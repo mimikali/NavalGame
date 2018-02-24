@@ -13,7 +13,7 @@ namespace NavalGame
 
         public Destroyer(Point position)
         {
-            Speed = 5;
+            Speed = 6;
             Position = position;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.LightArtillery, Order.Torpedo, Order.DepthCharge});
