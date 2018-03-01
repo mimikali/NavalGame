@@ -16,6 +16,7 @@ namespace NavalGame
         int _CameraScale;
         Point? DragFrom;
         Point? ClickPoint;
+        private Move _CurrentMove;
         Bitmap[] CachedTiles;
         OrdersDisplay _OrdersDisplay;
 
@@ -93,10 +94,25 @@ namespace NavalGame
             }
         }
 
+        public Move CurrentMove
+        {
+            get
+            {
+                return _CurrentMove;
+            }
+
+            set
+            {
+                _CurrentMove = value;
+                if (value == NavalGame.Move.Wait) Invalidate();
+            }
+        }
+
         public MapDisplay()
         {
             CachedTiles = new Bitmap[16];
             CameraScale = 20;
+            CurrentMove = NavalGame.Move.None;
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -141,6 +157,7 @@ namespace NavalGame
             if (Game == null) return;
             var counter = Bitmaps.Get("Data\\Counter.png");
             var selected = Bitmaps.Get("Data\\Selected.png");
+            var highlight = Bitmaps.Get("Data\\Highlight.png");
             if (CachedTiles[0] == null || CachedTiles[0].Height != CameraScale)
             {
                 var terrainTextures = Bitmaps.Get("Data\\TerrainTextures.png");
@@ -192,6 +209,21 @@ namespace NavalGame
                     Point p = MapToDisplay(new PointF(x, y));
                     pe.Graphics.DrawImage(CachedTiles[tileIndex], p.X, p.Y);
                     pe.Graphics.DrawRectangle(Pens.Black, new Rectangle(p, CachedTiles[0].Size));
+
+                    // Draw Highlight
+                    if (CurrentMove == NavalGame.Move.Wait)
+                    {
+                        if (Game.Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
+                        {
+                            if (x >= Game.SelectedUnit.Position.X - 1 && x <= Game.SelectedUnit.Position.X + 1)
+                            {
+                                if (y >= Game.SelectedUnit.Position.Y - 1 && y <= Game.SelectedUnit.Position.Y + 1)
+                                {
+                                    pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                                }
+                            }
+                        }
+                    }
                 }
 
                 for (int i = 0; i < Game.Units.Count; i++)
@@ -220,18 +252,118 @@ namespace NavalGame
         {
             if (PointDifference((Point)ClickPoint, e.Location) < 2)
             {
+                // Click
                 bool l = true;
-                for (int i = 0; i < Game.Units.Count; i++)
+                PointF mapClickPosition = DisplayToMap(e.Location);
+                if (CurrentMove == NavalGame.Move.Wait)
                 {
-                    PointF k = DisplayToMap(e.Location);
-                    Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
-                    if (Game.Units[i].Position == j)
+                    if (Game.SelectedUnit != null)
                     {
-                        Game.SelectedUnit = Game.Units[i];
-                        l = false;
+                        Point unitPosition = Game.SelectedUnit.Position;
+                        if (mapClickPosition.X < unitPosition.X + 2)
+                        {
+                            if (mapClickPosition.Y < unitPosition.Y + 2)
+                            {
+                                if (mapClickPosition.X >= unitPosition.X + 1)
+                                {
+                                    if (mapClickPosition.Y >= unitPosition.Y + 1)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X + 1, unitPosition.Y + 1, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.X += 1;
+                                            Game.SelectedUnit.Position.Y += 1;
+                                            CurrentMove = NavalGame.Move.SouthEast;
+                                        }
+                                    }
+                                    else if (mapClickPosition.Y >= unitPosition.Y)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X + 1, unitPosition.Y, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.X += 1;
+                                            CurrentMove = NavalGame.Move.East;
+                                        }
+                                    }
+                                    else if (mapClickPosition.Y >= unitPosition.Y - 1)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X + 1, unitPosition.Y - 1, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.X += 1;
+                                            Game.SelectedUnit.Position.Y -= 1;
+                                            CurrentMove = NavalGame.Move.NorthEast;
+                                        }
+                                    }
+                                }
+                                else if (mapClickPosition.X >= unitPosition.X)
+                                {
+                                    if (mapClickPosition.Y >= unitPosition.Y + 1)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X, unitPosition.Y + 1, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.Y += 1;
+                                            CurrentMove = NavalGame.Move.South;
+                                        }
+                                    }
+                                    else if (mapClickPosition.Y >= unitPosition.Y)
+                                    {
+                                        CurrentMove = NavalGame.Move.None;
+                                    }
+                                    else if (mapClickPosition.Y >= unitPosition.Y - 1)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X, unitPosition.Y - 1, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.Y -= 1;
+                                            CurrentMove = NavalGame.Move.North;
+                                        }
+                                    }
+                                }
+                                else if (mapClickPosition.X >= unitPosition.X - 1)
+                                {
+                                    if (mapClickPosition.Y >= unitPosition.Y + 1)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X - 1, unitPosition.Y + 1, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.X -= 1;
+                                            Game.SelectedUnit.Position.Y += 1;
+                                            CurrentMove = NavalGame.Move.SouthWest;
+                                        }
+                                    }
+                                    else if (mapClickPosition.Y >= unitPosition.Y)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X - 1, unitPosition.Y, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.X -= 1;
+                                            CurrentMove = NavalGame.Move.West;
+                                        }
+                                    }
+                                    else if (mapClickPosition.Y >= unitPosition.Y - 1)
+                                    {
+                                        if (Game.Terrain.Get(unitPosition.X - 1, unitPosition.Y - 1, TerrainType.Land) == TerrainType.Sea)
+                                        {
+                                            Game.SelectedUnit.Position.X -= 1;
+                                            Game.SelectedUnit.Position.Y -= 1;
+                                            CurrentMove = NavalGame.Move.NorthWest;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+
                 }
-                if (l) Game.SelectedUnit = null;
+                else
+                {
+                    for (int i = 0; i < Game.Units.Count; i++)
+                    {
+                        PointF k = DisplayToMap(e.Location);
+                        Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
+                        if (Game.Units[i].Position == j)
+                        {
+                            Game.SelectedUnit = Game.Units[i];
+                            l = false;
+                        }
+                    }
+                    if (l) Game.SelectedUnit = null;
+                }
                 if (OrdersDisplay != null) OrdersDisplay.Invalidate();
                 Invalidate();
             }

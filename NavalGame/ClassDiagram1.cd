@@ -3,15 +3,8 @@
   <Class Name="NavalGame.Unit" Collapsed="true">
     <Position X="4.25" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAQAAAAAAAAAgAAgAAAABAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <HashCode>AAAAAQAAAAAAAAAgAAgAAAABAAAAAAAAAAAAAIgAAAA=</HashCode>
       <FileName>Unit.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="NavalGame.OrdersDisplay" Collapsed="true">
-    <Position X="6.25" Y="2.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AACAAAAAAAAIAAAAAABAAAAAAgAAAEAAIABAAAACIAA=</HashCode>
-      <FileName>OrdersDisplay.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="NavalGame.Minesweeper" Collapsed="true">
@@ -19,6 +12,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Minesweeper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NavalGame.OrdersDisplay" Collapsed="true">
+    <Position X="6.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAIAAAAAABAAAAAAhAAAEAAIABAAAACIAA=</HashCode>
+      <FileName>OrdersDisplay.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="NavalGame.TerrainType" Collapsed="true">
@@ -38,8 +38,15 @@
   <Enum Name="NavalGame.Order" Collapsed="true">
     <Position X="4.25" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAACAgAIAAAAAAAAAAAAAAAACAAEACAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAAAAAAoAAAAAAAAAAAAAAAACAAEACAAAAAAAAQAA=</HashCode>
       <FileName>Order.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="NavalGame.Move" Collapsed="true">
+    <Position X="4" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACCCABABAAAAAAAAAAAAAAAAEAQAAAAAAAAAAAEBAAQ=</HashCode>
+      <FileName>Move.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

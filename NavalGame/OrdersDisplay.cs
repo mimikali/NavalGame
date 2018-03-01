@@ -77,7 +77,10 @@ namespace NavalGame
         {
             if (ButtonPressedIndex != -1)
             {
-                MapDisplay.Game.DoOrder(MapDisplay.Game.SelectedUnit, MapDisplay.Game.SelectedUnit.Abilities[ButtonPressedIndex]);
+                if (MapDisplay.Game.SelectedUnit.Abilities[ButtonPressedIndex] == Order.Move)
+                {
+                    MapDisplay.CurrentMove = NavalGame.Move.Wait;
+                }
                 ButtonPressedIndex = -1;
                 Invalidate();
             }

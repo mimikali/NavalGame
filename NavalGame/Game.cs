@@ -101,15 +101,6 @@ namespace NavalGame
             _Units.Remove(unit);
         }
 
-        public void DoOrder(Unit unit, Order order)
-        {
-            if (!Units.Contains(unit)) return;
-            if (order == Order.Move)
-            {
-
-            }
-        }
-
         public string GetOrderIconPath(Order order)
         {
             if (!OrderIcons.ContainsKey(order)) return "Data\\Torpedo.png";

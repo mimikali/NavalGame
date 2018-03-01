@@ -59,6 +59,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Minesweeper.cs" />
+    <Compile Include="Move.cs" />
     <Compile Include="MoveType.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="OrdersDisplay.cs">
@@ -124,6 +125,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\HeavyCruiser.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Highlight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\LightArtillery.png">
