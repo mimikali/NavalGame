@@ -17,6 +17,7 @@ namespace NavalGame
         Point? DragFrom;
         Point? ClickPoint;
         private Move _CurrentMove;
+        private List<Point> _PossibleMoves;
         Bitmap[] CachedTiles;
         OrdersDisplay _OrdersDisplay;
 
@@ -108,11 +109,25 @@ namespace NavalGame
             }
         }
 
+        public List<Point> PossibleMoves
+        {
+            get
+            {
+                return _PossibleMoves;
+            }
+
+            set
+            {
+                _PossibleMoves = value;
+            }
+        }
+
         public MapDisplay()
         {
             CachedTiles = new Bitmap[16];
             CameraScale = 20;
-            CurrentMove = NavalGame.Move.None;
+            _CurrentMove = NavalGame.Move.None;
+            _PossibleMoves = new List<Point>();
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -213,13 +228,20 @@ namespace NavalGame
                     // Draw Highlight
                     if (CurrentMove == NavalGame.Move.Wait)
                     {
+                        if (Game.SelectedUnit.MovesLeft < 1)
+                        {
+                            CurrentMove = NavalGame.Move.None;
+                        }
                         if (Game.Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
                         {
-                            if (x >= Game.SelectedUnit.Position.X - 1 && x <= Game.SelectedUnit.Position.X + 1)
+                            if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.MovesLeft)
                             {
-                                if (y >= Game.SelectedUnit.Position.Y - 1 && y <= Game.SelectedUnit.Position.Y + 1)
+                                pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+
+                                if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) < 2)
                                 {
                                     pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                                    PossibleMoves.Add(new Point(x, y));
                                 }
                             }
                         }
@@ -240,6 +262,7 @@ namespace NavalGame
                     }
                 }
             }
+            OrdersDisplay.Invalidate();
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -259,93 +282,9 @@ namespace NavalGame
                 {
                     if (Game.SelectedUnit != null)
                     {
-                        Point unitPosition = Game.SelectedUnit.Position;
-                        if (mapClickPosition.X < unitPosition.X + 2)
+                        if (PossibleMoves.Contains(Point.Truncate(mapClickPosition)))
                         {
-                            if (mapClickPosition.Y < unitPosition.Y + 2)
-                            {
-                                if (mapClickPosition.X >= unitPosition.X + 1)
-                                {
-                                    if (mapClickPosition.Y >= unitPosition.Y + 1)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X + 1, unitPosition.Y + 1, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.X += 1;
-                                            Game.SelectedUnit.Position.Y += 1;
-                                            CurrentMove = NavalGame.Move.SouthEast;
-                                        }
-                                    }
-                                    else if (mapClickPosition.Y >= unitPosition.Y)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X + 1, unitPosition.Y, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.X += 1;
-                                            CurrentMove = NavalGame.Move.East;
-                                        }
-                                    }
-                                    else if (mapClickPosition.Y >= unitPosition.Y - 1)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X + 1, unitPosition.Y - 1, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.X += 1;
-                                            Game.SelectedUnit.Position.Y -= 1;
-                                            CurrentMove = NavalGame.Move.NorthEast;
-                                        }
-                                    }
-                                }
-                                else if (mapClickPosition.X >= unitPosition.X)
-                                {
-                                    if (mapClickPosition.Y >= unitPosition.Y + 1)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X, unitPosition.Y + 1, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.Y += 1;
-                                            CurrentMove = NavalGame.Move.South;
-                                        }
-                                    }
-                                    else if (mapClickPosition.Y >= unitPosition.Y)
-                                    {
-                                        CurrentMove = NavalGame.Move.None;
-                                    }
-                                    else if (mapClickPosition.Y >= unitPosition.Y - 1)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X, unitPosition.Y - 1, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.Y -= 1;
-                                            CurrentMove = NavalGame.Move.North;
-                                        }
-                                    }
-                                }
-                                else if (mapClickPosition.X >= unitPosition.X - 1)
-                                {
-                                    if (mapClickPosition.Y >= unitPosition.Y + 1)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X - 1, unitPosition.Y + 1, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.X -= 1;
-                                            Game.SelectedUnit.Position.Y += 1;
-                                            CurrentMove = NavalGame.Move.SouthWest;
-                                        }
-                                    }
-                                    else if (mapClickPosition.Y >= unitPosition.Y)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X - 1, unitPosition.Y, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.X -= 1;
-                                            CurrentMove = NavalGame.Move.West;
-                                        }
-                                    }
-                                    else if (mapClickPosition.Y >= unitPosition.Y - 1)
-                                    {
-                                        if (Game.Terrain.Get(unitPosition.X - 1, unitPosition.Y - 1, TerrainType.Land) == TerrainType.Sea)
-                                        {
-                                            Game.SelectedUnit.Position.X -= 1;
-                                            Game.SelectedUnit.Position.Y -= 1;
-                                            CurrentMove = NavalGame.Move.NorthWest;
-                                        }
-                                    }
-                                }
-                            }
+                            Game.SelectedUnit.Position = Point.Truncate(mapClickPosition);
                         }
                     }
 
@@ -517,7 +456,7 @@ namespace NavalGame
             return false;
         }
 
-        static float PointDifference(Point p1, Point p2)
+        public static float PointDifference(Point p1, Point p2)
         {
             return (float)Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
         }

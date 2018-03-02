@@ -53,7 +53,7 @@ namespace NavalGame
 
         public Game()
         {
-            _Terrain = GenerateTerrain(20, 20, 143);
+            _Terrain = GenerateTerrain(64, 64, 0);
             _Units = new List<Unit>();
             AddUnit(new Destroyer(new Point(5, 6)));
             AddUnit(new Destroyer(new Point(7, 2)));

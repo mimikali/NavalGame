@@ -12,8 +12,10 @@ namespace NavalGame
 
         public Battleship(Point position)
         {
+            MovesLeft = float.PositiveInfinity;
             Speed = 3;
             Position = position;
+            MovesLeft = Speed;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.HeavyArtillery, Order.LightArtillery });
         }

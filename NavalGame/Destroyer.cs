@@ -13,10 +13,13 @@ namespace NavalGame
 
         public Destroyer(Point position)
         {
-            Speed = 6;
+            Speed = 5;
+            MovesLeft = float.PositiveInfinity;
             Position = position;
+            MovesLeft = Speed;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.LightArtillery, Order.Torpedo, Order.DepthCharge});
+            MovesLeft = Speed;
         }
     }
 }

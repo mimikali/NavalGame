@@ -56,6 +56,7 @@ namespace NavalGame
                     pe.Graphics.DrawImage(Bitmaps.Get(MapDisplay.Game.GetOrderIconPath(MapDisplay.Game.SelectedUnit.Abilities[i])), ButtonLocations[i]);
                 }
             }
+            MapDisplay.Invalidate();
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -79,7 +80,14 @@ namespace NavalGame
             {
                 if (MapDisplay.Game.SelectedUnit.Abilities[ButtonPressedIndex] == Order.Move)
                 {
-                    MapDisplay.CurrentMove = NavalGame.Move.Wait;
+                    if (MapDisplay.CurrentMove == NavalGame.Move.Wait)
+                    {
+                        MapDisplay.CurrentMove = NavalGame.Move.None;
+                    }
+                    else
+                    {
+                        MapDisplay.CurrentMove = NavalGame.Move.Wait;
+                    }
                 }
                 ButtonPressedIndex = -1;
                 Invalidate();
