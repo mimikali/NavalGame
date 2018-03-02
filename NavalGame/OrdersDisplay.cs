@@ -14,6 +14,7 @@ namespace NavalGame
         public int InitialHeight;
         int ButtonPressedIndex;
         List<Rectangle> ButtonLocations = new List<Rectangle>();
+        List<Rectangle> CounterLocations = new List<Rectangle>();
 
         public MapDisplay MapDisplay
         {
@@ -43,9 +44,12 @@ namespace NavalGame
             if (MapDisplay.Game.SelectedUnit != null)
             {
                 ButtonLocations.Clear();
+                CounterLocations.Clear();
                 for (int i = 0; i < MapDisplay.Game.SelectedUnit.Abilities.Count; i++)
                 {
-                    ButtonLocations.Add(new Rectangle((int)(Width * 0.1), (int)(Width * 0.2 + InitialHeight * 0.3 + i * Height * 0.1), (int)(Width * 0.8), (int)(InitialHeight * 0.1)));
+                    ButtonLocations.Add(new Rectangle((int)(Width * 0.1), (int)(Width * 0.2 + InitialHeight * 0.3 + i * Height * 0.1), (int)(Width * 0.6), (int)(InitialHeight * 0.1)));
+
+                    CounterLocations.Add(new Rectangle((int)(Width * 0.75), (int)(Width * 0.2 + InitialHeight * 0.3 + i * Height * 0.1 + Width * 0.02), (int)(Width * 0.15), (int)(InitialHeight * 0.088)));
                 }
                 pe.Graphics.DrawImage(Bitmaps.Get(MapDisplay.Game.SelectedUnit.Bitmap), new Rectangle((int)(Width * 0.1), (int)(Width * 0.1), (int)(Width * 0.8), (int)(InitialHeight * 0.3)));
                 for (int i = 0; i < ButtonLocations.Count; i++)
@@ -53,7 +57,30 @@ namespace NavalGame
                     if (i == ButtonPressedIndex) pe.Graphics.DrawImage(Bitmaps.Get("Data\\ButtonPressed.png"), ButtonLocations[i]);
                     else pe.Graphics.DrawImage(Bitmaps.Get("Data\\Button.png"), ButtonLocations[i]);
 
+                    if (MapDisplay.CurrentMove == NavalGame.Move.Wait && MapDisplay.Game.SelectedUnit.Abilities[i] == Order.Move)
+                    {
+                        pe.Graphics.DrawImage(Bitmaps.Get("Data\\Selected.png"), ButtonLocations[i]);
+                    }
+
                     pe.Graphics.DrawImage(Bitmaps.Get(MapDisplay.Game.GetOrderIconPath(MapDisplay.Game.SelectedUnit.Abilities[i])), ButtonLocations[i]);
+                }
+
+                for (int i = 0; i < CounterLocations.Count; i++)
+                {
+                    float fullness;
+                    switch(MapDisplay.Game.SelectedUnit.Abilities[i])
+                    {
+                        case Order.Move:
+                            fullness = MapDisplay.Game.SelectedUnit.MovesLeft / MapDisplay.Game.SelectedUnit.Speed;
+                            break;
+
+                        default:
+                            fullness = 0;
+                            break;
+
+                    }
+                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\Highlight.png"), CounterLocations[i]);
+                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\Texture.png"), new Rectangle(CounterLocations[i].X, CounterLocations[i].Y, CounterLocations[i].Width, (int)(CounterLocations[i].Height * fullness)));
                 }
             }
             MapDisplay.Invalidate();
