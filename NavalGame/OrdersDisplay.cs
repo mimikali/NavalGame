@@ -79,8 +79,9 @@ namespace NavalGame
                             break;
 
                     }
-                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\Highlight.png"), CounterLocations[i]);
-                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\Texture.png"), new Rectangle(CounterLocations[i].X, CounterLocations[i].Y, CounterLocations[i].Width, (int)(CounterLocations[i].Height * fullness)));
+                    pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\Texture.png"), CounterLocations[i]);
+                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\NoTexture.png"), new Rectangle(CounterLocations[i].X, CounterLocations[i].Y, CounterLocations[i].Width, (int)(CounterLocations[i].Height * (1 - fullness))));
                 }
             }
             MapDisplay.Invalidate();
