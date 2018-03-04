@@ -63,7 +63,7 @@ namespace NavalGame
 
             set
             {
-                int newScale = Math.Max(Math.Min(value, 1000), 12);
+                int newScale = Math.Max(Math.Min(value, 1000), 30);
 
                 if (newScale != _CameraPosition.X)
                 {
@@ -173,6 +173,7 @@ namespace NavalGame
             var counter = Bitmaps.Get("Data\\Counter.png");
             var selected = Bitmaps.Get("Data\\Selected.png");
             var highlight = Bitmaps.Get("Data\\Highlight.png");
+            var fogOfWar = Bitmaps.Get("Data\\FogOfWar.png");
             if (CachedTiles[0] == null || CachedTiles[0].Height != CameraScale)
             {
                 var terrainTextures = Bitmaps.Get("Data\\TerrainTextures.png");
@@ -223,6 +224,7 @@ namespace NavalGame
                     // Draw tile
                     Point p = MapToDisplay(new PointF(x, y));
                     pe.Graphics.DrawImage(CachedTiles[tileIndex], p.X, p.Y);
+                    if (!Game.CurrentPlayer.IsTileVisible(new Point(x, y))) pe.Graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
                     pe.Graphics.DrawRectangle(Pens.Black, new Rectangle(p, CachedTiles[0].Size));
 
                     // Draw Highlight
@@ -250,6 +252,8 @@ namespace NavalGame
 
                 for (int i = 0; i < Game.Units.Count; i++)
                 {
+                    if (Game.Units[i].Player != Game.CurrentPlayer) break;
+
                     Point displayPos = MapToDisplay(Game.Units[i].Position);
                     if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
                     {
@@ -273,6 +277,7 @@ namespace NavalGame
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            if (ClickPoint == null) return;
             if (PointDifference((Point)ClickPoint, e.Location) < 2)
             {
                 // Click
@@ -293,6 +298,8 @@ namespace NavalGame
                 {
                     for (int i = 0; i < Game.Units.Count; i++)
                     {
+                        if (Game.Units[i].Player != Game.CurrentPlayer) break;
+
                         PointF k = DisplayToMap(e.Location);
                         Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
                         if (Game.Units[i].Position == j)

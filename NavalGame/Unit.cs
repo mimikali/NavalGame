@@ -13,6 +13,9 @@ namespace NavalGame
         private Point _Position;
         private string _Bitmap;
         List<Order> _Abilities = new List<Order>();
+        private Player _Player;
+        private float _ViewDistance;
+        private Game _Game;
 
         public List<Order> Abilities
         {
@@ -61,6 +64,7 @@ namespace NavalGame
                 {
                     MovesLeft -= MapDisplay.PointDifference(_Position, value);
                     _Position = value;
+                    Game.ChangeInGame();
                 }
                 else
                 {
@@ -81,5 +85,46 @@ namespace NavalGame
                 _Bitmap = value;
             }
         }
+
+        public Player Player
+        {
+            get
+            {
+                return _Player;
+            }
+
+            set
+            {
+                _Player = value;
+                Game.ChangeInGame();
+            }
+        }
+
+        public float ViewDistance
+        {
+            get
+            {
+                return _ViewDistance;
+            }
+
+            set
+            {
+                _ViewDistance = value;
+            }
+        }
+
+        public Game Game
+        {
+            get
+            {
+                return _Game;
+            }
+
+            set
+            {
+                _Game = value;
+            }
+        }
+
     }
 }

@@ -14,6 +14,10 @@ namespace NavalGame
         private Unit _SelectedUnit;
         private Dictionary<Order, string> OrderIcons = new Dictionary<Order, string>();
         private Dictionary<Order, string> OrderDescriptions = new Dictionary<Order, string>();
+        private List<Player> Players = new List<Player>();
+        private Player _CurrentPlayer;
+        public event GameChange Change;
+        public delegate void GameChange(Game game, EventArgs e);
 
         public Unit SelectedUnit
         {
@@ -51,22 +55,34 @@ namespace NavalGame
             }
         }
 
+        public Player CurrentPlayer
+        {
+            get
+            {
+                return _CurrentPlayer;
+            }
+
+            set
+            {
+                if (!Players.Contains(value)) return;
+                _CurrentPlayer = value;
+            }
+        }
+
         public Game()
         {
-            _Terrain = GenerateTerrain(64, 64, 0);
+            _Terrain = GenerateTerrain(32, 32, 675);
             _Units = new List<Unit>();
-            AddUnit(new Destroyer(new Point(5, 6)));
-            AddUnit(new Destroyer(new Point(7, 2)));
-            AddUnit(new Destroyer(new Point(2, 4)));
-            AddUnit(new Destroyer(new Point(7, 7)));
-            AddUnit(new Battleship(new Point(2, 8)));
-            AddUnit(new Minesweeper(new Point(14, 8)));
+            Players.Add(new Player(this));
+            AddUnit(new Destroyer(new Point(12, 15), Players[0]));
+            //AddUnit(new Minesweeper(new Point(1, 16), Players[0]));
             OrderIcons.Add(Order.Torpedo, "Data\\Torpedo.png");
             OrderIcons.Add(Order.Mine, "Data\\Mine.png");
             OrderIcons.Add(Order.Move, "Data\\Move.png");
             OrderIcons.Add(Order.DepthCharge, "Data\\DepthCharge.png");
             OrderIcons.Add(Order.LightArtillery, "Data\\LightArtillery.png");
             OrderIcons.Add(Order.HeavyArtillery, "Data\\HeavyArtillery.png");
+            CurrentPlayer = Players[0];
         }
 
         static Terrain GenerateTerrain(int width, int height, int seed)
@@ -105,6 +121,11 @@ namespace NavalGame
         {
             if (!OrderIcons.ContainsKey(order)) return "Data\\Torpedo.png";
             else return OrderIcons[order];
+        }
+
+        public void ChangeInGame()
+        {
+            Change(this, null);
         }
     }
 }

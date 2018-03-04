@@ -11,8 +11,11 @@ namespace NavalGame
     {
         static string StaticBitmap = "Data\\Destroyer.png";
 
-        public Destroyer(Point position)
+        public Destroyer(Point position, Player player)
         {
+            Game = player.Game;
+            ViewDistance = 8;
+            Player = player;
             Speed = 5;
             MovesLeft = float.PositiveInfinity;
             Position = position;
