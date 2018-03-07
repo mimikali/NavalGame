@@ -13,7 +13,7 @@ namespace NavalGame
         public Battleship(Point position, Player player)
         {
             Game = player.Game;
-            ViewDistance = 12;
+            ViewDistance = 9;
             Player = player;
             MovesLeft = float.PositiveInfinity;
             Speed = 3;

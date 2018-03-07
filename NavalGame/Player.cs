@@ -8,34 +8,23 @@ namespace NavalGame
 {
     public class Player
     {
-        private List<bool> VisibleTiles;
+        private List<bool> _VisibleTiles;
         private List<Unit> _Units = new List<Unit>();
-        private bool IsVisibilityValid = false;
-        private bool AreUnitsValid = false;
         private Game _Game;
 
-        public List<Unit> Units
+        public IList<Unit> Units
         {
             get
             {
-                if (AreUnitsValid)
+                if (_Units == null)
                 {
-                    return _Units;
-                }
-                else
-                {
-                    _Units.Clear();
+                    _Units = new List<Unit>();
                     for (int i = 0; i < Game.Units.Count; i++)
                     {
                         if (Game.Units[i].Player == this) _Units.Add(Game.Units[i]);
                     }
-                    return _Units;
                 }
-            }
-
-            set
-            {
-                _Units = value;
+                return _Units.AsReadOnly();
             }
         }
 
@@ -55,26 +44,22 @@ namespace NavalGame
         public Player(Game game)
         {
             Game = game;
-            VisibleTiles = new List<bool>();
-            Units = new List<Unit>();
-            Game.Change += GameChange;
+            _VisibleTiles = new List<bool>();
+            _Units = new List<Unit>();
+            Game.Changed += GameChanged;
         }
 
-        private void GameChange(Game game, EventArgs e)
+        private void GameChanged()
         {
-            IsVisibilityValid = false;
-            AreUnitsValid = false;
+            _VisibleTiles = null;
+            _Units = null;
         }
 
         public bool IsTileVisible(Point position)
         {
-            if (IsVisibilityValid)
+            if (_VisibleTiles == null)
             {
-                return VisibleTiles[position.X + position.Y * Game.Terrain.Width];
-            }
-            else
-            {
-                VisibleTiles.Clear();
+                _VisibleTiles = new List<bool>();
                 for (int y = 0; y < Game.Terrain.Height; y++)
                 {
                     for (int x = 0; x < Game.Terrain.Width; x++)
@@ -88,12 +73,11 @@ namespace NavalGame
                                 break;
                             }
                         }
-                        VisibleTiles.Add(a);
+                        _VisibleTiles.Add(a);
                     }
                 }
-                IsVisibilityValid = true;
-                return VisibleTiles[position.X + position.Y * Game.Terrain.Width];
             }
+            return _VisibleTiles[position.X + position.Y * Game.Terrain.Width];
         }
     }
 }

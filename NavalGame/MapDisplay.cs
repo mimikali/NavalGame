@@ -16,8 +16,9 @@ namespace NavalGame
         int _CameraScale;
         Point? DragFrom;
         Point? ClickPoint;
-        private Move _CurrentMove;
+        private Order? _CurrentOrder;
         private List<Point> _PossibleMoves;
+        private Unit _LastSelectedUnit;
         Bitmap[] CachedTiles;
         OrdersDisplay _OrdersDisplay;
 
@@ -32,13 +33,27 @@ namespace NavalGame
             {
                 if (value != _Game)
                 {
+                    if (_Game != null) _Game.Changed -= GameChanged;
                     _Game = value;
                     MoveMode = MoveType.Drag;
                     _CameraPosition = new PointF(value.Terrain.Width / 2, value.Terrain.Height / 2);
                     CameraScale = 50;
                     DragFrom = null;
+                    _Game.Changed += GameChanged;
                 }
             }
+        }
+
+        private void GameChanged()
+        {
+            if (Game.SelectedUnit != _LastSelectedUnit)
+            {
+                CurrentOrder = Order.Move;
+                _PossibleMoves.Clear();
+            }
+            _LastSelectedUnit = Game.SelectedUnit;
+            Invalidate();
+            OrdersDisplay.GameChanged();
         }
 
         public OrdersDisplay OrdersDisplay
@@ -95,30 +110,17 @@ namespace NavalGame
             }
         }
 
-        public Move CurrentMove
+        public Order? CurrentOrder
         {
             get
             {
-                return _CurrentMove;
+                return _CurrentOrder;
             }
 
             set
             {
-                _CurrentMove = value;
-                if (value == NavalGame.Move.Wait) Invalidate();
-            }
-        }
-
-        public List<Point> PossibleMoves
-        {
-            get
-            {
-                return _PossibleMoves;
-            }
-
-            set
-            {
-                _PossibleMoves = value;
+                _CurrentOrder = value;
+                if (value == NavalGame.Order.Move) Invalidate();
             }
         }
 
@@ -126,7 +128,7 @@ namespace NavalGame
         {
             CachedTiles = new Bitmap[16];
             CameraScale = 20;
-            _CurrentMove = NavalGame.Move.None;
+            _CurrentOrder = null;
             _PossibleMoves = new List<Point>();
         }
 
@@ -205,6 +207,7 @@ namespace NavalGame
             m2y = Math.Min(m2y, Game.Terrain.Height);
             pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             pe.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+            _PossibleMoves.Clear();
             for (int x = m1x; x < m2x; x++)
             {
                 for (int y = m1y; y < m2y; y++)
@@ -224,16 +227,13 @@ namespace NavalGame
                     // Draw tile
                     Point p = MapToDisplay(new PointF(x, y));
                     pe.Graphics.DrawImage(CachedTiles[tileIndex], p.X, p.Y);
-                    if (!Game.CurrentPlayer.IsTileVisible(new Point(x, y))) pe.Graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
+                    if (Game.CurrentPlayer == null) pe.Graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
+                    else if (!Game.CurrentPlayer.IsTileVisible(new Point(x, y))) pe.Graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
                     pe.Graphics.DrawRectangle(Pens.Black, new Rectangle(p, CachedTiles[0].Size));
 
-                    // Draw Highlight
-                    if (CurrentMove == NavalGame.Move.Wait)
+                    // Draw Move Range
+                    if (CurrentOrder == Order.Move && Game.SelectedUnit != null)
                     {
-                        if (Game.SelectedUnit.MovesLeft < 1)
-                        {
-                            CurrentMove = NavalGame.Move.None;
-                        }
                         if (Game.Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
                         {
                             if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.MovesLeft)
@@ -243,30 +243,41 @@ namespace NavalGame
                                 if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) < 2)
                                 {
                                     pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                                    PossibleMoves.Add(new Point(x, y));
+                                    _PossibleMoves.Add(new Point(x, y));
                                 }
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i < Game.Units.Count; i++)
+                // Draw Units
+                if (Game.CurrentPlayer != null)
                 {
-                    if (Game.Units[i].Player != Game.CurrentPlayer) break;
-
-                    Point displayPos = MapToDisplay(Game.Units[i].Position);
-                    if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
+                    foreach (Unit unit in Game.Units)
                     {
-                        if (displayPos.X < Width + CameraScale || displayPos.Y < Height + CameraScale)
+                        if (Game.CurrentPlayer.IsTileVisible(unit.Position))
                         {
-                            pe.Graphics.DrawImage(counter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                            pe.Graphics.DrawImage(Bitmaps.Get(Game.Units[i].Bitmap), new Rectangle(new Point(displayPos.X + CameraScale / 8, displayPos.Y + CameraScale / 8), new Size((CameraScale / 8) * 6 , (CameraScale / 8) * 6)));
-                            if (Game.SelectedUnit == Game.Units[i]) pe.Graphics.DrawImage(selected, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                            Point displayPos = MapToDisplay(unit.Position);
+                            if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
+                            {
+                                if (displayPos.X < Width + CameraScale || displayPos.Y < Height + CameraScale)
+                                {
+                                    pe.Graphics.DrawImage(counter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                    pe.Graphics.DrawImage(Bitmaps.Get(unit.Bitmap), new Rectangle(new Point(displayPos.X + CameraScale / 8, displayPos.Y + CameraScale / 8), new Size((CameraScale / 8) * 6, (CameraScale / 8) * 6)));
+                                    if (Game.SelectedUnit == unit) pe.Graphics.DrawImage(selected, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                }
+                            }
                         }
                     }
                 }
             }
             OrdersDisplay.Invalidate();
+        }
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            Invalidate();
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -283,35 +294,32 @@ namespace NavalGame
                 // Click
                 bool l = true;
                 PointF mapClickPosition = DisplayToMap(e.Location);
-                if (CurrentMove == NavalGame.Move.Wait)
+                if (CurrentOrder == Order.Move)
                 {
                     if (Game.SelectedUnit != null)
                     {
-                        if (PossibleMoves.Contains(Point.Truncate(mapClickPosition)))
+                        if (_PossibleMoves.Contains(Point.Truncate(mapClickPosition)))
                         {
                             Game.SelectedUnit.Position = Point.Truncate(mapClickPosition);
                         }
                     }
 
                 }
-                else
-                {
-                    for (int i = 0; i < Game.Units.Count; i++)
-                    {
-                        if (Game.Units[i].Player != Game.CurrentPlayer) break;
 
+                if (Game.CurrentPlayer != null)
+                {
+                    foreach (Unit unit in Game.CurrentPlayer.Units)
+                    {
                         PointF k = DisplayToMap(e.Location);
                         Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
-                        if (Game.Units[i].Position == j)
+                        if (unit.Position == j)
                         {
-                            Game.SelectedUnit = Game.Units[i];
+                            Game.SelectedUnit = unit;
                             l = false;
                         }
                     }
-                    if (l) Game.SelectedUnit = null;
                 }
-                if (OrdersDisplay != null) OrdersDisplay.Invalidate();
-                Invalidate();
+                if (l) Game.SelectedUnit = null;
             }
             DragFrom = null;
         }

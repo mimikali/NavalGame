@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace NavalGame
 {
-    public class OrdersDisplay : PictureBox
+    public partial class OrdersDisplay : UserControl
     {
+        public OrdersDisplay()
+        {
+            InitializeComponent();
+        }
         MapDisplay _MapDisplay;
-        public int InitialWidth;
-        public int InitialHeight;
-        int ButtonPressedIndex;
+        private Player _NextPlayer;
         List<Rectangle> ButtonLocations = new List<Rectangle>();
         List<Rectangle> CounterLocations = new List<Rectangle>();
 
@@ -29,111 +34,50 @@ namespace NavalGame
             }
         }
 
+        public void GameChanged()
+        {
+            if (MapDisplay.Game.CurrentPlayer == null)
+            {
+                BeginTurnButton.Show();
+                NextTurnButton.Hide();
+            }
+            else
+            {
+                BeginTurnButton.Hide();
+                NextTurnButton.Show();
+            }
+            if (MapDisplay.Game.SelectedUnit != null)
+            {
+                MoveBar.Minimum = 0;
+                MoveBar.Maximum = MapDisplay.Game.SelectedUnit.Speed;
+                MoveBar.Value = (int)Math.Truncate(MapDisplay.Game.SelectedUnit.MovesLeft);
+            }
+            Invalidate();
+        }
+
         public OrdersDisplay(MapDisplay mapDisplay)
         {
             _MapDisplay = mapDisplay;
-            InitialWidth = Size.Width;
-            InitialHeight = Size.Height;
-            ButtonPressedIndex = -1;
         }
 
-        protected override void OnPaint(PaintEventArgs pe)
+        private void MoveButtonClicked(object sender, EventArgs e)
         {
-            pe.Graphics.FillRectangle(Brushes.Black, new Rectangle(0, 0, Width, Height));
-            if (MapDisplay.Game == null) return;
-            if (MapDisplay.Game.SelectedUnit != null)
-            {
-                ButtonLocations.Clear();
-                CounterLocations.Clear();
-                for (int i = 0; i < MapDisplay.Game.SelectedUnit.Abilities.Count; i++)
-                {
-                    ButtonLocations.Add(new Rectangle((int)(Width * 0.1), (int)(Width * 0.2 + InitialHeight * 0.3 + i * Height * 0.1), (int)(Width * 0.6), (int)(InitialHeight * 0.1)));
-
-                    CounterLocations.Add(new Rectangle((int)(Width * 0.75), (int)(Width * 0.2 + InitialHeight * 0.3 + i * Height * 0.1 + Width * 0.02), (int)(Width * 0.15), (int)(InitialHeight * 0.088)));
-                }
-                pe.Graphics.DrawImage(Bitmaps.Get(MapDisplay.Game.SelectedUnit.Bitmap), new Rectangle((int)(Width * 0.1), (int)(Width * 0.1), (int)(Width * 0.8), (int)(InitialHeight * 0.3)));
-                for (int i = 0; i < ButtonLocations.Count; i++)
-                {
-                    if (i == ButtonPressedIndex) pe.Graphics.DrawImage(Bitmaps.Get("Data\\ButtonPressed.png"), ButtonLocations[i]);
-                    else pe.Graphics.DrawImage(Bitmaps.Get("Data\\Button.png"), ButtonLocations[i]);
-
-                    if (MapDisplay.CurrentMove == NavalGame.Move.Wait && MapDisplay.Game.SelectedUnit.Abilities[i] == Order.Move)
-                    {
-                        pe.Graphics.DrawImage(Bitmaps.Get("Data\\Selected.png"), ButtonLocations[i]);
-                    }
-
-                    pe.Graphics.DrawImage(Bitmaps.Get(MapDisplay.Game.GetOrderIconPath(MapDisplay.Game.SelectedUnit.Abilities[i])), ButtonLocations[i]);
-                }
-
-                for (int i = 0; i < CounterLocations.Count; i++)
-                {
-                    float fullness;
-                    switch(MapDisplay.Game.SelectedUnit.Abilities[i])
-                    {
-                        case Order.Move:
-                            fullness = MapDisplay.Game.SelectedUnit.MovesLeft / MapDisplay.Game.SelectedUnit.Speed;
-                            break;
-
-                        default:
-                            fullness = 0;
-                            break;
-
-                    }
-                    pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\Texture.png"), CounterLocations[i]);
-                    pe.Graphics.DrawImage(Bitmaps.Get("Data\\NoTexture.png"), new Rectangle(CounterLocations[i].X, CounterLocations[i].Y, CounterLocations[i].Width, (int)(CounterLocations[i].Height * (1 - fullness))));
-                }
-            }
-            MapDisplay.Invalidate();
+            MapDisplay.CurrentOrder = Order.Move;
         }
 
-        protected override void OnMouseDown(MouseEventArgs e)
+        private void NextTurnButtonClick(object sender, EventArgs e)
         {
-            for (int i = 0; i < ButtonLocations.Count; i++)
-            {
-                if (e.X > ButtonLocations[i].X && e.X < ButtonLocations[i].X + ButtonLocations[i].Width)
-                {
-                    if (e.Y > ButtonLocations[i].Y && e.Y < ButtonLocations[i].Y + ButtonLocations[i].Height)
-                    {
-                        ButtonPressedIndex = i;
-                        Invalidate();
-                    }
-                }
-            }
+            _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 1) % MapDisplay.Game.Players.Count];
+            MapDisplay.Game.CurrentPlayer = null;
+            NextTurnButton.Hide();
+            BeginTurnButton.Show();
         }
 
-        protected override void OnMouseUp(MouseEventArgs e)
+        private void BeginTurnButtonClick(object sender, EventArgs e)
         {
-            if (ButtonPressedIndex != -1)
-            {
-                if (MapDisplay.Game.SelectedUnit.Abilities[ButtonPressedIndex] == Order.Move)
-                {
-                    if (MapDisplay.CurrentMove == NavalGame.Move.Wait)
-                    {
-                        MapDisplay.CurrentMove = NavalGame.Move.None;
-                    }
-                    else
-                    {
-                        MapDisplay.CurrentMove = NavalGame.Move.Wait;
-                    }
-                }
-                ButtonPressedIndex = -1;
-                Invalidate();
-            }
-        }
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            for (int i = 0; i < ButtonLocations.Count; i++)
-            {
-                if (e.X > ButtonLocations[i].X && e.X < ButtonLocations[i].X + ButtonLocations[i].Width)
-                {
-                    if (e.Y > ButtonLocations[i].Y && e.Y < ButtonLocations[i].Y + ButtonLocations[i].Height)
-                    {
-                        
-                    }
-                }
-            }
+            MapDisplay.Game.CurrentPlayer = _NextPlayer ?? MapDisplay.Game.Players[0]; //_NextPlayer != null ? _NextPlayer : MapDisplay.Game.Players[0];
+            BeginTurnButton.Hide();
+            NextTurnButton.Show();
         }
     }
 }

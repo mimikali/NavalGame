@@ -19,6 +19,8 @@ namespace NavalGame
             InitializeComponent();
             Game = new Game();
             MapDisplay.Game = Game;
+            MapDisplay.OrdersDisplay = OrdersDisplay;
+            OrdersDisplay.MapDisplay = MapDisplay;
         }
 
         private void FormSizeChanged(object sender, EventArgs e)

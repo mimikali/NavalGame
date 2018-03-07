@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Collections.ObjectModel;
 
 namespace NavalGame
 {
@@ -14,10 +15,9 @@ namespace NavalGame
         private Unit _SelectedUnit;
         private Dictionary<Order, string> OrderIcons = new Dictionary<Order, string>();
         private Dictionary<Order, string> OrderDescriptions = new Dictionary<Order, string>();
-        private List<Player> Players = new List<Player>();
+        private List<Player> _Players = new List<Player>();
         private Player _CurrentPlayer;
-        public event GameChange Change;
-        public delegate void GameChange(Game game, EventArgs e);
+        public event Action Changed;
 
         public Unit SelectedUnit
         {
@@ -31,6 +31,7 @@ namespace NavalGame
                 if (value == null || Units.Contains(value))
                 {
                     _SelectedUnit = value;
+                    if (Changed != null) Changed();
                 }
                 else
                 {
@@ -64,8 +65,25 @@ namespace NavalGame
 
             set
             {
-                if (!Players.Contains(value)) return;
+                if (value != null && !Players.Contains(value)) throw new Exception("Invalid current player.");
                 _CurrentPlayer = value;
+                SelectedUnit = null;
+                if (value != null)
+                {
+                    foreach (Unit unit in value.Units)
+                    {
+                        unit.NextMove();
+                    }
+                }
+                if (Changed != null) Changed();
+            }
+        }
+
+        public IList<Player> Players
+        {
+            get
+            {
+                return _Players.AsReadOnly();
             }
         }
 
@@ -73,16 +91,17 @@ namespace NavalGame
         {
             _Terrain = GenerateTerrain(32, 32, 675);
             _Units = new List<Unit>();
-            Players.Add(new Player(this));
+            _Players.Add(new Player(this));
+            _Players.Add(new Player(this));
             AddUnit(new Destroyer(new Point(12, 15), Players[0]));
-            //AddUnit(new Minesweeper(new Point(1, 16), Players[0]));
+            AddUnit(new Minesweeper(new Point(1, 16), Players[0]));
+            AddUnit(new Minesweeper(new Point(7, 6), Players[1]));
             OrderIcons.Add(Order.Torpedo, "Data\\Torpedo.png");
             OrderIcons.Add(Order.Mine, "Data\\Mine.png");
             OrderIcons.Add(Order.Move, "Data\\Move.png");
             OrderIcons.Add(Order.DepthCharge, "Data\\DepthCharge.png");
             OrderIcons.Add(Order.LightArtillery, "Data\\LightArtillery.png");
             OrderIcons.Add(Order.HeavyArtillery, "Data\\HeavyArtillery.png");
-            CurrentPlayer = Players[0];
         }
 
         static Terrain GenerateTerrain(int width, int height, int seed)
@@ -108,6 +127,7 @@ namespace NavalGame
         {
             if (Units.Contains(unit)) throw new Exception("Bad unit addition.");
             _Units.Add(unit);
+            if (Changed != null) Changed();
         }
 
         public void RemoveUnit(Unit unit)
@@ -115,6 +135,7 @@ namespace NavalGame
             if (!Units.Contains(unit)) throw new Exception("Bad unit removal.");
             if (SelectedUnit == unit) SelectedUnit = null;
             _Units.Remove(unit);
+            if (Changed != null) Changed();
         }
 
         public string GetOrderIconPath(Order order)
@@ -123,9 +144,9 @@ namespace NavalGame
             else return OrderIcons[order];
         }
 
-        public void ChangeInGame()
+        public void FireChangedEvent()
         {
-            Change(this, null);
+            if (Changed != null) Changed();
         }
     }
 }

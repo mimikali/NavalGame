@@ -14,7 +14,7 @@ namespace NavalGame
         public Destroyer(Point position, Player player)
         {
             Game = player.Game;
-            ViewDistance = 8;
+            ViewDistance = 9;
             Player = player;
             Speed = 5;
             MovesLeft = float.PositiveInfinity;

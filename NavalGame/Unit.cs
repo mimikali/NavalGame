@@ -64,11 +64,11 @@ namespace NavalGame
                 {
                     MovesLeft -= MapDisplay.PointDifference(_Position, value);
                     _Position = value;
-                    Game.ChangeInGame();
+                    Game.FireChangedEvent();
                 }
                 else
                 {
-                    throw new Exception("Illegal move");
+                    throw new Exception("Illegal move.");
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace NavalGame
             set
             {
                 _Player = value;
-                Game.ChangeInGame();
+                Game.FireChangedEvent();
             }
         }
 
@@ -126,5 +126,9 @@ namespace NavalGame
             }
         }
 
+        public void NextMove()
+        {
+            MovesLeft = Speed;
+        }
     }
 }
