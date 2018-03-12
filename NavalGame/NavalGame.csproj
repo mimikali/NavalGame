@@ -68,9 +68,6 @@
     <Compile Include="OrdersDisplay.Designer.cs">
       <DependentUpon>OrdersDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="_OrdersDisplay.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
