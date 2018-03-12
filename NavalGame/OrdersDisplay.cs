@@ -48,9 +48,38 @@ namespace NavalGame
             }
             if (MapDisplay.Game.SelectedUnit != null)
             {
+                MoveBox.Hide();
+                LightArtilleryBox.Hide();
+                HeavyArtilleryBox.Hide();
+                foreach (Order ability in MapDisplay.Game.SelectedUnit.Abilities)
+                {
+                    switch (ability)
+                    {
+                        case Order.Move:
+                            MoveBox.Show();
+                            break;
+
+                        case Order.LightArtillery:
+                            LightArtilleryBox.Show();
+                            break;
+
+                        case Order.HeavyArtillery:
+                            HeavyArtilleryBox.Show();
+                            break;
+                    }
+                }
+
                 MoveBar.Minimum = 0;
                 MoveBar.Maximum = MapDisplay.Game.SelectedUnit.Speed;
                 MoveBar.Value = (int)Math.Truncate(MapDisplay.Game.SelectedUnit.MovesLeft);
+
+                LightArtilleryBar.Minimum = 0;
+                LightArtilleryBar.Maximum = MapDisplay.Game.SelectedUnit.LightShots;
+                LightArtilleryBar.Value = MapDisplay.Game.SelectedUnit.LightShotsLeft;
+
+                HeavyArtilleryBar.Minimum = 0;
+                HeavyArtilleryBar.Maximum = MapDisplay.Game.SelectedUnit.HeavyShots;
+                HeavyArtilleryBar.Value = MapDisplay.Game.SelectedUnit.HeavyShotsLeft;
             }
             Invalidate();
         }
@@ -78,6 +107,16 @@ namespace NavalGame
             MapDisplay.Game.CurrentPlayer = _NextPlayer ?? MapDisplay.Game.Players[0]; //_NextPlayer != null ? _NextPlayer : MapDisplay.Game.Players[0];
             BeginTurnButton.Hide();
             NextTurnButton.Show();
+        }
+
+        private void LightArtilleryButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.LightArtillery;
+        }
+
+        private void HeavyArtilleryButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.HeavyArtillery;
         }
     }
 }

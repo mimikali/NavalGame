@@ -148,5 +148,15 @@ namespace NavalGame
         {
             if (Changed != null) Changed();
         }
+
+        public void LightArtillery(Unit target, Unit shooter)
+        {
+
+        }
+
+        public void HeavyArtillery(Unit target, Unit shooter)
+        {
+
+        }
     }
 }

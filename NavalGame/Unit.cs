@@ -16,6 +16,12 @@ namespace NavalGame
         private Player _Player;
         private float _ViewDistance;
         private Game _Game;
+        private int _LightShots;
+        private int _LightShotsLeft;
+        private float _LightRange;
+        private int _HeavyShots;
+        private int _HeavyShotsLeft;
+        private float _HeavyRange;
 
         public List<Order> Abilities
         {
@@ -123,6 +129,84 @@ namespace NavalGame
             set
             {
                 _Game = value;
+            }
+        }
+
+        public int LightShots
+        {
+            get
+            {
+                return _LightShots;
+            }
+
+            set
+            {
+                _LightShots = value;
+            }
+        }
+
+        public int LightShotsLeft
+        {
+            get
+            {
+                return _LightShotsLeft;
+            }
+
+            set
+            {
+                _LightShotsLeft = value;
+            }
+        }
+
+        public float LightRange
+        {
+            get
+            {
+                return _LightRange;
+            }
+
+            set
+            {
+                _LightRange = value;
+            }
+        }
+
+        public int HeavyShots
+        {
+            get
+            {
+                return _HeavyShots;
+            }
+
+            set
+            {
+                _HeavyShots = value;
+            }
+        }
+
+        public int HeavyShotsLeft
+        {
+            get
+            {
+                return _HeavyShotsLeft;
+            }
+
+            set
+            {
+                _HeavyShotsLeft = value;
+            }
+        }
+
+        public float HeavyRange
+        {
+            get
+            {
+                return _HeavyRange;
+            }
+
+            set
+            {
+                _HeavyRange = value;
             }
         }
 

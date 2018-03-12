@@ -18,9 +18,12 @@ namespace NavalGame
         Point? ClickPoint;
         private Order? _CurrentOrder;
         private List<Point> _PossibleMoves;
+        private List<Point> _PossibleLightShots;
+        private List<Point> _PossibleHeavyShots;
         private Unit _LastSelectedUnit;
         Bitmap[] CachedTiles;
         OrdersDisplay _OrdersDisplay;
+        ToolTip _ToolTip;
 
         public Game Game
         {
@@ -120,16 +123,19 @@ namespace NavalGame
             set
             {
                 _CurrentOrder = value;
-                if (value == NavalGame.Order.Move) Invalidate();
+                Invalidate();
             }
         }
 
         public MapDisplay()
         {
+            _ToolTip = new ToolTip();
             CachedTiles = new Bitmap[16];
             CameraScale = 20;
             _CurrentOrder = null;
             _PossibleMoves = new List<Point>();
+            _PossibleLightShots = new List<Point>();
+            _PossibleHeavyShots = new List<Point>();
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -172,6 +178,7 @@ namespace NavalGame
         protected override void OnPaint(PaintEventArgs pe)
         {
             if (Game == null) return;
+
             var counter = Bitmaps.Get("Data\\Counter.png");
             var selected = Bitmaps.Get("Data\\Selected.png");
             var highlight = Bitmaps.Get("Data\\Highlight.png");
@@ -207,7 +214,10 @@ namespace NavalGame
             m2y = Math.Min(m2y, Game.Terrain.Height);
             pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             pe.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+
             _PossibleMoves.Clear();
+            _PossibleLightShots.Clear();
+            _PossibleHeavyShots.Clear();
             for (int x = m1x; x < m2x; x++)
             {
                 for (int y = m1y; y < m2y; y++)
@@ -248,6 +258,52 @@ namespace NavalGame
                             }
                         }
                     }
+
+                    // Draw Light Artillery Range
+                    if (CurrentOrder == Order.LightArtillery && Game.SelectedUnit != null)
+                    {
+                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.LightRange)
+                        {
+                            pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                            bool a = false;
+                            foreach(Unit unit in Game.Units)
+                            {
+                                if (unit.Position == new Point(x, y))
+                                {
+                                    a = true;
+                                    break;
+                                }
+                            }
+                            if (a)
+                            {
+                                pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                                _PossibleLightShots.Add(new Point(x, y));
+                            }
+                        }
+                    }
+
+                    // Draw Heavy Artillery Range
+                    if (CurrentOrder == Order.HeavyArtillery && Game.SelectedUnit != null)
+                    {
+                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.HeavyRange)
+                        {
+                            pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                            bool a = false;
+                            foreach (Unit unit in Game.Units)
+                            {
+                                if (unit.Position == new Point(x, y))
+                                {
+                                    a = true;
+                                    break;
+                                }
+                            }
+                            if (a)
+                            {
+                                pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                                _PossibleHeavyShots.Add(new Point(x, y));
+                            }
+                        }
+                    }
                 }
 
                 // Draw Units
@@ -284,6 +340,7 @@ namespace NavalGame
         {
             if (MoveMode == MoveType.Drag) DragFrom = e.Location;
             ClickPoint = e.Location;
+            _ToolTip.Show("hello", this, e.Location, 3000);
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
@@ -294,6 +351,8 @@ namespace NavalGame
                 // Click
                 bool l = true;
                 PointF mapClickPosition = DisplayToMap(e.Location);
+
+                // Move
                 if (CurrentOrder == Order.Move)
                 {
                     if (Game.SelectedUnit != null)
@@ -304,6 +363,44 @@ namespace NavalGame
                         }
                     }
 
+                }
+
+                // Light Artillery
+                if (CurrentOrder == Order.LightArtillery)
+                {
+                    if (Game.SelectedUnit != null)
+                    {
+                        if (_PossibleLightShots.Contains(Point.Truncate(mapClickPosition)))
+                        {
+                            foreach (Unit unit in Game.Units)
+                            {
+                                if (unit.Position == Point.Truncate(mapClickPosition))
+                                {
+                                    Game.LightArtillery(unit, Game.SelectedUnit);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Heavy Artillery
+                if (CurrentOrder == Order.HeavyArtillery)
+                {
+                    if (Game.SelectedUnit != null)
+                    {
+                        if (_PossibleHeavyShots.Contains(Point.Truncate(mapClickPosition)))
+                        {
+                            foreach (Unit unit in Game.Units)
+                            {
+                                if (unit.Position == Point.Truncate(mapClickPosition))
+                                {
+                                    Game.HeavyArtillery(unit, Game.SelectedUnit);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 if (Game.CurrentPlayer != null)
@@ -321,6 +418,7 @@ namespace NavalGame
                 }
                 if (l) Game.SelectedUnit = null;
             }
+            // Drag
             DragFrom = null;
         }
 

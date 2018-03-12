@@ -14,6 +14,12 @@ namespace NavalGame
         public Destroyer(Point position, Player player)
         {
             Game = player.Game;
+            LightShots = 3;
+            LightShotsLeft = LightShots;
+            LightRange = 6;
+            HeavyShots = 0;
+            HeavyShotsLeft = HeavyShots;
+            HeavyRange = 0;
             ViewDistance = 9;
             Player = player;
             Speed = 5;
