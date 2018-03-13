@@ -94,8 +94,7 @@ namespace NavalGame
             _Players.Add(new Player(this));
             _Players.Add(new Player(this));
             AddUnit(new Destroyer(new Point(12, 15), Players[0]));
-            AddUnit(new Minesweeper(new Point(1, 16), Players[0]));
-            AddUnit(new Minesweeper(new Point(7, 6), Players[1]));
+            AddUnit(new Destroyer(new Point(6, 15), Players[1]));
             OrderIcons.Add(Order.Torpedo, "Data\\Torpedo.png");
             OrderIcons.Add(Order.Mine, "Data\\Mine.png");
             OrderIcons.Add(Order.Move, "Data\\Move.png");
@@ -149,14 +148,15 @@ namespace NavalGame
             if (Changed != null) Changed();
         }
 
-        public void LightArtillery(Unit target, Unit shooter)
+        public void LightArtillery(Point target, Unit shooter)
         {
-
+            shooter.LightShotsLeft -= 1;
+            
         }
 
-        public void HeavyArtillery(Unit target, Unit shooter)
+        public void HeavyArtillery(Point target, Unit shooter)
         {
-
+            shooter.HeavyShotsLeft -= 1;
         }
     }
 }

@@ -265,20 +265,7 @@ namespace NavalGame
                         if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.LightRange)
                         {
                             pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                            bool a = false;
-                            foreach(Unit unit in Game.Units)
-                            {
-                                if (unit.Position == new Point(x, y))
-                                {
-                                    a = true;
-                                    break;
-                                }
-                            }
-                            if (a)
-                            {
-                                pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                                _PossibleLightShots.Add(new Point(x, y));
-                            }
+                            _PossibleLightShots.Add(new Point(x, y));
                         }
                     }
 
@@ -288,20 +275,7 @@ namespace NavalGame
                         if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.HeavyRange)
                         {
                             pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                            bool a = false;
-                            foreach (Unit unit in Game.Units)
-                            {
-                                if (unit.Position == new Point(x, y))
-                                {
-                                    a = true;
-                                    break;
-                                }
-                            }
-                            if (a)
-                            {
-                                pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                                _PossibleHeavyShots.Add(new Point(x, y));
-                            }
+                            _PossibleHeavyShots.Add(new Point(x, y));
                         }
                     }
                 }
@@ -340,7 +314,6 @@ namespace NavalGame
         {
             if (MoveMode == MoveType.Drag) DragFrom = e.Location;
             ClickPoint = e.Location;
-            _ToolTip.Show("hello", this, e.Location, 3000);
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
@@ -350,73 +323,59 @@ namespace NavalGame
             {
                 // Click
                 bool l = true;
+                bool a = true;
                 PointF mapClickPosition = DisplayToMap(e.Location);
-
-                // Move
-                if (CurrentOrder == Order.Move)
+                if (Game.SelectedUnit != null)
                 {
-                    if (Game.SelectedUnit != null)
+                    // Move
+                    if (CurrentOrder == Order.Move)
                     {
                         if (_PossibleMoves.Contains(Point.Truncate(mapClickPosition)))
                         {
                             Game.SelectedUnit.Position = Point.Truncate(mapClickPosition);
+                            a = false;
                         }
                     }
 
-                }
-
-                // Light Artillery
-                if (CurrentOrder == Order.LightArtillery)
-                {
-                    if (Game.SelectedUnit != null)
+                    // Light Artillery
+                    else if (CurrentOrder == Order.LightArtillery)
                     {
                         if (_PossibleLightShots.Contains(Point.Truncate(mapClickPosition)))
                         {
-                            foreach (Unit unit in Game.Units)
-                            {
-                                if (unit.Position == Point.Truncate(mapClickPosition))
-                                {
-                                    Game.LightArtillery(unit, Game.SelectedUnit);
-                                    break;
-                                }
-                            }
+                            Game.LightArtillery(Point.Truncate(mapClickPosition), Game.SelectedUnit);
+                            a = false;
                         }
                     }
-                }
 
-                // Heavy Artillery
-                if (CurrentOrder == Order.HeavyArtillery)
-                {
-                    if (Game.SelectedUnit != null)
+                    // Heavy Artillery
+                    else if (CurrentOrder == Order.HeavyArtillery)
                     {
                         if (_PossibleHeavyShots.Contains(Point.Truncate(mapClickPosition)))
                         {
-                            foreach (Unit unit in Game.Units)
-                            {
-                                if (unit.Position == Point.Truncate(mapClickPosition))
-                                {
-                                    Game.HeavyArtillery(unit, Game.SelectedUnit);
-                                    break;
-                                }
-                            }
+                            Game.HeavyArtillery(Point.Truncate(mapClickPosition), Game.SelectedUnit);
+                            a = false;
                         }
                     }
                 }
 
-                if (Game.CurrentPlayer != null)
+                // Selection
+                if (a)
                 {
-                    foreach (Unit unit in Game.CurrentPlayer.Units)
+                    if (Game.CurrentPlayer != null)
                     {
-                        PointF k = DisplayToMap(e.Location);
-                        Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
-                        if (unit.Position == j)
+                        foreach (Unit unit in Game.CurrentPlayer.Units)
                         {
-                            Game.SelectedUnit = unit;
-                            l = false;
+                            PointF k = DisplayToMap(e.Location);
+                            Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
+                            if (unit.Position == j)
+                            {
+                                Game.SelectedUnit = unit;
+                                l = false;
+                            }
                         }
                     }
+                    if (l) Game.SelectedUnit = null;
                 }
-                if (l) Game.SelectedUnit = null;
             }
             // Drag
             DragFrom = null;

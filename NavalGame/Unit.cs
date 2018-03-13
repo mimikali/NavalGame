@@ -116,6 +116,7 @@ namespace NavalGame
             set
             {
                 _ViewDistance = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -129,6 +130,7 @@ namespace NavalGame
             set
             {
                 _Game = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -142,6 +144,7 @@ namespace NavalGame
             set
             {
                 _LightShots = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -155,6 +158,7 @@ namespace NavalGame
             set
             {
                 _LightShotsLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -168,6 +172,7 @@ namespace NavalGame
             set
             {
                 _LightRange = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -181,6 +186,7 @@ namespace NavalGame
             set
             {
                 _HeavyShots = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -194,6 +200,7 @@ namespace NavalGame
             set
             {
                 _HeavyShotsLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -207,12 +214,15 @@ namespace NavalGame
             set
             {
                 _HeavyRange = value;
+                Game.FireChangedEvent();
             }
         }
 
         public void NextMove()
         {
             MovesLeft = Speed;
+            LightShotsLeft = LightShots;
+            HeavyShotsLeft = HeavyShots;
         }
     }
 }
