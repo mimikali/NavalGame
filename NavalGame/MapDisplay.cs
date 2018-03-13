@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Media;
 
 namespace NavalGame
 {
@@ -16,6 +17,7 @@ namespace NavalGame
         int _CameraScale;
         Point? DragFrom;
         Point? ClickPoint;
+        private SoundPlayer _SoundPlayer;
         private Order? _CurrentOrder;
         private List<Point> _PossibleMoves;
         private List<Point> _PossibleLightShots;
@@ -129,6 +131,7 @@ namespace NavalGame
 
         public MapDisplay()
         {
+            _SoundPlayer = new SoundPlayer();
             _ToolTip = new ToolTip();
             CachedTiles = new Bitmap[16];
             CameraScale = 20;
@@ -324,15 +327,16 @@ namespace NavalGame
                 // Click
                 bool l = true;
                 bool a = true;
-                PointF mapClickPosition = DisplayToMap(e.Location);
+                Point mapClickPosition = Point.Truncate(DisplayToMap(e.Location));
                 if (Game.SelectedUnit != null)
                 {
                     // Move
                     if (CurrentOrder == Order.Move)
                     {
-                        if (_PossibleMoves.Contains(Point.Truncate(mapClickPosition)))
+                        if (_PossibleMoves.Contains(mapClickPosition))
                         {
-                            Game.SelectedUnit.Position = Point.Truncate(mapClickPosition);
+                            Game.SelectedUnit.Position = mapClickPosition;
+                            PlaySound("Data\\Sailing.wav");
                             a = false;
                         }
                     }
@@ -340,9 +344,22 @@ namespace NavalGame
                     // Light Artillery
                     else if (CurrentOrder == Order.LightArtillery)
                     {
-                        if (_PossibleLightShots.Contains(Point.Truncate(mapClickPosition)))
+                        if (_PossibleLightShots.Contains(mapClickPosition))
                         {
-                            Game.LightArtillery(Point.Truncate(mapClickPosition), Game.SelectedUnit);
+                            bool isHit = false;
+                            if (Game.LightArtillery(mapClickPosition, Game.SelectedUnit))
+                            {
+                                PlaySound("Data\\LightArtilleryHit.wav");
+                                _ToolTip.IsBalloon = true;
+                                _ToolTip.Show("Hit", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                            }
+                            else
+                            {
+                                PlaySound("Data\\LightArtilleryMiss.wav");
+                                _ToolTip.IsBalloon = true;
+                                _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+
+                            }
                             a = false;
                         }
                     }
@@ -350,9 +367,9 @@ namespace NavalGame
                     // Heavy Artillery
                     else if (CurrentOrder == Order.HeavyArtillery)
                     {
-                        if (_PossibleHeavyShots.Contains(Point.Truncate(mapClickPosition)))
+                        if (_PossibleHeavyShots.Contains(mapClickPosition))
                         {
-                            Game.HeavyArtillery(Point.Truncate(mapClickPosition), Game.SelectedUnit);
+                            _ToolTip.Show(Game.HeavyArtillery(mapClickPosition, Game.SelectedUnit), this, e.Location, 2000);
                             a = false;
                         }
                     }
@@ -531,6 +548,12 @@ namespace NavalGame
         public static float PointDifference(Point p1, Point p2)
         {
             return (float)Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
+        }
+
+        public void PlaySound(string fileName)
+        {
+            _SoundPlayer.SoundLocation = fileName;
+            _SoundPlayer.Play();
         }
     }
 

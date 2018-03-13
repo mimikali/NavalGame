@@ -148,15 +148,55 @@ namespace NavalGame
             if (Changed != null) Changed();
         }
 
-        public void LightArtillery(Point target, Unit shooter)
+        public bool LightArtillery(Point target, Unit shooter)
         {
             shooter.LightShotsLeft -= 1;
-            
+            Unit targetUnit = null;
+            foreach(Unit unit in Units)
+            {
+                if (unit.Position == target)
+                {
+                    targetUnit = unit;
+                    break;
+                }
+            }
+
+            if (targetUnit != null)
+            {
+                if (MapDisplay.PointDifference(shooter.Position, target) < shooter.ViewDistance)
+                {
+
+                }
+                return true;
+            }
+
+            return false;
+
+
         }
 
-        public void HeavyArtillery(Point target, Unit shooter)
+        public string HeavyArtillery(Point target, Unit shooter)
         {
             shooter.HeavyShotsLeft -= 1;
+            Unit targetUnit = null;
+            foreach (Unit unit in Units)
+            {
+                if (unit.Position == target)
+                {
+                    targetUnit = unit;
+                    break;
+                }
+            }
+
+            if (targetUnit != null)
+            {
+                if (MapDisplay.PointDifference(shooter.Position, target) < shooter.ViewDistance)
+                {
+                    return "";
+                }
+            }
+
+            return " ";
         }
     }
 }
