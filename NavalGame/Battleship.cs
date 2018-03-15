@@ -13,12 +13,16 @@ namespace NavalGame
         public Battleship(Point position, Player player)
         {
             Game = player.Game;
+            Health = 0;
+            Armour = 12;
             LightShots = 4;
             LightShotsLeft = LightShots;
             LightRange = 6;
+            LightPower = 2;
             HeavyShots = 3;
             HeavyShotsLeft = HeavyShots;
             HeavyRange = 12;
+            HeavyPower = 5;
             ViewDistance = 9;
             Player = player;
             MovesLeft = float.PositiveInfinity;

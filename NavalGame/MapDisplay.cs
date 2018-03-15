@@ -268,7 +268,10 @@ namespace NavalGame
                         if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.LightRange)
                         {
                             pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                            _PossibleLightShots.Add(new Point(x, y));
+                            if (Game.SelectedUnit.LightShotsLeft >= 1)
+                            {
+                                _PossibleLightShots.Add(new Point(x, y));
+                            }
                         }
                     }
 
@@ -278,7 +281,10 @@ namespace NavalGame
                         if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.HeavyRange)
                         {
                             pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                            _PossibleHeavyShots.Add(new Point(x, y));
+                            if (Game.SelectedUnit.HeavyShotsLeft >= 1)
+                            {
+                                _PossibleHeavyShots.Add(new Point(x, y));
+                            }
                         }
                     }
                 }
@@ -346,19 +352,19 @@ namespace NavalGame
                     {
                         if (_PossibleLightShots.Contains(mapClickPosition))
                         {
-                            bool isHit = false;
-                            if (Game.LightArtillery(mapClickPosition, Game.SelectedUnit))
-                            {
-                                PlaySound("Data\\LightArtilleryHit.wav");
-                                _ToolTip.IsBalloon = true;
-                                _ToolTip.Show("Hit", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
-                            }
-                            else
+                            int hit = Game.LightArtillery(mapClickPosition, Game.SelectedUnit);
+                            if (hit == 0)
                             {
                                 PlaySound("Data\\LightArtilleryMiss.wav");
                                 _ToolTip.IsBalloon = true;
                                 _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
 
+                            }
+                            else
+                            {
+                                PlaySound("Data\\LightArtilleryHit.wav");
+                                _ToolTip.IsBalloon = true;
+                                _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
                             a = false;
                         }

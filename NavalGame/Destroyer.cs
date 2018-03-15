@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace NavalGame
@@ -14,12 +13,16 @@ namespace NavalGame
         public Destroyer(Point position, Player player)
         {
             Game = player.Game;
+            Health = 1;
+            Armour = 4;
             LightShots = 3;
             LightShotsLeft = LightShots;
             LightRange = 6;
+            LightPower = 2;
             HeavyShots = 0;
             HeavyShotsLeft = HeavyShots;
             HeavyRange = 0;
+            HeavyPower = 0;
             ViewDistance = 9;
             Player = player;
             Speed = 5;
@@ -28,7 +31,6 @@ namespace NavalGame
             MovesLeft = Speed;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.LightArtillery, Order.Torpedo, Order.DepthCharge});
-            MovesLeft = Speed;
         }
     }
 }

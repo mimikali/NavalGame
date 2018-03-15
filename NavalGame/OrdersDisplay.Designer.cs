@@ -40,6 +40,7 @@
             this.HeavyArtilleryBox = new System.Windows.Forms.GroupBox();
             this.HeavyArtilleryBar = new System.Windows.Forms.ProgressBar();
             this.HeavyArtilleryButton = new System.Windows.Forms.Button();
+            this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.MoveBox.SuspendLayout();
             this.OrdersPanel.SuspendLayout();
             this.LightArtilleryBox.SuspendLayout();
@@ -66,6 +67,7 @@
             this.MoveBar.Location = new System.Drawing.Point(87, 19);
             this.MoveBar.Name = "MoveBar";
             this.MoveBar.Size = new System.Drawing.Size(107, 23);
+            this.MoveBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.MoveBar.TabIndex = 1;
             // 
             // MoveButton
@@ -136,6 +138,7 @@
             this.LightArtilleryBar.Location = new System.Drawing.Point(87, 19);
             this.LightArtilleryBar.Name = "LightArtilleryBar";
             this.LightArtilleryBar.Size = new System.Drawing.Size(107, 23);
+            this.LightArtilleryBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.LightArtilleryBar.TabIndex = 1;
             // 
             // LightArtilleryButton
@@ -170,6 +173,7 @@
             this.HeavyArtilleryBar.Location = new System.Drawing.Point(87, 19);
             this.HeavyArtilleryBar.Name = "HeavyArtilleryBar";
             this.HeavyArtilleryBar.Size = new System.Drawing.Size(107, 23);
+            this.HeavyArtilleryBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.HeavyArtilleryBar.TabIndex = 1;
             // 
             // HeavyArtilleryButton
@@ -184,10 +188,21 @@
             this.HeavyArtilleryButton.UseVisualStyleBackColor = true;
             this.HeavyArtilleryButton.Click += new System.EventHandler(this.HeavyArtilleryButtonClick);
             // 
+            // HealthBar
+            // 
+            this.HealthBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.HealthBar.Location = new System.Drawing.Point(46, 231);
+            this.HealthBar.Name = "HealthBar";
+            this.HealthBar.Size = new System.Drawing.Size(107, 23);
+            this.HealthBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.HealthBar.TabIndex = 4;
+            // 
             // OrdersDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.HealthBar);
             this.Controls.Add(this.OrdersPanel);
             this.Controls.Add(this.BeginTurnButton);
             this.Controls.Add(this.NextTurnButton);
@@ -215,5 +230,6 @@
         private System.Windows.Forms.GroupBox HeavyArtilleryBox;
         private System.Windows.Forms.ProgressBar HeavyArtilleryBar;
         private System.Windows.Forms.Button HeavyArtilleryButton;
+        private System.Windows.Forms.ProgressBar HealthBar;
     }
 }

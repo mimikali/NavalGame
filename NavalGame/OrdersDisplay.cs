@@ -80,6 +80,10 @@ namespace NavalGame
                 HeavyArtilleryBar.Minimum = 0;
                 HeavyArtilleryBar.Maximum = MapDisplay.Game.SelectedUnit.HeavyShots;
                 HeavyArtilleryBar.Value = MapDisplay.Game.SelectedUnit.HeavyShotsLeft;
+
+                HealthBar.Minimum = 0;
+                HealthBar.Maximum = 100;
+                HealthBar.Value = (int)(MapDisplay.Game.SelectedUnit.Health * 100);
             }
             Invalidate();
         }

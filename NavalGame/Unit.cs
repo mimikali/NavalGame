@@ -19,9 +19,13 @@ namespace NavalGame
         private int _LightShots;
         private int _LightShotsLeft;
         private float _LightRange;
+        private float _LightPower;
         private int _HeavyShots;
         private int _HeavyShotsLeft;
         private float _HeavyRange;
+        private float _HeavyPower;
+        private float _Health;
+        private float _Armour;
 
         public List<Order> Abilities
         {
@@ -215,6 +219,60 @@ namespace NavalGame
             {
                 _HeavyRange = value;
                 Game.FireChangedEvent();
+            }
+        }
+
+        public float Health
+        {
+            get
+            {
+                return _Health;
+            }
+
+            set
+            {
+                if (value < 0) _Health = 0;
+                else _Health = value;
+                Game.FireChangedEvent();
+            }
+        }
+
+        public float Armour
+        {
+            get
+            {
+                return _Armour;
+            }
+
+            set
+            {
+                _Armour = value;
+            }
+        }
+
+        public float HeavyPower
+        {
+            get
+            {
+                return _HeavyPower;
+            }
+
+            set
+            {
+                _HeavyPower = value;
+            }
+        }
+
+        public float LightPower
+        {
+            get
+            {
+                return _LightPower;
+            }
+
+            set
+            {
+                _LightPower = value;
             }
         }
 
