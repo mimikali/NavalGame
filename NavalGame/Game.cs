@@ -95,8 +95,8 @@ namespace NavalGame
             _Units = new List<Unit>();
             _Players.Add(new Player(this));
             _Players.Add(new Player(this));
-            AddUnit(new Destroyer(new Point(12, 15), Players[0]));
-            AddUnit(new Destroyer(new Point(6, 15), Players[1]));
+            AddUnit(new Battleship(new Point(12, 15), Players[0]));
+            AddUnit(new Battleship(new Point(6, 15), Players[1]));
             OrderIcons.Add(Order.Torpedo, "Data\\Torpedo.png");
             OrderIcons.Add(Order.Mine, "Data\\Mine.png");
             OrderIcons.Add(Order.Move, "Data\\Move.png");
@@ -216,9 +216,12 @@ namespace NavalGame
             return 0;
         }
 
-        public string HeavyArtillery(Point target, Unit shooter)
+        public int HeavyArtillery(Point target, Unit shooter)
         {
+            // Use a shot
             shooter.HeavyShotsLeft -= 1;
+
+            // Determine whether there is a target unit
             Unit targetUnit = null;
             foreach (Unit unit in Units)
             {
@@ -229,15 +232,54 @@ namespace NavalGame
                 }
             }
 
-            if (targetUnit != null)
+            // Return as no hit if there is no target unit
+            if (targetUnit == null)
             {
-                if (MapDisplay.PointDifference(shooter.Position, target) < shooter.ViewDistance)
-                {
-                    return "";
-                }
+                return 0;
             }
 
-            return " ";
+            // Calculate the chances of a hit
+            List<int> chances = new List<int>();
+            for (int i = 0; i < MapDisplay.PointDifference(shooter.Position, target); i++)
+            {
+                chances.Add(0);
+            }
+
+            for (int i = 0; i < targetUnit.Speed; i++)
+            {
+                chances.Add(0);
+            }
+
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(2);
+
+            // Choose if the shot missed, hit, or critically hit
+            int result = chances[Random.Next(0, chances.Count)];
+
+            // Calculate damage
+            float basedamage = shooter.HeavyPower / targetUnit.Armour;
+            float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
+
+            // Take action according to the shot
+            switch (result)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                    targetUnit.Health -= basedamage + randomVariation;
+                    return (int)((basedamage + randomVariation) * 100);
+                case 2:
+                    targetUnit.Health -= 2 * basedamage + randomVariation;
+                    return (int)((2 * basedamage + randomVariation) * 100);
+            }
+            return 0;
+
         }
     }
 }

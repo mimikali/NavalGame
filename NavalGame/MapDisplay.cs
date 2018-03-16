@@ -302,7 +302,15 @@ namespace NavalGame
                                 if (displayPos.X < Width + CameraScale || displayPos.Y < Height + CameraScale)
                                 {
                                     pe.Graphics.DrawImage(counter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                                    pe.Graphics.DrawImage(Bitmaps.Get(unit.Bitmap), new Rectangle(new Point(displayPos.X + CameraScale / 8, displayPos.Y + CameraScale / 8), new Size((CameraScale / 8) * 6, (CameraScale / 8) * 6)));
+                                    pe.Graphics.DrawImage(Bitmaps.Get(unit.Bitmap), new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
+                                    RectangleF stringRectangle = new RectangleF(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale));
+                                    stringRectangle.Inflate(-0.05f * CameraScale, -0.05f * CameraScale);
+                                    StringFormat stringFormat = new StringFormat()
+                                    {
+                                        Alignment = StringAlignment.Center,
+                                        LineAlignment = StringAlignment.Far
+                                    };
+                                    pe.Graphics.DrawString("Iowa", new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, stringFormat);
                                     if (Game.SelectedUnit == unit) pe.Graphics.DrawImage(selected, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
                                 }
                             }
@@ -375,7 +383,20 @@ namespace NavalGame
                     {
                         if (_PossibleHeavyShots.Contains(mapClickPosition))
                         {
-                            _ToolTip.Show(Game.HeavyArtillery(mapClickPosition, Game.SelectedUnit), this, e.Location, 2000);
+                            int hit = Game.HeavyArtillery(mapClickPosition, Game.SelectedUnit);
+                            if (hit == 0)
+                            {
+                                PlaySound("Data\\HeavyArtilleryMiss.wav");
+                                _ToolTip.IsBalloon = true;
+                                _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+
+                            }
+                            else
+                            {
+                                PlaySound("Data\\HeavyArtilleryHit.wav");
+                                _ToolTip.IsBalloon = true;
+                                _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                            }
                             a = false;
                         }
                     }

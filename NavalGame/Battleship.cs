@@ -8,13 +8,13 @@ namespace NavalGame
 {
     public class Battleship : Unit
     {
-        static string StaticBitmap = "Data\\Battleship.png";
+        static string StaticBitmap = "Data\\Ships\\US\\Iowa.png";
 
         public Battleship(Point position, Player player)
         {
             Game = player.Game;
-            Health = 0;
-            Armour = 12;
+            Health = 1;
+            Armour = 18;
             LightShots = 4;
             LightShotsLeft = LightShots;
             LightRange = 6;
@@ -22,7 +22,7 @@ namespace NavalGame
             HeavyShots = 3;
             HeavyShotsLeft = HeavyShots;
             HeavyRange = 12;
-            HeavyPower = 5;
+            HeavyPower = 8;
             ViewDistance = 9;
             Player = player;
             MovesLeft = float.PositiveInfinity;
