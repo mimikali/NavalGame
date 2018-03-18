@@ -13,6 +13,7 @@ namespace NavalGame
         public Battleship(Point position, Player player)
         {
             Game = player.Game;
+            Type = UnitType.Battleship;
             Health = 1;
             Armour = 18;
             LightShots = 4;
@@ -31,6 +32,7 @@ namespace NavalGame
             MovesLeft = Speed;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.HeavyArtillery, Order.LightArtillery });
+            Player.NameUnit(this);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace NavalGame
         public Minesweeper(Point position, Player player)
         {
             Game = player.Game;
+            Type = UnitType.Minesweeper;
             Armour = 2;
             Health = 1;
             LightShots = 0;
@@ -31,6 +32,7 @@ namespace NavalGame
             MovesLeft = Speed;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.Mine });
+            Player.NameUnit(this);
         }
     }
 }

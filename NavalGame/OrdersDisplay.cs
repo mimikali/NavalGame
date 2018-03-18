@@ -16,6 +16,7 @@ namespace NavalGame
         {
             InitializeComponent();
         }
+
         MapDisplay _MapDisplay;
         private Player _NextPlayer;
         List<Rectangle> ButtonLocations = new List<Rectangle>();

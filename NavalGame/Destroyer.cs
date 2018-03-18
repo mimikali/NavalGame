@@ -13,6 +13,7 @@ namespace NavalGame
         public Destroyer(Point position, Player player)
         {
             Game = player.Game;
+            Type = UnitType.Destroyer;
             Health = 1;
             Armour = 4;
             LightShots = 3;
@@ -31,6 +32,7 @@ namespace NavalGame
             MovesLeft = Speed;
             Bitmap = StaticBitmap;
             Abilities.AddRange(new List<Order>() { Order.Move, Order.LightArtillery, Order.Torpedo, Order.DepthCharge});
+            Player.NameUnit(this);
         }
     }
 }

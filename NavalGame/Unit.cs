@@ -8,24 +8,26 @@ namespace NavalGame
 {
     public abstract class Unit
     {
-        private int _Speed;
-        private float _MovesLeft;
-        private Point _Position;
-        private string _Bitmap;
+        private int _Speed = 0;
+        private float _MovesLeft = 0;
+        private Point _Position = new Point(0, 0);
+        private string _Bitmap = "";
         List<Order> _Abilities = new List<Order>();
-        private Player _Player;
-        private float _ViewDistance;
-        private Game _Game;
-        private int _LightShots;
-        private int _LightShotsLeft;
-        private float _LightRange;
-        private float _LightPower;
-        private int _HeavyShots;
-        private int _HeavyShotsLeft;
-        private float _HeavyRange;
-        private float _HeavyPower;
-        private float _Health;
-        private float _Armour;
+        private Player _Player = null;
+        private float _ViewDistance = 0;
+        private Game _Game = null;
+        private int _LightShots = 0;
+        private int _LightShotsLeft = 0;
+        private float _LightRange = 0;
+        private float _LightPower = 0;
+        private int _HeavyShots = 0;
+        private int _HeavyShotsLeft = 0;
+        private float _HeavyRange = 0;
+        private float _HeavyPower = 0;
+        private float _Health = 1;
+        private float _Armour = 0;
+        private string _Name = "Unit";
+        private UnitType _Type = UnitType.Destroyer;
 
         public List<Order> Abilities
         {
@@ -273,6 +275,32 @@ namespace NavalGame
             set
             {
                 _LightPower = value;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return _Name;
+            }
+
+            set
+            {
+                _Name = value;
+            }
+        }
+
+        public UnitType Type
+        {
+            get
+            {
+                return _Type;
+            }
+
+            set
+            {
+                _Type = value;
             }
         }
 
