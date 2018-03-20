@@ -40,10 +40,10 @@
             // 
             this.OrdersDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.OrdersDisplay.Location = new System.Drawing.Point(566, 12);
+            this.OrdersDisplay.Location = new System.Drawing.Point(527, 12);
             this.OrdersDisplay.MapDisplay = null;
             this.OrdersDisplay.Name = "OrdersDisplay";
-            this.OrdersDisplay.Size = new System.Drawing.Size(222, 428);
+            this.OrdersDisplay.Size = new System.Drawing.Size(261, 428);
             this.OrdersDisplay.TabIndex = 1;
             // 
             // MapDisplay
@@ -58,7 +58,7 @@
             this.MapDisplay.Location = new System.Drawing.Point(10, 10);
             this.MapDisplay.Name = "MapDisplay";
             this.MapDisplay.OrdersDisplay = null;
-            this.MapDisplay.Size = new System.Drawing.Size(550, 430);
+            this.MapDisplay.Size = new System.Drawing.Size(511, 430);
             this.MapDisplay.TabIndex = 0;
             this.MapDisplay.TabStop = false;
             // 

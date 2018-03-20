@@ -13,7 +13,13 @@ namespace NavalGame
         private Game _Game;
         private Faction _Faction;
         private List<string> _UnitNames;
-        static int _NameIteration;
+        private float _SpeedMultiplier = 1;
+        private float _ArmourMultiplier = 1;
+        private float _ViewDistanceMultiplier = 1;
+        private float _LightPowerMultiplier = 1;
+        private float _LightRangeMultiplier = 1;
+        private float _HeavyPowerMultiplier = 1;
+        private float _HeavyRangeMultiplier = 1;
 
         public IList<Unit> Units
         {
@@ -67,6 +73,97 @@ namespace NavalGame
             set
             {
                 _UnitNames = value;
+            }
+        }
+
+        public float SpeedMultiplier
+        {
+            get
+            {
+                return _SpeedMultiplier;
+            }
+
+            set
+            {
+                _SpeedMultiplier = value;
+            }
+        }
+
+        public float ArmourMultiplier
+        {
+            get
+            {
+                return _ArmourMultiplier;
+            }
+
+            set
+            {
+                _ArmourMultiplier = value;
+            }
+        }
+
+        public float ViewDistanceMultiplier
+        {
+            get
+            {
+                return _ViewDistanceMultiplier;
+            }
+
+            set
+            {
+                _ViewDistanceMultiplier = value;
+            }
+        }
+
+        public float LightPowerMultiplier
+        {
+            get
+            {
+                return _LightPowerMultiplier;
+            }
+
+            set
+            {
+                _LightPowerMultiplier = value;
+            }
+        }
+
+        public float LightRangeMultiplier
+        {
+            get
+            {
+                return _LightRangeMultiplier;
+            }
+
+            set
+            {
+                _LightRangeMultiplier = value;
+            }
+        }
+
+        public float HeavyPowerMultiplier
+        {
+            get
+            {
+                return _HeavyPowerMultiplier;
+            }
+
+            set
+            {
+                _HeavyPowerMultiplier = value;
+            }
+        }
+
+        public float HeavyRangeMultiplier
+        {
+            get
+            {
+                return _HeavyRangeMultiplier;
+            }
+
+            set
+            {
+                _HeavyRangeMultiplier = value;
             }
         }
 

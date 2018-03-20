@@ -37,18 +37,16 @@ namespace NavalGame
 
         public void GameChanged()
         {
-            if (MapDisplay.Game.CurrentPlayer == null)
-            {
-                BeginTurnButton.Show();
-                NextTurnButton.Hide();
-            }
-            else
-            {
-                BeginTurnButton.Hide();
-                NextTurnButton.Show();
-            }
             if (MapDisplay.Game.SelectedUnit != null)
             {
+                UnitPanel.Show();
+                OrdersPanel.Show();
+                InfoPanel.Show();
+
+                UnitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                UnitPictureBox.Image = Bitmaps.Get(MapDisplay.Game.SelectedUnit.LargeBitmap);
+                UnitTextBox.Text = MapDisplay.Game.SelectedUnit.Name + "\r\nHealth: " + Math.Round(MapDisplay.Game.SelectedUnit.Health * 100).ToString() + "%";
+
                 MoveBox.Hide();
                 LightArtilleryBox.Hide();
                 HeavyArtilleryBox.Hide();
@@ -85,6 +83,12 @@ namespace NavalGame
                 HealthBar.Minimum = 0;
                 HealthBar.Maximum = 100;
                 HealthBar.Value = (int)(MapDisplay.Game.SelectedUnit.Health * 100);
+            }
+            else
+            {
+                UnitPanel.Hide();
+                OrdersPanel.Hide();
+                InfoPanel.Hide();
             }
             Invalidate();
         }

@@ -27,6 +27,7 @@ namespace NavalGame
         private float _Health = 1;
         private float _Armour = 0;
         private string _Name = "Unit";
+        private string _LargeBitmap = "";
         private UnitType _Type = UnitType.Destroyer;
 
         public List<Order> Abilities
@@ -41,7 +42,7 @@ namespace NavalGame
         {
             get
             {
-                return _Speed;
+                return (int)(_Speed * Player.SpeedMultiplier);
             }
 
             set
@@ -116,7 +117,7 @@ namespace NavalGame
         {
             get
             {
-                return _ViewDistance;
+                return _ViewDistance * Player.ViewDistanceMultiplier;
             }
 
             set
@@ -172,7 +173,7 @@ namespace NavalGame
         {
             get
             {
-                return _LightRange;
+                return _LightRange * Player.LightRangeMultiplier;
             }
 
             set
@@ -214,7 +215,7 @@ namespace NavalGame
         {
             get
             {
-                return _HeavyRange;
+                return _HeavyRange * Player.HeavyRangeMultiplier;
             }
 
             set
@@ -243,7 +244,7 @@ namespace NavalGame
         {
             get
             {
-                return _Armour;
+                return _Armour * Player.ArmourMultiplier;
             }
 
             set
@@ -256,7 +257,7 @@ namespace NavalGame
         {
             get
             {
-                return _HeavyPower;
+                return _HeavyPower * Player.HeavyPowerMultiplier;
             }
 
             set
@@ -269,7 +270,7 @@ namespace NavalGame
         {
             get
             {
-                return _LightPower;
+                return _LightPower * Player.LightPowerMultiplier;
             }
 
             set
@@ -301,6 +302,19 @@ namespace NavalGame
             set
             {
                 _Type = value;
+            }
+        }
+
+        public string LargeBitmap
+        {
+            get
+            {
+                return _LargeBitmap;
+            }
+
+            set
+            {
+                _LargeBitmap = value;
             }
         }
 

@@ -1,7 +1,4 @@
-- Colours of units on MapDisplay
-- Unit names
-- Nice picture of unit on OrdersDiplay
 - Make non-changeable unit parameters read-only
 - Flag of country on unit
 - Add more icons
-- 
+- Add likely outcome tooltip
