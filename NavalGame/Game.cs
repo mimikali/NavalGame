@@ -91,16 +91,16 @@ namespace NavalGame
         public Game()
         {
             Random = new Random();
-            _Terrain = GenerateTerrain(32, 32, 675);
+            _Terrain = GenerateTerrain(96, 96, 675);
             _Units = new List<Unit>();
             _Players.Add(new Player(this, Faction.Japan));
             _Players.Add(new Player(this, Faction.Germany));
             _Players.Add(new Player(this, Faction.England));
             _Players.Add(new Player(this, Faction.USA));
-            AddUnit(new Battleship(new Point(12, 15), Players[0]));
-            AddUnit(new Battleship(new Point(15, 15), Players[1]));
-            AddUnit(new Battleship(new Point(12, 12), Players[2]));
-            AddUnit(new Battleship(new Point(15, 12), Players[3]));
+            AddUnit(new Battleship(new Point(9, 12), Players[0]));
+            AddUnit(new Battleship(new Point(12, 12), Players[1]));
+            AddUnit(new Battleship(new Point(9, 9), Players[2]));
+            AddUnit(new Battleship(new Point(12, 9), Players[3]));
             OrderIcons.Add(Order.Torpedo, "Data\\Torpedo.png");
             OrderIcons.Add(Order.Mine, "Data\\Mine.png");
             OrderIcons.Add(Order.Move, "Data\\Move.png");

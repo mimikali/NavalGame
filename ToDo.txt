@@ -1,4 +1,7 @@
 - Make non-changeable unit parameters read-only
-- Flag of country on unit
-- Add more icons
-- Add likely outcome tooltip
+- Flag of country on ordersDisplay
+- Add more unit icons
+- Add likely outcome tooltip 1/2
+- Create scenario choosing
+- Add wreck unit
+- Resources

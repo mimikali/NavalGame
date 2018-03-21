@@ -11,21 +11,26 @@ namespace NavalGame
 {
     public class MapDisplay : PictureBox
     {
-        Game _Game;
-        MoveType MoveMode;
-        PointF _CameraPosition;
-        int _CameraScale;
-        Point? DragFrom;
-        Point? ClickPoint;
+        private Game _Game;
+        private MoveType _MoveMode; //ToDo: delete
+        private PointF _CameraPosition;
+        private int _CameraScale;
+        private Point? _DragFrom;
+        private Point? _ClickPoint;
         private SoundPlayer _SoundPlayer;
         private Order? _CurrentOrder;
         private List<Point> _PossibleMoves;
         private List<Point> _PossibleLightShots;
         private List<Point> _PossibleHeavyShots;
         private Unit _LastSelectedUnit;
-        Bitmap[] CachedTiles;
-        OrdersDisplay _OrdersDisplay;
-        ToolTip _ToolTip;
+        private Bitmap[] CachedTiles;
+        private OrdersDisplay _OrdersDisplay;
+        private ToolTip _ToolTip;
+        private TileRenderer _TileRenderer;
+        private int _OceanLayerId;
+        private int _LandLayerId;
+        private int _FogOfWarLayerId;
+        private int _RangesLayerId;
 
         public Game Game
         {
@@ -40,10 +45,10 @@ namespace NavalGame
                 {
                     if (_Game != null) _Game.Changed -= GameChanged;
                     _Game = value;
-                    MoveMode = MoveType.Drag;
+                    _MoveMode = MoveType.Drag;
                     _CameraPosition = new PointF(value.Terrain.Width / 2, value.Terrain.Height / 2);
                     CameraScale = 50;
-                    DragFrom = null;
+                    _DragFrom = null;
                     _Game.Changed += GameChanged;
                 }
             }
@@ -83,7 +88,7 @@ namespace NavalGame
 
             set
             {
-                int newScale = Math.Max(Math.Min(value, 1000), 30);
+                int newScale = Math.Max(Math.Min(value, 200), 10);
 
                 if (newScale != _CameraPosition.X)
                 {
@@ -131,6 +136,11 @@ namespace NavalGame
 
         public MapDisplay()
         {
+            _TileRenderer = new TileRenderer(32);
+            _OceanLayerId = _TileRenderer.AddLayer(TileRenderer.LayerLayout.Corners, Bitmaps.Get("Data\\Ocean.png"), Bitmaps.Get("Data\\SeaWrap.png"));
+            _LandLayerId = _TileRenderer.AddLayer(TileRenderer.LayerLayout.Corners, Bitmaps.Get("Data\\Land.png"), null);
+            _FogOfWarLayerId = _TileRenderer.AddLayer(TileRenderer.LayerLayout.Corners, Bitmaps.Get("Data\\FogOfWar.png"), Bitmaps.Get("Data\\FogOfWarWrap.png"));
+            _RangesLayerId = _TileRenderer.AddLayer(TileRenderer.LayerLayout.Corners, Bitmaps.Get("Data\\Ranges.png"), null);
             _SoundPlayer = new SoundPlayer();
             _ToolTip = new ToolTip();
             CachedTiles = new Bitmap[16];
@@ -187,152 +197,49 @@ namespace NavalGame
             var japanCounter = Bitmaps.Get("Data\\JapanCounter.png");
             var englandCounter = Bitmaps.Get("Data\\EnglandCounter.png");
             var selected = Bitmaps.Get("Data\\Selected.png");
-            var highlight = Bitmaps.Get("Data\\Highlight.png");
-            var fogOfWar = Bitmaps.Get("Data\\FogOfWar.png");
-            if (CachedTiles[0] == null || CachedTiles[0].Height != CameraScale)
+
+            DrawMap2(pe.Graphics);
+
+            // Draw Units
+            if (Game.CurrentPlayer != null)
             {
-                var terrainTextures = Bitmaps.Get("Data\\TerrainTextures.png");
-                for (int i = 0; i < 16; ++i)
+                foreach (Unit unit in Game.Units)
                 {
-                    if (CachedTiles[i] != null) CachedTiles[i].Dispose();
-                    CachedTiles[i] = new Bitmap(CameraScale, CameraScale);
-                    var g = Graphics.FromImage(CachedTiles[i]);
-                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    var srcRect = GetSrcRectangle((i & 1) != 0, (i & 2) != 0, (i & 4) != 0, (i & 8) != 0);
-                    g.DrawImage(terrainTextures, new Rectangle(0, 0, CachedTiles[i].Width, CachedTiles[i].Height), srcRect, GraphicsUnit.Pixel);
-                    g.Dispose();
-                }
-            }
-
-            pe.Graphics.Clear(Color.Black);
-            PointF m1 = DisplayToMap(new Point(0, 0));
-            PointF m2 = DisplayToMap(new Point(Width, Height));
-
-            int m1x = (int)Math.Floor(m1.X);
-            int m1y = (int)Math.Floor(m1.Y);
-            int m2x = (int)Math.Ceiling(m2.X);
-            int m2y = (int)Math.Ceiling(m2.Y);
-
-            m1x = Math.Max(m1x, 0);
-            m1y = Math.Max(m1y, 0);
-            m2x = Math.Min(m2x, Game.Terrain.Width);
-            m2y = Math.Min(m2y, Game.Terrain.Height);
-            pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            pe.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
-
-            _PossibleMoves.Clear();
-            _PossibleLightShots.Clear();
-            _PossibleHeavyShots.Clear();
-            for (int x = m1x; x < m2x; x++)
-            {
-                for (int y = m1y; y < m2y; y++)
-                {
-                    // Calculate tile index
-                    int tileIndex = 0;
-                    TerrainType t = Game.Terrain.Get(x, y);
-                    bool topLeft = IsQuadrantLand(t, Game.Terrain.Get(x - 1, y), Game.Terrain.Get(x - 1, y - 1), Game.Terrain.Get(x, y - 1));
-                    bool topRight = IsQuadrantLand(t, Game.Terrain.Get(x, y - 1), Game.Terrain.Get(x + 1, y - 1), Game.Terrain.Get(x + 1, y));
-                    bool bottomRight = IsQuadrantLand(t, Game.Terrain.Get(x + 1, y), Game.Terrain.Get(x + 1, y + 1), Game.Terrain.Get(x, y + 1));
-                    bool bottomLeft = IsQuadrantLand(t, Game.Terrain.Get(x, y + 1), Game.Terrain.Get(x - 1, y + 1), Game.Terrain.Get(x - 1, y));
-                    if (topLeft) tileIndex += 1;
-                    if (topRight) tileIndex += 2;
-                    if (bottomLeft) tileIndex += 4;
-                    if (bottomRight) tileIndex += 8;
-
-                    // Draw tile
-                    Point p = MapToDisplay(new PointF(x, y));
-                    pe.Graphics.DrawImage(CachedTiles[tileIndex], p.X, p.Y);
-                    if (Game.CurrentPlayer == null) pe.Graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
-                    else if (!Game.CurrentPlayer.IsTileVisible(new Point(x, y))) pe.Graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
-                    pe.Graphics.DrawRectangle(Pens.Black, new Rectangle(p, CachedTiles[0].Size));
-
-                    // Draw Move Range
-                    if (CurrentOrder == Order.Move && Game.SelectedUnit != null)
+                    if (Game.CurrentPlayer.IsTileVisible(unit.Position))
                     {
-                        if (Game.Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
+                        Point displayPos = MapToDisplay(unit.Position);
+                        if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
                         {
-                            if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.MovesLeft)
+                            if (displayPos.X < Width + CameraScale || displayPos.Y < Height + CameraScale)
                             {
-                                pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-
-                                if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) < 2)
+                                switch (unit.Player.Faction)
                                 {
-                                    pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                                    _PossibleMoves.Add(new Point(x, y));
+                                    case Faction.USA:
+                                        pe.Graphics.DrawImage(USACounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                        break;
+
+                                    case Faction.Germany:
+                                        pe.Graphics.DrawImage(germanyCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                        break;
+
+                                    case Faction.Japan:
+                                        pe.Graphics.DrawImage(japanCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                        break;
+
+                                    case Faction.England:
+                                        pe.Graphics.DrawImage(englandCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                        break;
                                 }
-                            }
-                        }
-                    }
-
-                    // Draw Light Artillery Range
-                    if (CurrentOrder == Order.LightArtillery && Game.SelectedUnit != null)
-                    {
-                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.LightRange)
-                        {
-                            pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                            if (Game.SelectedUnit.LightShotsLeft >= 1)
-                            {
-                                _PossibleLightShots.Add(new Point(x, y));
-                            }
-                        }
-                    }
-
-                    // Draw Heavy Artillery Range
-                    if (CurrentOrder == Order.HeavyArtillery && Game.SelectedUnit != null)
-                    {
-                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.HeavyRange)
-                        {
-                            pe.Graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
-                            if (Game.SelectedUnit.HeavyShotsLeft >= 1)
-                            {
-                                _PossibleHeavyShots.Add(new Point(x, y));
-                            }
-                        }
-                    }
-                }
-
-                // Draw Units
-                if (Game.CurrentPlayer != null)
-                {
-                    foreach (Unit unit in Game.Units)
-                    {
-                        if (Game.CurrentPlayer.IsTileVisible(unit.Position))
-                        {
-                            Point displayPos = MapToDisplay(unit.Position);
-                            if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
-                            {
-                                if (displayPos.X < Width + CameraScale || displayPos.Y < Height + CameraScale)
+                                pe.Graphics.DrawImage(Bitmaps.Get(unit.Bitmap), new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
+                                RectangleF stringRectangle = new RectangleF(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale));
+                                stringRectangle.Inflate(-0.05f * CameraScale, -0.05f * CameraScale);
+                                StringFormat stringFormat = new StringFormat()
                                 {
-                                    switch(unit.Player.Faction)
-                                    {
-                                        case Faction.USA:
-                                            pe.Graphics.DrawImage(USACounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                                            break;
-
-                                        case Faction.Germany:
-                                            pe.Graphics.DrawImage(germanyCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                                            break;
-
-                                        case Faction.Japan:
-                                            pe.Graphics.DrawImage(japanCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                                            break;
-
-                                        case Faction.England:
-                                            pe.Graphics.DrawImage(englandCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                                            break;
-                                    }
-                                    pe.Graphics.DrawImage(Bitmaps.Get(unit.Bitmap), new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
-                                    RectangleF stringRectangle = new RectangleF(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale));
-                                    stringRectangle.Inflate(-0.05f * CameraScale, -0.05f * CameraScale);
-                                    StringFormat stringFormat = new StringFormat()
-                                    {
-                                        Alignment = StringAlignment.Center,
-                                        LineAlignment = StringAlignment.Far
-                                    };
-                                    pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, stringFormat);
-                                    if (Game.SelectedUnit == unit) pe.Graphics.DrawImage(selected, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
-                                }
+                                    Alignment = StringAlignment.Center,
+                                    LineAlignment = StringAlignment.Far
+                                };
+                                pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, stringFormat);
+                                if (Game.SelectedUnit == unit) pe.Graphics.DrawImage(selected, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
                             }
                         }
                     }
@@ -349,14 +256,14 @@ namespace NavalGame
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (MoveMode == MoveType.Drag) DragFrom = e.Location;
-            ClickPoint = e.Location;
+            if (_MoveMode == MoveType.Drag) _DragFrom = e.Location;
+            _ClickPoint = e.Location;
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            if (ClickPoint == null) return;
-            if (PointDifference((Point)ClickPoint, e.Location) < 2)
+            if (_ClickPoint == null) return;
+            if (PointDifference((Point)_ClickPoint, e.Location) < 2)
             {
                 // Click
                 bool l = true;
@@ -442,7 +349,7 @@ namespace NavalGame
                 }
             }
             // Drag
-            DragFrom = null;
+            _DragFrom = null;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -450,7 +357,7 @@ namespace NavalGame
             Focus();
 
             #region Pan
-            if (MoveMode == MoveType.Pan)
+            if (_MoveMode == MoveType.Pan)
             {
                 if (e.X <= 50)
                 {
@@ -497,13 +404,13 @@ namespace NavalGame
             #endregion
 
             #region Drag
-            if (MoveMode == MoveType.Drag && DragFrom != null)
+            if (_MoveMode == MoveType.Drag && _DragFrom != null)
             {
                 PointF cameraPosition = CameraPosition;
-                cameraPosition.X += (DragFrom.Value.X - e.Location.X) / (float)CameraScale;
-                cameraPosition.Y += (DragFrom.Value.Y - e.Location.Y) / (float)CameraScale;
+                cameraPosition.X += (_DragFrom.Value.X - e.Location.X) / (float)CameraScale;
+                cameraPosition.Y += (_DragFrom.Value.Y - e.Location.Y) / (float)CameraScale;
                 CameraPosition = cameraPosition;
-                DragFrom = new Point(e.Location.X, e.Location.Y);
+                _DragFrom = new Point(e.Location.X, e.Location.Y);
             }
             #endregion
         }
@@ -511,39 +418,39 @@ namespace NavalGame
         protected override void OnMouseHover(EventArgs e)
         {
             base.OnMouseHover(e);
-            if (Game.SelectedUnit == null) return;
-            Unit unit = Game.SelectedUnit;
-            Point mapPos = Point.Truncate(DisplayToMap(Cursor.Position));
-            switch (CurrentOrder)
-            {
-                case null:
-                    return;
+            //if (Game.SelectedUnit == null) return;
+            //Unit unit = Game.SelectedUnit;
+            //Point mapPos = Point.Truncate(DisplayToMap(Cursor.Position));
+            //switch (CurrentOrder)
+            //{
+            //    case null:
+            //        return;
 
-                case Order.Move:
-                    if (_PossibleMoves.Contains(mapPos))
-                    {
-                        float baseFuelCost = PointDifference(unit.Position, mapPos);
-                        float fuelCost = (float)(baseFuelCost + (baseFuelCost * 0.5) * (unit.Speed - unit.MovesLeft));
-                        _ToolTip.IsBalloon = true;
-                        _ToolTip.Show("Moving here costs " + Math.Round(fuelCost, 2).ToString() + " fuel.", this, 3000);
-                    }
-                    break;
+            //    case Order.Move:
+            //        if (_PossibleMoves.Contains(mapPos))
+            //        {
+            //            float baseFuelCost = PointDifference(unit.Position, mapPos);
+            //            float fuelCost = (float)(baseFuelCost + (baseFuelCost * 0.5) * (unit.Speed - unit.MovesLeft));
+            //            _ToolTip.IsBalloon = true;
+            //            _ToolTip.Show("Moving here costs " + Math.Round(fuelCost, 2).ToString() + " fuel.", this, 3000);
+            //        }
+            //        break;
 
-                case Order.LightArtillery:
-                    if (_PossibleLightShots.Contains(mapPos))
-                    {
+            //    case Order.LightArtillery:
+            //        if (_PossibleLightShots.Contains(mapPos))
+            //        {
 
-                    }
-                    break;
-            }
-            DisplayToMap(Cursor.Position);
+            //        }
+            //        break;
+            //}
+            //DisplayToMap(Cursor.Position);
         }
 
         protected override Cursor DefaultCursor
         {
             get
             {
-                if (MoveMode == MoveType.Pan) return Cursors.NoMove2D;
+                if (_MoveMode == MoveType.Pan) return Cursors.NoMove2D;
                 else return Cursors.Hand;
             }
 
@@ -552,6 +459,179 @@ namespace NavalGame
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             CameraScale = (int)Math.Round(Math.Pow(1.2, e.Delta / 120) * CameraScale);
+        }
+
+        private void DrawMap(Graphics graphics)
+        {
+            var highlight = Bitmaps.Get("Data\\Highlight.png");
+            var fogOfWar = Bitmaps.Get("Data\\FogOfWar.png");
+
+            _PossibleMoves.Clear();
+            _PossibleLightShots.Clear();
+            _PossibleHeavyShots.Clear();
+
+            if (CachedTiles[0] == null || CachedTiles[0].Height != CameraScale)
+            {
+                var terrainTextures = Bitmaps.Get("Data\\TerrainTextures.png");
+                for (int i = 0; i < 16; ++i)
+                {
+                    if (CachedTiles[i] != null) CachedTiles[i].Dispose();
+                    CachedTiles[i] = new Bitmap(CameraScale, CameraScale);
+                    var g = Graphics.FromImage(CachedTiles[i]);
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    var srcRect = GetSrcRectangle((i & 1) != 0, (i & 2) != 0, (i & 4) != 0, (i & 8) != 0);
+                    g.DrawImage(terrainTextures, new Rectangle(0, 0, CachedTiles[i].Width, CachedTiles[i].Height), srcRect, GraphicsUnit.Pixel);
+                    g.Dispose();
+                }
+            }
+
+            graphics.Clear(Color.Black);
+            PointF m1 = DisplayToMap(new Point(0, 0));
+            PointF m2 = DisplayToMap(new Point(Width, Height));
+
+            int m1x = (int)Math.Floor(m1.X);
+            int m1y = (int)Math.Floor(m1.Y);
+            int m2x = (int)Math.Ceiling(m2.X);
+            int m2y = (int)Math.Ceiling(m2.Y);
+
+            m1x = Math.Max(m1x, 0);
+            m1y = Math.Max(m1y, 0);
+            m2x = Math.Min(m2x, Game.Terrain.Width);
+            m2y = Math.Min(m2y, Game.Terrain.Height);
+            graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+
+            for (int x = m1x; x < m2x; x++)
+            {
+                for (int y = m1y; y < m2y; y++)
+                {
+                    // Calculate tile index
+                    int tileIndex = 0;
+                    TerrainType t = Game.Terrain.Get(x, y);
+                    bool topLeft = IsQuadrantLand(t, Game.Terrain.Get(x - 1, y), Game.Terrain.Get(x - 1, y - 1), Game.Terrain.Get(x, y - 1));
+                    bool topRight = IsQuadrantLand(t, Game.Terrain.Get(x, y - 1), Game.Terrain.Get(x + 1, y - 1), Game.Terrain.Get(x + 1, y));
+                    bool bottomRight = IsQuadrantLand(t, Game.Terrain.Get(x + 1, y), Game.Terrain.Get(x + 1, y + 1), Game.Terrain.Get(x, y + 1));
+                    bool bottomLeft = IsQuadrantLand(t, Game.Terrain.Get(x, y + 1), Game.Terrain.Get(x - 1, y + 1), Game.Terrain.Get(x - 1, y));
+                    if (topLeft) tileIndex += 1;
+                    if (topRight) tileIndex += 2;
+                    if (bottomLeft) tileIndex += 4;
+                    if (bottomRight) tileIndex += 8;
+
+                    // Draw tile
+                    Point p = MapToDisplay(new PointF(x, y));
+                    graphics.DrawImage(CachedTiles[tileIndex], p.X, p.Y);
+                    if (Game.CurrentPlayer == null) graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
+                    else if (!Game.CurrentPlayer.IsTileVisible(new Point(x, y))) graphics.DrawImage(fogOfWar, new Rectangle(p, CachedTiles[0].Size));
+                    graphics.DrawRectangle(Pens.Black, new Rectangle(p, CachedTiles[0].Size));
+
+                    // Draw Move Range
+                    if (CurrentOrder == Order.Move && Game.SelectedUnit != null)
+                    {
+                        if (Game.Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
+                        {
+                            if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.MovesLeft)
+                            {
+                                graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+
+                                if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) < 2)
+                                {
+                                    graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                                    _PossibleMoves.Add(new Point(x, y));
+                                }
+                            }
+                        }
+                    }
+
+                    // Draw Light Artillery Range
+                    if (CurrentOrder == Order.LightArtillery && Game.SelectedUnit != null)
+                    {
+                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.LightRange)
+                        {
+                            graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                            if (Game.SelectedUnit.LightShotsLeft >= 1)
+                            {
+                                _PossibleLightShots.Add(new Point(x, y));
+                            }
+                        }
+                    }
+
+                    // Draw Heavy Artillery Range
+                    if (CurrentOrder == Order.HeavyArtillery && Game.SelectedUnit != null)
+                    {
+                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.HeavyRange)
+                        {
+                            graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
+                            if (Game.SelectedUnit.HeavyShotsLeft >= 1)
+                            {
+                                _PossibleHeavyShots.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawMap2(Graphics graphics)
+        {
+            _TileRenderer.TileSize = CameraScale;
+            _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
+            {
+                p.X = Math.Min(Math.Max(p.X, 0), Game.Terrain.Width - 1);
+                p.Y = Math.Min(Math.Max(p.Y, 0), Game.Terrain.Height - 1);
+                TerrainType t = Game.Terrain.Get(p.X, p.Y, TerrainType.Sea);
+                int result = 0;
+                if (Game.CurrentPlayer == null || !Game.CurrentPlayer.IsTileVisible(p))
+                {
+                    result |= _FogOfWarLayerId;
+                }
+
+                if (Game.SelectedUnit != null)
+                {
+                    switch (CurrentOrder)
+                    {
+                        case null: break;
+                        case Order.Move:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.MovesLeft)
+                            {
+                                result |= _RangesLayerId;
+                                if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
+                            }
+                            break;
+                        case Order.LightArtillery:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.LightRange)
+                            {
+                                result |= _RangesLayerId;
+                                _PossibleLightShots.Add(p);
+                            }
+                            break;
+                        case Order.HeavyArtillery:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.HeavyRange)
+                            {
+                                result |= _RangesLayerId;
+                                _PossibleHeavyShots.Add(p);
+                            }
+                            break;
+                    }
+                }
+                switch(t)
+                {
+                    case TerrainType.Sea: result |= _OceanLayerId; break;
+                    case TerrainType.Land: result |= _OceanLayerId | _LandLayerId; break;
+                    default: throw new Exception();
+                }
+                return result;
+            });
+
+            Pen pen = new Pen(Color.FromArgb(64, 0, 0, 0));
+            for (int x = 0; x < Game.Terrain.Width; x++)
+            {
+                graphics.DrawLine(pen, MapToDisplay(new Point(x, 0)), MapToDisplay(new Point(x, Game.Terrain.Height)));
+            }
+            for (int y = 0; y < Game.Terrain.Height; y++)
+            {
+                graphics.DrawLine(pen, MapToDisplay(new Point(0, y)), MapToDisplay(new Point(Game.Terrain.Width, y)));
+            }
         }
 
         static Terrain StringToTerrain(int width, string plan)
