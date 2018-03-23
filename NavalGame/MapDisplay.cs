@@ -350,6 +350,7 @@ namespace NavalGame
             }
             // Drag
             _DragFrom = null;
+            Game.FireChangedEvent();
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -574,6 +575,10 @@ namespace NavalGame
 
         private void DrawMap2(Graphics graphics)
         {
+            _PossibleLightShots.Clear();
+            _PossibleMoves.Clear();
+            _PossibleHeavyShots.Clear();
+
             _TileRenderer.TileSize = CameraScale;
             _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
             {
@@ -588,6 +593,7 @@ namespace NavalGame
 
                 if (Game.SelectedUnit != null)
                 {
+
                     switch (CurrentOrder)
                     {
                         case null: break;
@@ -602,14 +608,17 @@ namespace NavalGame
                             if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.LightRange)
                             {
                                 result |= _RangesLayerId;
-                                _PossibleLightShots.Add(p);
+                                if (Game.SelectedUnit.LightShotsLeft >= 1) _PossibleLightShots.Add(p);
                             }
                             break;
                         case Order.HeavyArtillery:
                             if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.HeavyRange)
                             {
                                 result |= _RangesLayerId;
-                                _PossibleHeavyShots.Add(p);
+                                if (Game.SelectedUnit.HeavyShotsLeft >= 1)
+                                {
+                                    _PossibleHeavyShots.Add(p);
+                                }
                             }
                             break;
                     }
@@ -634,7 +643,7 @@ namespace NavalGame
             }
         }
 
-        static Terrain StringToTerrain(int width, string plan)
+        public static Terrain StringToTerrain(int width, string plan)
         {
             Terrain terrain = new Terrain(width, plan.Length / width);
 
@@ -725,7 +734,14 @@ namespace NavalGame
             Bitmap result;
             if (!_Cache.TryGetValue(filename, out result))
             {
-                result = (Bitmap)Image.FromFile(filename);
+                try
+                {
+                    result = (Bitmap)Image.FromFile(filename);
+                }
+                catch (Exception)
+                {
+                    
+                }
                 _Cache.Add(filename, result);
             }
             return result;

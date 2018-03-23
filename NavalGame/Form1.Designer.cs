@@ -69,13 +69,13 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.OrdersDisplay);
             this.Controls.Add(this.MapDisplay);
+            this.FormClosed += Form1Closed;
             this.Name = "Form1";
             this.Text = "Form";
             ((System.ComponentModel.ISupportInitialize)(this.MapDisplay)).EndInit();
             this.ResumeLayout(false);
 
         }
-
 
         #endregion
 

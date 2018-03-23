@@ -13,14 +13,22 @@ namespace NavalGame
     public partial class Form1 : Form
     {
         Game Game;
+        Form Parent;
 
-        public Form1()
+        public Form1(Terrain terrain, Form parent)
         {
             InitializeComponent();
-            Game = new Game();
+            Parent = parent;
+            Game = new Game(terrain);
             MapDisplay.Game = Game;
             MapDisplay.OrdersDisplay = OrdersDisplay;
             OrdersDisplay.MapDisplay = MapDisplay;
+        }
+
+
+        private void Form1Closed(object sender, FormClosedEventArgs e)
+        {
+            Parent.Show();
         }
 
         private void FormSizeChanged(object sender, EventArgs e)

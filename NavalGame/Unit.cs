@@ -8,7 +8,7 @@ namespace NavalGame
 {
     public abstract class Unit
     {
-        private int _Speed = 0;
+        private float _Speed = 0;
         private float _MovesLeft = 0;
         private Point _Position = new Point(0, 0);
         private string _Bitmap = "";
@@ -16,11 +16,9 @@ namespace NavalGame
         private Player _Player = null;
         private float _ViewDistance = 0;
         private Game _Game = null;
-        private int _LightShots = 0;
         private int _LightShotsLeft = 0;
         private float _LightRange = 0;
         private float _LightPower = 0;
-        private int _HeavyShots = 0;
         private int _HeavyShotsLeft = 0;
         private float _HeavyRange = 0;
         private float _HeavyPower = 0;
@@ -38,7 +36,7 @@ namespace NavalGame
             }
         }
 
-        public int Speed
+        public float Speed
         {
             get
             {
@@ -141,20 +139,6 @@ namespace NavalGame
             }
         }
 
-        public int LightShots
-        {
-            get
-            {
-                return _LightShots;
-            }
-
-            set
-            {
-                _LightShots = value;
-                Game.FireChangedEvent();
-            }
-        }
-
         public int LightShotsLeft
         {
             get
@@ -164,6 +148,10 @@ namespace NavalGame
 
             set
             {
+                if (value < 0)
+                {
+                    throw new Exception("Illegal shot.");
+                }
                 _LightShotsLeft = value;
                 Game.FireChangedEvent();
             }
@@ -183,20 +171,6 @@ namespace NavalGame
             }
         }
 
-        public int HeavyShots
-        {
-            get
-            {
-                return _HeavyShots;
-            }
-
-            set
-            {
-                _HeavyShots = value;
-                Game.FireChangedEvent();
-            }
-        }
-
         public int HeavyShotsLeft
         {
             get
@@ -206,6 +180,10 @@ namespace NavalGame
 
             set
             {
+                if (value < 0)
+                {
+                    throw new Exception("Illegal shot.");
+                }
                 _HeavyShotsLeft = value;
                 Game.FireChangedEvent();
             }
@@ -321,8 +299,8 @@ namespace NavalGame
         public void NextMove()
         {
             MovesLeft = Speed;
-            LightShotsLeft = LightShots;
-            HeavyShotsLeft = HeavyShots;
+            LightShotsLeft = 1;
+            HeavyShotsLeft = 1;
         }
     }
 }

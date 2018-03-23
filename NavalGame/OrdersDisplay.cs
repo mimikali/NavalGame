@@ -37,6 +37,13 @@ namespace NavalGame
 
         public void GameChanged()
         {
+            MovePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            MovePictureBox.Image = Bitmaps.Get("Data\\Move.png");
+            LightArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            LightArtilleryPictureBox.Image = Bitmaps.Get("Data\\LightArtillery.png");
+            HeavyArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            HeavyArtilleryPictureBox.Image = Bitmaps.Get("Data\\HeavyArtillery.png");
+
             if (MapDisplay.Game.SelectedUnit != null)
             {
                 UnitPanel.Show();
@@ -67,18 +74,6 @@ namespace NavalGame
                             break;
                     }
                 }
-
-                MoveBar.Minimum = 0;
-                MoveBar.Maximum = MapDisplay.Game.SelectedUnit.Speed;
-                MoveBar.Value = (int)Math.Truncate(MapDisplay.Game.SelectedUnit.MovesLeft);
-
-                LightArtilleryBar.Minimum = 0;
-                LightArtilleryBar.Maximum = MapDisplay.Game.SelectedUnit.LightShots;
-                LightArtilleryBar.Value = MapDisplay.Game.SelectedUnit.LightShotsLeft;
-
-                HeavyArtilleryBar.Minimum = 0;
-                HeavyArtilleryBar.Maximum = MapDisplay.Game.SelectedUnit.HeavyShots;
-                HeavyArtilleryBar.Value = MapDisplay.Game.SelectedUnit.HeavyShotsLeft;
 
                 HealthBar.Minimum = 0;
                 HealthBar.Maximum = 100;

@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             this.MoveBox = new System.Windows.Forms.GroupBox();
-            this.MoveBar = new System.Windows.Forms.ProgressBar();
+            this.MovePictureBox = new System.Windows.Forms.PictureBox();
             this.MoveButton = new System.Windows.Forms.Button();
             this.NextTurnButton = new System.Windows.Forms.Button();
             this.BeginTurnButton = new System.Windows.Forms.Button();
             this.OrdersPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.LightArtilleryBox = new System.Windows.Forms.GroupBox();
-            this.LightArtilleryBar = new System.Windows.Forms.ProgressBar();
+            this.LightArtilleryPictureBox = new System.Windows.Forms.PictureBox();
             this.LightArtilleryButton = new System.Windows.Forms.Button();
             this.HeavyArtilleryBox = new System.Windows.Forms.GroupBox();
-            this.HeavyArtilleryBar = new System.Windows.Forms.ProgressBar();
+            this.HeavyArtilleryPictureBox = new System.Windows.Forms.PictureBox();
             this.HeavyArtilleryButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
@@ -46,9 +46,12 @@
             this.UnitPictureBox = new System.Windows.Forms.PictureBox();
             this.InfoPanel = new System.Windows.Forms.Panel();
             this.MoveBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).BeginInit();
             this.OrdersPanel.SuspendLayout();
             this.LightArtilleryBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LightArtilleryPictureBox)).BeginInit();
             this.HeavyArtilleryBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HeavyArtilleryPictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
@@ -58,7 +61,7 @@
             // 
             this.MoveBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.MoveBox.Controls.Add(this.MoveBar);
+            this.MoveBox.Controls.Add(this.MovePictureBox);
             this.MoveBox.Controls.Add(this.MoveButton);
             this.MoveBox.Location = new System.Drawing.Point(3, 3);
             this.MoveBox.Name = "MoveBox";
@@ -66,16 +69,13 @@
             this.MoveBox.TabIndex = 0;
             this.MoveBox.TabStop = false;
             // 
-            // MoveBar
+            // MovePictureBox
             // 
-            this.MoveBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.MoveBar.Location = new System.Drawing.Point(87, 19);
-            this.MoveBar.Name = "MoveBar";
-            this.MoveBar.Size = new System.Drawing.Size(143, 23);
-            this.MoveBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.MoveBar.TabIndex = 1;
+            this.MovePictureBox.Location = new System.Drawing.Point(122, 10);
+            this.MovePictureBox.Name = "MovePictureBox";
+            this.MovePictureBox.Size = new System.Drawing.Size(97, 37);
+            this.MovePictureBox.TabIndex = 1;
+            this.MovePictureBox.TabStop = false;
             // 
             // MoveButton
             // 
@@ -131,7 +131,7 @@
             // 
             this.LightArtilleryBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.LightArtilleryBox.Controls.Add(this.LightArtilleryBar);
+            this.LightArtilleryBox.Controls.Add(this.LightArtilleryPictureBox);
             this.LightArtilleryBox.Controls.Add(this.LightArtilleryButton);
             this.LightArtilleryBox.Location = new System.Drawing.Point(3, 62);
             this.LightArtilleryBox.Name = "LightArtilleryBox";
@@ -139,16 +139,13 @@
             this.LightArtilleryBox.TabIndex = 1;
             this.LightArtilleryBox.TabStop = false;
             // 
-            // LightArtilleryBar
+            // LightArtilleryPictureBox
             // 
-            this.LightArtilleryBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LightArtilleryBar.Location = new System.Drawing.Point(87, 19);
-            this.LightArtilleryBar.Name = "LightArtilleryBar";
-            this.LightArtilleryBar.Size = new System.Drawing.Size(143, 23);
-            this.LightArtilleryBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.LightArtilleryBar.TabIndex = 1;
+            this.LightArtilleryPictureBox.Location = new System.Drawing.Point(122, 13);
+            this.LightArtilleryPictureBox.Name = "LightArtilleryPictureBox";
+            this.LightArtilleryPictureBox.Size = new System.Drawing.Size(97, 34);
+            this.LightArtilleryPictureBox.TabIndex = 2;
+            this.LightArtilleryPictureBox.TabStop = false;
             // 
             // LightArtilleryButton
             // 
@@ -166,7 +163,7 @@
             // 
             this.HeavyArtilleryBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.HeavyArtilleryBox.Controls.Add(this.HeavyArtilleryBar);
+            this.HeavyArtilleryBox.Controls.Add(this.HeavyArtilleryPictureBox);
             this.HeavyArtilleryBox.Controls.Add(this.HeavyArtilleryButton);
             this.HeavyArtilleryBox.Location = new System.Drawing.Point(3, 121);
             this.HeavyArtilleryBox.Name = "HeavyArtilleryBox";
@@ -174,16 +171,13 @@
             this.HeavyArtilleryBox.TabIndex = 2;
             this.HeavyArtilleryBox.TabStop = false;
             // 
-            // HeavyArtilleryBar
+            // HeavyArtilleryPictureBox
             // 
-            this.HeavyArtilleryBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.HeavyArtilleryBar.Location = new System.Drawing.Point(87, 19);
-            this.HeavyArtilleryBar.Name = "HeavyArtilleryBar";
-            this.HeavyArtilleryBar.Size = new System.Drawing.Size(143, 23);
-            this.HeavyArtilleryBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.HeavyArtilleryBar.TabIndex = 1;
+            this.HeavyArtilleryPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.HeavyArtilleryPictureBox.Name = "HeavyArtilleryPictureBox";
+            this.HeavyArtilleryPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.HeavyArtilleryPictureBox.TabIndex = 2;
+            this.HeavyArtilleryPictureBox.TabStop = false;
             // 
             // HeavyArtilleryButton
             // 
@@ -260,9 +254,12 @@
             this.Name = "OrdersDisplay";
             this.Size = new System.Drawing.Size(256, 535);
             this.MoveBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).EndInit();
             this.OrdersPanel.ResumeLayout(false);
             this.LightArtilleryBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.LightArtilleryPictureBox)).EndInit();
             this.HeavyArtilleryBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.HeavyArtilleryPictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
@@ -273,21 +270,21 @@
         #endregion
 
         private System.Windows.Forms.Button MoveButton;
-        private System.Windows.Forms.ProgressBar MoveBar;
         private System.Windows.Forms.GroupBox MoveBox;
         private System.Windows.Forms.Button NextTurnButton;
         private System.Windows.Forms.Button BeginTurnButton;
         private System.Windows.Forms.FlowLayoutPanel OrdersPanel;
         private System.Windows.Forms.GroupBox LightArtilleryBox;
-        private System.Windows.Forms.ProgressBar LightArtilleryBar;
         private System.Windows.Forms.Button LightArtilleryButton;
         private System.Windows.Forms.GroupBox HeavyArtilleryBox;
-        private System.Windows.Forms.ProgressBar HeavyArtilleryBar;
         private System.Windows.Forms.Button HeavyArtilleryButton;
         private System.Windows.Forms.ProgressBar HealthBar;
         private System.Windows.Forms.Panel UnitPanel;
         private System.Windows.Forms.PictureBox UnitPictureBox;
         private System.Windows.Forms.RichTextBox UnitTextBox;
         private System.Windows.Forms.Panel InfoPanel;
+        private System.Windows.Forms.PictureBox MovePictureBox;
+        private System.Windows.Forms.PictureBox LightArtilleryPictureBox;
+        private System.Windows.Forms.PictureBox HeavyArtilleryPictureBox;
     }
 }

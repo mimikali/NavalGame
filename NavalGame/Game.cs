@@ -88,10 +88,11 @@ namespace NavalGame
             }
         }
 
-        public Game()
+        public Game(Terrain terrain)
         {
             Random = new Random();
-            _Terrain = GenerateTerrain(96, 96, 675);
+            //_Terrain = GenerateTerrain(20, 20, 1);
+            _Terrain = terrain;
             _Units = new List<Unit>();
             _Players.Add(new Player(this, Faction.Japan));
             _Players.Add(new Player(this, Faction.Germany));
@@ -109,7 +110,7 @@ namespace NavalGame
             OrderIcons.Add(Order.HeavyArtillery, "Data\\HeavyArtillery.png");
         }
 
-        static Terrain GenerateTerrain(int width, int height, int seed)
+        public static Terrain GenerateTerrain(int width, int height, int seed)
         {
             Random random = new Random(seed);
             Terrain terrain = new Terrain(width, height);
