@@ -288,6 +288,7 @@ namespace NavalGame
         int _PixmapsTileSize;
         List<Layer> _Layers = new List<Layer>();
         Pixmap _Pixmap;
+        int[] _Terrain;
 
         public int TileSize
         {
@@ -357,14 +358,31 @@ namespace NavalGame
                 _PixmapsTileSize = TileSize;
             }
 
+            // Prepare terrain cache
+            int originX = tx1 - 1;
+            int originY = ty1 - 1;
+            int sizeX = tx2 - tx1 + 2 + 2;
+            int sizeY = ty2 - ty1 + 2 + 2;
+            if (_Terrain == null || _Terrain.Length != sizeX * sizeY)
+            {
+                _Terrain = new int[sizeX * sizeY];
+            }
+            for (int y = 0; y < sizeY; ++y)
+            {
+                for (int x = 0; x < sizeX; ++x)
+                {
+                    _Terrain[x + y * sizeX] = terrain(new Point(x + originX, y + originY));
+                }
+            }
+
             // Draw all layers
             foreach (var layer in _Layers)
             {
                 if (layer.Layout == LayerLayout.Corners)
                 {
                     // For all terrain locations to draw
-                    //Parallel.For(ty1, ty2 + 2, ty =>
-                    for (int ty = ty1; ty < ty2 + 2; ++ty)
+                    Parallel.For(ty1, ty2 + 2, ty =>
+                    // for (int ty = ty1; ty < ty2 + 2; ++ty)
                     {
                         for (int tx = tx1; tx < tx2 + 2; ++tx)
                         {
@@ -373,10 +391,10 @@ namespace NavalGame
                             int py = ty * TileSize + p.Y - sy1 - TileSize / 2;
 
                             // Get layers masks of surrounding terrain locations (corners)
-                            int cmask1 = terrain(new Point(tx - 1, ty - 1));
-                            int cmask2 = terrain(new Point(tx, ty - 1));
-                            int cmask3 = terrain(new Point(tx - 1, ty));
-                            int cmask4 = terrain(new Point(tx, ty));
+                            int cmask1 = _Terrain[(tx - originX - 1) + (ty - originY - 1) * sizeX];
+                            int cmask2 = _Terrain[(tx - originX) + (ty - originY - 1) * sizeX];
+                            int cmask3 = _Terrain[(tx - originX - 1) + (ty - originY) * sizeX];
+                            int cmask4 = _Terrain[(tx - originX) + (ty - originY) * sizeX];
 
                             // Prepare seed for selecting random variations of tiles
                             int seed = tx | (ty << 16);
@@ -397,7 +415,7 @@ namespace NavalGame
                                     Pixmap.Draw(layer.TilesPixmap, _Pixmap, srcRect, px, py);
                             }
                         }
-                    }
+                    });
                 }
                 else
                 {
@@ -416,10 +434,14 @@ namespace NavalGame
                                 int py = ty * TileSize + p.Y - sy1;
 
                                 // Get layers masks of surrounding terrain locations (sides)
-                                int lmask = terrain(new Point(tx - 1, ty));
-                                int umask = terrain(new Point(tx, ty - 1));
-                                int rmask = terrain(new Point(tx + 1, ty));
-                                int dmask = terrain(new Point(tx, ty + 1));
+                                //int lmask = terrain(new Point(tx - 1, ty));
+                                //int umask = terrain(new Point(tx, ty - 1));
+                                //int rmask = terrain(new Point(tx + 1, ty));
+                                //int dmask = terrain(new Point(tx, ty + 1));
+                                int lmask = _Terrain[(tx - originX - 1) + (ty - originY) * sizeX];
+                                int umask = _Terrain[(tx - originX) + (ty - originY - 1) * sizeX];
+                                int rmask = _Terrain[(tx - originX + 1) + (ty - originY) * sizeX];
+                                int dmask = _Terrain[(tx - originX) + (ty - originY + 1) * sizeX];
 
                                 // Prepare seed for selecting random variations of tiles
                                 int seed = tx | (ty << 16);

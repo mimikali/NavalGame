@@ -22,6 +22,8 @@ namespace NavalGame
         private int _HeavyShotsLeft = 0;
         private float _HeavyRange = 0;
         private float _HeavyPower = 0;
+        private int _RepairsLeft = 0;
+        private float _RepairPower = 0;
         private float _Health = 1;
         private float _Armour = 0;
         private string _Name = "Unit";
@@ -213,6 +215,7 @@ namespace NavalGame
             set
             {
                 if (value < 0) _Health = 0;
+                else if (value > 1) _Health = 1;
                 else _Health = value;
                 Game.FireChangedEvent();
             }
@@ -296,11 +299,38 @@ namespace NavalGame
             }
         }
 
+        public float RepairPower
+        {
+            get
+            {
+                return _RepairPower;
+            }
+
+            set
+            {
+                _RepairPower = value;
+            }
+        }
+
+        public int RepairsLeft
+        {
+            get
+            {
+                return _RepairsLeft;
+            }
+
+            set
+            {
+                _RepairsLeft = value;
+            }
+        }
+
         public void NextMove()
         {
             MovesLeft = Speed;
             LightShotsLeft = 1;
             HeavyShotsLeft = 1;
+            RepairsLeft = 1;
         }
     }
 }

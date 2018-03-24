@@ -22,6 +22,8 @@ namespace NavalGame
             HeavyShotsLeft = 1;
             HeavyRange = 0;
             HeavyPower = 0;
+            RepairPower = 0;
+            RepairsLeft = 0;
             ViewDistance = 9;
             Player = player;
             Speed = 6;

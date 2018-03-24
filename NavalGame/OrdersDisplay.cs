@@ -43,6 +43,8 @@ namespace NavalGame
             LightArtilleryPictureBox.Image = Bitmaps.Get("Data\\LightArtillery.png");
             HeavyArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             HeavyArtilleryPictureBox.Image = Bitmaps.Get("Data\\HeavyArtillery.png");
+            RepairPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            RepairPictureBox.Image = Bitmaps.Get("Data\\Repair.png");
 
             if (MapDisplay.Game.SelectedUnit != null)
             {
@@ -57,6 +59,7 @@ namespace NavalGame
                 MoveBox.Hide();
                 LightArtilleryBox.Hide();
                 HeavyArtilleryBox.Hide();
+                RepairBox.Hide();
                 foreach (Order ability in MapDisplay.Game.SelectedUnit.Abilities)
                 {
                     switch (ability)
@@ -72,12 +75,25 @@ namespace NavalGame
                         case Order.HeavyArtillery:
                             HeavyArtilleryBox.Show();
                             break;
+
+                        case Order.Repair:
+                            RepairBox.Show();
+                            break;
                     }
                 }
 
                 HealthBar.Minimum = 0;
                 HealthBar.Maximum = 100;
                 HealthBar.Value = (int)(MapDisplay.Game.SelectedUnit.Health * 100);
+
+                if (MapDisplay.Game.SelectedUnit.MovesLeft < 1) MoveBox.Enabled = false;
+                else MoveBox.Enabled = true;
+                if (MapDisplay.Game.SelectedUnit.LightShotsLeft < 1) LightArtilleryBox.Enabled = false;
+                else LightArtilleryBox.Enabled = true;
+                if (MapDisplay.Game.SelectedUnit.HeavyShotsLeft < 1) HeavyArtilleryBox.Enabled = false;
+                else HeavyArtilleryBox.Enabled = true;
+                if (MapDisplay.Game.SelectedUnit.RepairsLeft < 1) RepairBox.Enabled = false;
+                else RepairBox.Enabled = true;
             }
             else
             {
@@ -121,6 +137,11 @@ namespace NavalGame
         private void HeavyArtilleryButtonClick(object sender, EventArgs e)
         {
             MapDisplay.CurrentOrder = Order.HeavyArtillery;
+        }
+
+        private void RepairButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.Repair;
         }
     }
 }

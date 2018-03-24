@@ -1,8 +1,6 @@
 - Make unit parameters object
-- Revert to only one shot per turn.
 - Flag of country on ordersDisplay
 - Add more unit icons
 - Add likely outcome tooltip 1/2
-- Create scenario choosing
-- Add wreck unit
+- Add harbour
 - Resources

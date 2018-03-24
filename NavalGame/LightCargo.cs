@@ -6,32 +6,34 @@ using System.Drawing;
 
 namespace NavalGame
 {
-    public class Minesweeper : Unit
+    public class LightCargo : Unit
     {
-        static string StaticBitmap = "Data\\Minesweeper.png";
+        static string StaticBitmap = "Data\\Ships\\Miscellaneous\\LightCargo.png";
+        static string StaticBitmapLarge = "Data\\Ships\\Miscellaneous\\LightCargoLarge.png";
 
-        public Minesweeper(Point position, Player player)
+        public LightCargo(Point position, Player player)
         {
             Game = player.Game;
-            Type = UnitType.Minesweeper;
-            Armour = 2;
+            Type = UnitType.Wreck;
             Health = 1;
-            LightShotsLeft = 1;
+            Armour = 2;
+            LightShotsLeft = 0;
             LightRange = 0;
             LightPower = 0;
-            HeavyShotsLeft = 1;
+            HeavyShotsLeft = 0;
             HeavyRange = 0;
             HeavyPower = 0;
             RepairPower = 0;
             RepairsLeft = 0;
-            ViewDistance = 0;
+            ViewDistance = 8;
             Player = player;
-            Speed = 4;
             MovesLeft = float.PositiveInfinity;
+            Speed = 5;
             Position = position;
             MovesLeft = Speed;
             Bitmap = StaticBitmap;
-            Abilities.AddRange(new List<Order>() { Order.Move, Order.Mine });
+            LargeBitmap = StaticBitmapLarge;
+            Abilities.AddRange(new List<Order>() { Order.Move });
             Player.NameUnit(this);
         }
     }

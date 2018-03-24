@@ -22,6 +22,7 @@ namespace NavalGame
         private List<Point> _PossibleMoves;
         private List<Point> _PossibleLightShots;
         private List<Point> _PossibleHeavyShots;
+        private List<Point> _PossibleRepairs;
         private Unit _LastSelectedUnit;
         private Bitmap[] CachedTiles;
         private OrdersDisplay _OrdersDisplay;
@@ -88,7 +89,7 @@ namespace NavalGame
 
             set
             {
-                int newScale = Math.Max(Math.Min(value, 200), 10);
+                int newScale = Math.Max(Math.Min(value, 180), 10);
 
                 if (newScale != _CameraPosition.X)
                 {
@@ -149,6 +150,7 @@ namespace NavalGame
             _PossibleMoves = new List<Point>();
             _PossibleLightShots = new List<Point>();
             _PossibleHeavyShots = new List<Point>();
+            _PossibleRepairs = new List<Point>();
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -325,6 +327,16 @@ namespace NavalGame
                                 _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
                             a = false;
+                        }
+                    }
+
+                    // Repair
+                    else if (CurrentOrder == Order.Repair)
+                    {
+                        if (_PossibleRepairs.Contains(mapClickPosition))
+                        {
+                            int repairs = Game.Repair(mapClickPosition, Game.SelectedUnit);
+                            _ToolTip.Show("Repaired " + repairs.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                         }
                     }
                 }
@@ -578,6 +590,7 @@ namespace NavalGame
             _PossibleLightShots.Clear();
             _PossibleMoves.Clear();
             _PossibleHeavyShots.Clear();
+            _PossibleRepairs.Clear();
 
             _TileRenderer.TileSize = CameraScale;
             _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
@@ -601,7 +614,10 @@ namespace NavalGame
                             if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.MovesLeft)
                             {
                                 result |= _RangesLayerId;
-                                if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
+                                if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea)
+                                {
+                                    if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
+                                }
                             }
                             break;
                         case Order.LightArtillery:
@@ -619,6 +635,13 @@ namespace NavalGame
                                 {
                                     _PossibleHeavyShots.Add(p);
                                 }
+                            }
+                            break;
+                        case Order.Repair:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                            {
+                                result |= _RangesLayerId;
+                                if (Game.SelectedUnit.RepairsLeft >= 1) _PossibleRepairs.Add(p);
                             }
                             break;
                     }

@@ -40,6 +40,9 @@
             this.HeavyArtilleryBox = new System.Windows.Forms.GroupBox();
             this.HeavyArtilleryPictureBox = new System.Windows.Forms.PictureBox();
             this.HeavyArtilleryButton = new System.Windows.Forms.Button();
+            this.RepairBox = new System.Windows.Forms.GroupBox();
+            this.RepairPictureBox = new System.Windows.Forms.PictureBox();
+            this.RepairButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
             this.UnitTextBox = new System.Windows.Forms.RichTextBox();
@@ -52,6 +55,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.LightArtilleryPictureBox)).BeginInit();
             this.HeavyArtilleryBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.HeavyArtilleryPictureBox)).BeginInit();
+            this.RepairBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RepairPictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
@@ -93,7 +98,7 @@
             // 
             this.NextTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextTurnButton.Location = new System.Drawing.Point(62, 491);
+            this.NextTurnButton.Location = new System.Drawing.Point(62, 588);
             this.NextTurnButton.Name = "NextTurnButton";
             this.NextTurnButton.Size = new System.Drawing.Size(117, 23);
             this.NextTurnButton.TabIndex = 1;
@@ -105,7 +110,7 @@
             // 
             this.BeginTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.BeginTurnButton.Location = new System.Drawing.Point(62, 491);
+            this.BeginTurnButton.Location = new System.Drawing.Point(62, 588);
             this.BeginTurnButton.Name = "BeginTurnButton";
             this.BeginTurnButton.Size = new System.Drawing.Size(117, 23);
             this.BeginTurnButton.TabIndex = 2;
@@ -121,9 +126,10 @@
             this.OrdersPanel.Controls.Add(this.MoveBox);
             this.OrdersPanel.Controls.Add(this.LightArtilleryBox);
             this.OrdersPanel.Controls.Add(this.HeavyArtilleryBox);
+            this.OrdersPanel.Controls.Add(this.RepairBox);
             this.OrdersPanel.Location = new System.Drawing.Point(6, 247);
             this.OrdersPanel.Name = "OrdersPanel";
-            this.OrdersPanel.Size = new System.Drawing.Size(247, 187);
+            this.OrdersPanel.Size = new System.Drawing.Size(247, 284);
             this.OrdersPanel.TabIndex = 3;
             this.OrdersPanel.Visible = false;
             // 
@@ -191,6 +197,38 @@
             this.HeavyArtilleryButton.UseVisualStyleBackColor = true;
             this.HeavyArtilleryButton.Click += new System.EventHandler(this.HeavyArtilleryButtonClick);
             // 
+            // RepairBox
+            // 
+            this.RepairBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.RepairBox.Controls.Add(this.RepairPictureBox);
+            this.RepairBox.Controls.Add(this.RepairButton);
+            this.RepairBox.Location = new System.Drawing.Point(3, 180);
+            this.RepairBox.Name = "RepairBox";
+            this.RepairBox.Size = new System.Drawing.Size(241, 53);
+            this.RepairBox.TabIndex = 3;
+            this.RepairBox.TabStop = false;
+            // 
+            // RepairPictureBox
+            // 
+            this.RepairPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.RepairPictureBox.Name = "RepairPictureBox";
+            this.RepairPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.RepairPictureBox.TabIndex = 2;
+            this.RepairPictureBox.TabStop = false;
+            // 
+            // RepairButton
+            // 
+            this.RepairButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.RepairButton.Location = new System.Drawing.Point(6, 19);
+            this.RepairButton.Name = "RepairButton";
+            this.RepairButton.Size = new System.Drawing.Size(75, 23);
+            this.RepairButton.TabIndex = 0;
+            this.RepairButton.Text = "Repair";
+            this.RepairButton.UseVisualStyleBackColor = true;
+            this.RepairButton.Click += new System.EventHandler(this.RepairButtonClick);
+            // 
             // HealthBar
             // 
             this.HealthBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -252,7 +290,7 @@
             this.Controls.Add(this.BeginTurnButton);
             this.Controls.Add(this.NextTurnButton);
             this.Name = "OrdersDisplay";
-            this.Size = new System.Drawing.Size(256, 535);
+            this.Size = new System.Drawing.Size(256, 632);
             this.MoveBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).EndInit();
             this.OrdersPanel.ResumeLayout(false);
@@ -260,6 +298,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.LightArtilleryPictureBox)).EndInit();
             this.HeavyArtilleryBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.HeavyArtilleryPictureBox)).EndInit();
+            this.RepairBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.RepairPictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
@@ -286,5 +326,8 @@
         private System.Windows.Forms.PictureBox MovePictureBox;
         private System.Windows.Forms.PictureBox LightArtilleryPictureBox;
         private System.Windows.Forms.PictureBox HeavyArtilleryPictureBox;
+        private System.Windows.Forms.GroupBox RepairBox;
+        private System.Windows.Forms.PictureBox RepairPictureBox;
+        private System.Windows.Forms.Button RepairButton;
     }
 }

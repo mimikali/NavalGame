@@ -23,6 +23,7 @@ namespace NavalGame
             HeavyShotsLeft = 1;
             HeavyRange = 12;
             HeavyPower = 7;
+            RepairPower = 0;
             ViewDistance = 9;
             Player = player;
             MovesLeft = float.PositiveInfinity;

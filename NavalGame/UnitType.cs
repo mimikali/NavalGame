@@ -11,6 +11,6 @@ namespace NavalGame
 {
     public enum UnitType
     {
-        Destroyer, Battleship, Minesweeper
+        Destroyer, Battleship, Minesweeper, Wreck, LightCargo, MediumCargo, HeavyCargo
     }
 }

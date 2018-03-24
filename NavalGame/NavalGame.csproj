@@ -60,12 +60,14 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Game.cs" />
+    <Compile Include="LightCargo.cs" />
     <Compile Include="MapDisplay.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MapView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="MediumCargo.cs" />
     <Compile Include="Minesweeper.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="MoveType.cs" />
@@ -77,6 +79,7 @@
       <DependentUpon>OrdersDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Player.cs" />
+    <Compile Include="Port.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScenarioSelectionForm.cs">
@@ -90,6 +93,7 @@
     <Compile Include="TileRenderer.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnitType.cs" />
+    <Compile Include="Wreck.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -189,6 +193,9 @@
     <Content Include="Data\Ranges.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\Repair.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\Sailing.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -196,6 +203,30 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Selected.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\LightCargo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\LightCargoLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\MediumCargo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\MediumCargoLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\Port.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\PortLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\Wreck.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Miscellaneous\WreckLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Ships\US\iowa.png">

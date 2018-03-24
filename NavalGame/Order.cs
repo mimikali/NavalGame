@@ -7,6 +7,6 @@ namespace NavalGame
 {
     public enum Order
     {
-        Move, HeavyArtillery, LightArtillery, Torpedo, DepthCharge, DiveOrSurface, Mine
+        Move, HeavyArtillery, LightArtillery, Torpedo, DepthCharge, DiveOrSurface, Mine, Repair
     }
 }

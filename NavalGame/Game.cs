@@ -13,8 +13,6 @@ namespace NavalGame
         private List<Unit> _Units;
         private Terrain _Terrain;
         private Unit _SelectedUnit;
-        private Dictionary<Order, string> OrderIcons = new Dictionary<Order, string>();
-        private Dictionary<Order, string> OrderDescriptions = new Dictionary<Order, string>();
         private List<Player> _Players = new List<Player>();
         private Player _CurrentPlayer;
         public event Action Changed;
@@ -95,19 +93,10 @@ namespace NavalGame
             _Terrain = terrain;
             _Units = new List<Unit>();
             _Players.Add(new Player(this, Faction.Japan));
-            _Players.Add(new Player(this, Faction.Germany));
-            _Players.Add(new Player(this, Faction.England));
-            _Players.Add(new Player(this, Faction.USA));
-            AddUnit(new Battleship(new Point(9, 12), Players[0]));
-            AddUnit(new Battleship(new Point(12, 12), Players[1]));
-            AddUnit(new Battleship(new Point(9, 9), Players[2]));
-            AddUnit(new Battleship(new Point(12, 9), Players[3]));
-            OrderIcons.Add(Order.Torpedo, "Data\\Torpedo.png");
-            OrderIcons.Add(Order.Mine, "Data\\Mine.png");
-            OrderIcons.Add(Order.Move, "Data\\Move.png");
-            OrderIcons.Add(Order.DepthCharge, "Data\\DepthCharge.png");
-            OrderIcons.Add(Order.LightArtillery, "Data\\LightArtillery.png");
-            OrderIcons.Add(Order.HeavyArtillery, "Data\\HeavyArtillery.png");
+            AddUnit(new LightCargo(new Point(9, 12), Players[0]));
+            AddUnit(new Battleship(new Point(8, 9), Players[0]));
+            AddUnit(new Port(new Point(9, 9), Players[0]));
+            AddUnit(new Battleship(new Point(8, 11), Players[0]));
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -144,15 +133,23 @@ namespace NavalGame
             if (Changed != null) Changed();
         }
 
-        public string GetOrderIconPath(Order order)
-        {
-            if (!OrderIcons.ContainsKey(order)) return "Data\\Torpedo.png";
-            else return OrderIcons[order];
-        }
-
         public void FireChangedEvent()
         {
-            _Units.RemoveAll(unit => unit.Health <= 0);
+            List<Unit> toRemove = new List<Unit>();
+
+            foreach(Unit unit in Units)
+            {
+                if (unit.Health <= 0)
+                {
+                    toRemove.Add(unit);
+                }
+            }
+
+            foreach(Unit unit in toRemove)
+            {
+                _Units.Remove(unit);
+                _Units.Add(new Wreck(unit.Position, unit.Player, unit.Name));
+            }
             if (Changed != null) Changed();
         }
 
@@ -190,6 +187,8 @@ namespace NavalGame
                 chances.Add(0);
             }
 
+            chances.Add(1);
+            chances.Add(1);
             chances.Add(1);
             chances.Add(1);
             chances.Add(1);
@@ -262,6 +261,10 @@ namespace NavalGame
             chances.Add(1);
             chances.Add(1);
             chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
             chances.Add(2);
 
             // Choose if the shot missed, hit, or critically hit
@@ -285,6 +288,24 @@ namespace NavalGame
             }
             return 0;
 
+        }
+
+        public int Repair(Point target, Unit repairer)
+        {
+            foreach(Unit unit in Units)
+            {
+                if (unit.Position == target)
+                {
+                    repairer.RepairsLeft -= 1;
+                    unit.Health += repairer.RepairPower;
+                    unit.HeavyShotsLeft = 0;
+                    unit.LightShotsLeft = 0;
+                    unit.MovesLeft = 0;
+                    unit.RepairsLeft = 0;
+                    return (int)Math.Truncate(repairer.RepairPower * 100);
+                }
+            }
+            return 0;
         }
     }
 }
