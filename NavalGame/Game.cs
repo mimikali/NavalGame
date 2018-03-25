@@ -16,7 +16,7 @@ namespace NavalGame
         private List<Player> _Players = new List<Player>();
         private Player _CurrentPlayer;
         public event Action Changed;
-        public Random Random;
+        public Random Random = new Random();
 
         public Unit SelectedUnit
         {
@@ -71,7 +71,7 @@ namespace NavalGame
                 {
                     foreach (Unit unit in value.Units)
                     {
-                        unit.NextMove();
+                        unit.ResetProperties(false);
                     }
                 }
                 if (Changed != null) Changed();
@@ -88,15 +88,15 @@ namespace NavalGame
 
         public Game(Terrain terrain)
         {
-            Random = new Random();
             //_Terrain = GenerateTerrain(20, 20, 1);
             _Terrain = terrain;
             _Units = new List<Unit>();
             _Players.Add(new Player(this, Faction.Japan));
-            AddUnit(new LightCargo(new Point(9, 12), Players[0]));
-            AddUnit(new Battleship(new Point(8, 9), Players[0]));
-            AddUnit(new Port(new Point(9, 9), Players[0]));
-            AddUnit(new Battleship(new Point(8, 11), Players[0]));
+            _Players.Add(new Player(this, Faction.USA));
+            _Players.Add(new Player(this, Faction.Germany));
+            _Players.Add(new Player(this, Faction.England));
+            AddUnit(new Port(Players[0], new Point(10, 12)));
+            //AddUnit(new Port(new Point(9, 9), Players[0]));
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -136,6 +136,7 @@ namespace NavalGame
         public void FireChangedEvent()
         {
             List<Unit> toRemove = new List<Unit>();
+            List<Unit> toBuild = new List<Unit>();
 
             foreach(Unit unit in Units)
             {
@@ -143,12 +144,25 @@ namespace NavalGame
                 {
                     toRemove.Add(unit);
                 }
+                if (unit.GetType() == typeof(ShipInProgress) && unit.TurnsUntilCompletion <= 0)
+                {
+                    toBuild.Add(unit);
+                }
             }
 
             foreach(Unit unit in toRemove)
             {
                 _Units.Remove(unit);
-                _Units.Add(new Wreck(unit.Position, unit.Player, unit.Name));
+                Wreck wreck = new Wreck(unit.Player, unit.Position);
+                wreck.Name = unit.Name;
+                _Units.Add(wreck);
+            }
+            foreach(ShipInProgress unit in toBuild)
+            {
+                _Units.Remove(unit);
+                Unit newUnit = unit.ShipType.CreateUnit(unit.Player, unit.Position);
+                newUnit.Name = unit.Name;
+                _Units.Add(newUnit);
             }
             if (Changed != null) Changed();
         }
@@ -182,7 +196,7 @@ namespace NavalGame
                 chances.Add(0);
             }
 
-            for (int i = 0; i < targetUnit.Speed; i++)
+            for (int i = 0; i < targetUnit.Type.Speed; i++)
             {
                 chances.Add(0);
             }
@@ -202,7 +216,7 @@ namespace NavalGame
             int result = chances[Random.Next(0, chances.Count)];
 
             // Calculate damage
-            float basedamage = shooter.LightPower / targetUnit.Armour;
+            float basedamage = shooter.Type.LightPower / targetUnit.Type.Armour;
             float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
 
             // Take action according to the shot
@@ -249,7 +263,7 @@ namespace NavalGame
                 chances.Add(0);
             }
 
-            for (int i = 0; i < targetUnit.Speed; i++)
+            for (int i = 0; i < targetUnit.Type.Speed; i++)
             {
                 chances.Add(0);
             }
@@ -271,7 +285,7 @@ namespace NavalGame
             int result = chances[Random.Next(0, chances.Count)];
 
             // Calculate damage
-            float basedamage = shooter.HeavyPower / targetUnit.Armour;
+            float basedamage = shooter.Type.HeavyPower / targetUnit.Type.Armour;
             float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
 
             // Take action according to the shot
@@ -297,15 +311,66 @@ namespace NavalGame
                 if (unit.Position == target)
                 {
                     repairer.RepairsLeft -= 1;
-                    unit.Health += repairer.RepairPower;
+                    unit.Health += repairer.Type.RepairPower / unit.Type.Armour;
                     unit.HeavyShotsLeft = 0;
                     unit.LightShotsLeft = 0;
                     unit.MovesLeft = 0;
                     unit.RepairsLeft = 0;
-                    return (int)Math.Truncate(repairer.RepairPower * 100);
+                    return (int)Math.Truncate(repairer.Type.RepairPower/ unit.Type.Armour * 100);
                 }
             }
             return 0;
+        }
+
+        public static Bitmap GetFactionFlag(Faction faction)
+        {
+            switch(faction)
+            {
+                case Faction.England:
+                    return Bitmaps.Get("Data\\FlagEngland.png");
+                case Faction.Germany:
+                    return Bitmaps.Get("Data\\FlagGermany.png");
+                case Faction.Japan:
+                    return Bitmaps.Get("Data\\FlagJapan.png");
+                case Faction.USA:
+                    return Bitmaps.Get("Data\\FlagUSA.png");
+                default:
+                    throw new Exception("Bad Faction.");
+            }
+        }
+
+        public static string GetFactionGreetings(Faction faction)
+        {
+            switch(faction)
+            {
+                case Faction.England:
+                    return "Good evening, Your Majesty. The Royal Navy awaits to do its duty!";
+                case Faction.Germany:
+                    return "Greetings, Mein Fuhrer! The Kriegsmarine ships are waiting!";
+                case Faction.Japan:
+                    return "Issue your orders, Honourable Emperor. The samurai are prepared to die. Banzai!";
+                case Faction.USA:
+                    return "Good morning Mr. President. The US Navy is ready to fight!";
+                default:
+                    throw new Exception("Bad Faction.");
+            }
+        }
+
+        public static Color GetFactionColor(Faction faction)
+        {
+            switch(faction)
+            {
+                case Faction.England:
+                    return Color.FromArgb(153, 44, 176);
+                case Faction.Germany:
+                    return Color.FromArgb(45, 181, 102);
+                case Faction.Japan:
+                    return Color.FromArgb(157, 23, 23);
+                case Faction.USA:
+                    return Color.FromArgb(176, 92, 44);
+                default:
+                    throw new Exception("Bad Faction.");
+            }
         }
     }
 }

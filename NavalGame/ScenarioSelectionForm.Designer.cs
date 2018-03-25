@@ -54,6 +54,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ScenarioDescriptionBox.Location = new System.Drawing.Point(204, 203);
             this.ScenarioDescriptionBox.Name = "ScenarioDescriptionBox";
+            this.ScenarioDescriptionBox.ReadOnly = true;
             this.ScenarioDescriptionBox.Size = new System.Drawing.Size(213, 97);
             this.ScenarioDescriptionBox.TabIndex = 1;
             this.ScenarioDescriptionBox.Text = "";
@@ -70,16 +71,16 @@
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.StartButtonClick);
             // 
-            // mapView1
+            // MapView
             // 
             this.MapView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MapView.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.MapView.CameraPosition = ((System.Drawing.PointF)(resources.GetObject("mapView1.CameraPosition")));
+            this.MapView.CameraPosition = ((System.Drawing.PointF)(resources.GetObject("MapView.CameraPosition")));
             this.MapView.CameraScale = 0;
             this.MapView.Location = new System.Drawing.Point(204, 13);
-            this.MapView.Name = "mapView1";
+            this.MapView.Name = "MapView";
             this.MapView.Size = new System.Drawing.Size(213, 184);
             this.MapView.TabIndex = 2;
             this.MapView.TabStop = false;

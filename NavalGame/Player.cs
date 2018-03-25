@@ -194,7 +194,7 @@ namespace NavalGame
                         bool a = false;
                         for (int i = 0; i < Units.Count; i++)
                         {
-                            if (MapDisplay.PointDifference(new Point(x, y), Units[i].Position) < Units[i].ViewDistance)
+                            if (MapDisplay.PointDifference(new Point(x, y), Units[i].Position) < Units[i].Type.ViewDistance)
                             {
                                 a = true;
                                 break;
@@ -205,44 +205,6 @@ namespace NavalGame
                 }
             }
             return _VisibleTiles[position.X + position.Y * Game.Terrain.Width];
-        }
-
-        public void NameUnit(Unit unit)
-        {
-            //switch (unit.Player.Faction)
-            //{
-            //    case Faction.USA:
-            //        switch (unit.Type)
-            //        {
-            //            case UnitType.Destroyer:
-            //                while (Units.Any(i => i.Name == unit.Name))
-            //                {
-            //                    unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 0 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
-            //                    if (_NameIteration == 2) _NameIteration = 0;
-            //                    else _NameIteration++;
-            //                }
-            //                break;
-
-            //            case UnitType.Battleship:
-            //                unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 1 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
-            //                if (_NameIteration == 2) _NameIteration = 0;
-            //                else _NameIteration++;
-            //                break;
-
-            //            case UnitType.Minesweeper:
-            //                unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 2 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
-            //                if (_NameIteration == 2) _NameIteration = 0;
-            //                else _NameIteration++;
-            //                break;
-
-            //            default:
-            //                unit.Name = "Unnamed unit";
-            //                break;
-            //        }
-            //        break;
-            //}
-
-            unit.Name = "Unit";
         }
     }
 }

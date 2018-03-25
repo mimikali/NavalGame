@@ -43,11 +43,16 @@
             this.RepairBox = new System.Windows.Forms.GroupBox();
             this.RepairPictureBox = new System.Windows.Forms.PictureBox();
             this.RepairButton = new System.Windows.Forms.Button();
+            this.BuildBox = new System.Windows.Forms.GroupBox();
+            this.BuildPictureBox = new System.Windows.Forms.PictureBox();
+            this.BuildButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
             this.UnitTextBox = new System.Windows.Forms.RichTextBox();
             this.UnitPictureBox = new System.Windows.Forms.PictureBox();
             this.InfoPanel = new System.Windows.Forms.Panel();
+            this.FlagBox = new System.Windows.Forms.PictureBox();
+            this.GreetingText = new System.Windows.Forms.Label();
             this.MoveBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).BeginInit();
             this.OrdersPanel.SuspendLayout();
@@ -57,9 +62,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.HeavyArtilleryPictureBox)).BeginInit();
             this.RepairBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RepairPictureBox)).BeginInit();
+            this.BuildBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BuildPictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.FlagBox)).BeginInit();
             this.SuspendLayout();
             // 
             // MoveBox
@@ -98,9 +106,9 @@
             // 
             this.NextTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextTurnButton.Location = new System.Drawing.Point(62, 588);
+            this.NextTurnButton.Location = new System.Drawing.Point(131, 628);
             this.NextTurnButton.Name = "NextTurnButton";
-            this.NextTurnButton.Size = new System.Drawing.Size(117, 23);
+            this.NextTurnButton.Size = new System.Drawing.Size(112, 53);
             this.NextTurnButton.TabIndex = 1;
             this.NextTurnButton.Text = "End Turn";
             this.NextTurnButton.UseVisualStyleBackColor = true;
@@ -110,9 +118,9 @@
             // 
             this.BeginTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.BeginTurnButton.Location = new System.Drawing.Point(62, 588);
+            this.BeginTurnButton.Location = new System.Drawing.Point(131, 628);
             this.BeginTurnButton.Name = "BeginTurnButton";
-            this.BeginTurnButton.Size = new System.Drawing.Size(117, 23);
+            this.BeginTurnButton.Size = new System.Drawing.Size(119, 53);
             this.BeginTurnButton.TabIndex = 2;
             this.BeginTurnButton.Text = "Begin Turn";
             this.BeginTurnButton.UseVisualStyleBackColor = true;
@@ -127,9 +135,10 @@
             this.OrdersPanel.Controls.Add(this.LightArtilleryBox);
             this.OrdersPanel.Controls.Add(this.HeavyArtilleryBox);
             this.OrdersPanel.Controls.Add(this.RepairBox);
-            this.OrdersPanel.Location = new System.Drawing.Point(6, 247);
+            this.OrdersPanel.Controls.Add(this.BuildBox);
+            this.OrdersPanel.Location = new System.Drawing.Point(6, 315);
             this.OrdersPanel.Name = "OrdersPanel";
-            this.OrdersPanel.Size = new System.Drawing.Size(247, 284);
+            this.OrdersPanel.Size = new System.Drawing.Size(247, 307);
             this.OrdersPanel.TabIndex = 3;
             this.OrdersPanel.Visible = false;
             // 
@@ -229,13 +238,45 @@
             this.RepairButton.UseVisualStyleBackColor = true;
             this.RepairButton.Click += new System.EventHandler(this.RepairButtonClick);
             // 
+            // BuildBox
+            // 
+            this.BuildBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BuildBox.Controls.Add(this.BuildPictureBox);
+            this.BuildBox.Controls.Add(this.BuildButton);
+            this.BuildBox.Location = new System.Drawing.Point(3, 239);
+            this.BuildBox.Name = "BuildBox";
+            this.BuildBox.Size = new System.Drawing.Size(241, 53);
+            this.BuildBox.TabIndex = 4;
+            this.BuildBox.TabStop = false;
+            // 
+            // BuildPictureBox
+            // 
+            this.BuildPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.BuildPictureBox.Name = "BuildPictureBox";
+            this.BuildPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.BuildPictureBox.TabIndex = 2;
+            this.BuildPictureBox.TabStop = false;
+            // 
+            // BuildButton
+            // 
+            this.BuildButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.BuildButton.Location = new System.Drawing.Point(6, 19);
+            this.BuildButton.Name = "BuildButton";
+            this.BuildButton.Size = new System.Drawing.Size(75, 23);
+            this.BuildButton.TabIndex = 0;
+            this.BuildButton.Text = "Build";
+            this.BuildButton.UseVisualStyleBackColor = true;
+            this.BuildButton.Click += new System.EventHandler(this.BuildButtonClick);
+            // 
             // HealthBar
             // 
             this.HealthBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.HealthBar.Location = new System.Drawing.Point(10, 3);
+            this.HealthBar.Location = new System.Drawing.Point(4, 3);
             this.HealthBar.Name = "HealthBar";
-            this.HealthBar.Size = new System.Drawing.Size(117, 23);
+            this.HealthBar.Size = new System.Drawing.Size(241, 23);
             this.HealthBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.HealthBar.TabIndex = 4;
             // 
@@ -245,7 +286,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.UnitPanel.Controls.Add(this.UnitTextBox);
             this.UnitPanel.Controls.Add(this.UnitPictureBox);
-            this.UnitPanel.Location = new System.Drawing.Point(6, 3);
+            this.UnitPanel.Location = new System.Drawing.Point(6, 74);
             this.UnitPanel.Name = "UnitPanel";
             this.UnitPanel.Size = new System.Drawing.Size(247, 169);
             this.UnitPanel.TabIndex = 5;
@@ -274,23 +315,46 @@
             this.InfoPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.InfoPanel.Controls.Add(this.HealthBar);
-            this.InfoPanel.Location = new System.Drawing.Point(5, 178);
+            this.InfoPanel.Location = new System.Drawing.Point(6, 246);
             this.InfoPanel.Name = "InfoPanel";
             this.InfoPanel.Size = new System.Drawing.Size(247, 63);
             this.InfoPanel.TabIndex = 6;
             this.InfoPanel.Visible = false;
             // 
+            // FlagBox
+            // 
+            this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FlagBox.Location = new System.Drawing.Point(6, 628);
+            this.FlagBox.Name = "FlagBox";
+            this.FlagBox.Size = new System.Drawing.Size(106, 53);
+            this.FlagBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.FlagBox.TabIndex = 7;
+            this.FlagBox.TabStop = false;
+            // 
+            // GreetingText
+            // 
+            this.GreetingText.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.GreetingText.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GreetingText.Location = new System.Drawing.Point(6, 4);
+            this.GreetingText.Name = "GreetingText";
+            this.GreetingText.Size = new System.Drawing.Size(244, 67);
+            this.GreetingText.TabIndex = 8;
+            this.GreetingText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // OrdersDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.GreetingText);
+            this.Controls.Add(this.FlagBox);
             this.Controls.Add(this.InfoPanel);
             this.Controls.Add(this.UnitPanel);
             this.Controls.Add(this.OrdersPanel);
             this.Controls.Add(this.BeginTurnButton);
             this.Controls.Add(this.NextTurnButton);
             this.Name = "OrdersDisplay";
-            this.Size = new System.Drawing.Size(256, 632);
+            this.Size = new System.Drawing.Size(256, 684);
             this.MoveBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).EndInit();
             this.OrdersPanel.ResumeLayout(false);
@@ -300,9 +364,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.HeavyArtilleryPictureBox)).EndInit();
             this.RepairBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RepairPictureBox)).EndInit();
+            this.BuildBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.BuildPictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.FlagBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -329,5 +396,10 @@
         private System.Windows.Forms.GroupBox RepairBox;
         private System.Windows.Forms.PictureBox RepairPictureBox;
         private System.Windows.Forms.Button RepairButton;
+        private System.Windows.Forms.GroupBox BuildBox;
+        private System.Windows.Forms.PictureBox BuildPictureBox;
+        private System.Windows.Forms.Button BuildButton;
+        private System.Windows.Forms.PictureBox FlagBox;
+        private System.Windows.Forms.Label GreetingText;
     }
 }

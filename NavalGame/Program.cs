@@ -16,6 +16,7 @@ namespace NavalGame
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            UnitType.InitializeUnitTypes();
             Application.Run(new ScenarioSelectionForm());
         }
     }

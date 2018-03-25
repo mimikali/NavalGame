@@ -8,94 +8,40 @@ namespace NavalGame
 {
     public abstract class Unit
     {
-        private float _Speed = 0;
-        private float _MovesLeft = 0;
-        private Point _Position = new Point(0, 0);
-        private string _Bitmap = "";
-        List<Order> _Abilities = new List<Order>();
-        private Player _Player = null;
-        private float _ViewDistance = 0;
-        private Game _Game = null;
-        private int _LightShotsLeft = 0;
-        private float _LightRange = 0;
-        private float _LightPower = 0;
-        private int _HeavyShotsLeft = 0;
-        private float _HeavyRange = 0;
-        private float _HeavyPower = 0;
-        private int _RepairsLeft = 0;
-        private float _RepairPower = 0;
-        private float _Health = 1;
-        private float _Armour = 0;
+        private UnitType _Type;
+        private Player _Player;
         private string _Name = "Unit";
-        private string _LargeBitmap = "";
-        private UnitType _Type = UnitType.Destroyer;
+        private Point _Position;
+        private float _Health = 1;
+        private float _MovesLeft;
+        private int _LightShotsLeft;
+        private int _HeavyShotsLeft;
+        private int _RepairsLeft;
+        private int _BuildsLeft;
+        private int _TurnsUntilCompletion;
 
-        public List<Order> Abilities
+        protected Unit(UnitType type, Player player, Point position)
+        {
+            _Type = type;
+            _Player = player;
+            _Position = position;
+            Name = GenerateUnitName(player.Faction);
+            ResetProperties(true);
+        }
+
+        public Game Game
         {
             get
             {
-                return _Abilities;
+                return _Player.Game;
             }
         }
 
-        public float Speed
+        public UnitType Type
         {
             get
             {
-                return (int)(_Speed * Player.SpeedMultiplier);
-            }
-
-            set
-            {
-                _Speed = value;
-            }
-        }
-
-        public float MovesLeft
-        {
-            get
-            {
-                return _MovesLeft;
-            }
-
-            set
-            {
-                _MovesLeft = value;
-            }
-        }
-
-        public Point Position
-        {
-            get
-            {
-                return _Position;
-            }
-
-            set
-            {
-                if (MapDisplay.PointDifference(_Position, value) <= MovesLeft)
-                {
-                    MovesLeft -= MapDisplay.PointDifference(_Position, value);
-                    _Position = value;
-                    Game.FireChangedEvent();
-                }
-                else
-                {
-                    throw new Exception("Illegal move.");
-                }
-            }
-        }
-
-        public string Bitmap
-        {
-            get
-            {
-                return _Bitmap;
-            }
-
-            set
-            {
-                _Bitmap = value;
+                return _Type;
             }
         }
 
@@ -113,94 +59,28 @@ namespace NavalGame
             }
         }
 
-        public float ViewDistance
+        public string Name
         {
             get
             {
-                return _ViewDistance * Player.ViewDistanceMultiplier;
+                return _Name;
             }
-
             set
             {
-                _ViewDistance = value;
+                _Name = value;
                 Game.FireChangedEvent();
             }
         }
 
-        public Game Game
+        public Point Position
         {
             get
             {
-                return _Game;
+                return _Position;
             }
-
             set
             {
-                _Game = value;
-                Game.FireChangedEvent();
-            }
-        }
-
-        public int LightShotsLeft
-        {
-            get
-            {
-                return _LightShotsLeft;
-            }
-
-            set
-            {
-                if (value < 0)
-                {
-                    throw new Exception("Illegal shot.");
-                }
-                _LightShotsLeft = value;
-                Game.FireChangedEvent();
-            }
-        }
-
-        public float LightRange
-        {
-            get
-            {
-                return _LightRange * Player.LightRangeMultiplier;
-            }
-
-            set
-            {
-                _LightRange = value;
-                Game.FireChangedEvent();
-            }
-        }
-
-        public int HeavyShotsLeft
-        {
-            get
-            {
-                return _HeavyShotsLeft;
-            }
-
-            set
-            {
-                if (value < 0)
-                {
-                    throw new Exception("Illegal shot.");
-                }
-                _HeavyShotsLeft = value;
-                Game.FireChangedEvent();
-            }
-        }
-
-        public float HeavyRange
-        {
-            get
-            {
-                return _HeavyRange * Player.HeavyRangeMultiplier;
-            }
-
-            set
-            {
-                _HeavyRange = value;
+                _Position = value;
                 Game.FireChangedEvent();
             }
         }
@@ -211,7 +91,6 @@ namespace NavalGame
             {
                 return _Health;
             }
-
             set
             {
                 if (value < 0) _Health = 0;
@@ -221,94 +100,42 @@ namespace NavalGame
             }
         }
 
-        public float Armour
+        public float MovesLeft
         {
             get
             {
-                return _Armour * Player.ArmourMultiplier;
+                return _MovesLeft;
             }
-
             set
             {
-                _Armour = value;
+                _MovesLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
-        public float HeavyPower
+        public int LightShotsLeft
         {
             get
             {
-                return _HeavyPower * Player.HeavyPowerMultiplier;
+                return _LightShotsLeft;
             }
-
             set
             {
-                _HeavyPower = value;
+                _LightShotsLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
-        public float LightPower
+        public int HeavyShotsLeft
         {
             get
             {
-                return _LightPower * Player.LightPowerMultiplier;
+                return _HeavyShotsLeft;
             }
-
             set
             {
-                _LightPower = value;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                return _Name;
-            }
-
-            set
-            {
-                _Name = value;
-            }
-        }
-
-        public UnitType Type
-        {
-            get
-            {
-                return _Type;
-            }
-
-            set
-            {
-                _Type = value;
-            }
-        }
-
-        public string LargeBitmap
-        {
-            get
-            {
-                return _LargeBitmap;
-            }
-
-            set
-            {
-                _LargeBitmap = value;
-            }
-        }
-
-        public float RepairPower
-        {
-            get
-            {
-                return _RepairPower;
-            }
-
-            set
-            {
-                _RepairPower = value;
+                _HeavyShotsLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -322,15 +149,98 @@ namespace NavalGame
             set
             {
                 _RepairsLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
-        public void NextMove()
+        public int BuildsLeft
         {
-            MovesLeft = Speed;
+            get
+            {
+                return _BuildsLeft;
+            }
+
+            set
+            {
+                _BuildsLeft = value;
+                Game.FireChangedEvent();
+            }
+        }
+
+        public int TurnsUntilCompletion
+        {
+            get
+            {
+                return _TurnsUntilCompletion;
+            }
+
+            set
+            {
+                _TurnsUntilCompletion = value;
+                Game.FireChangedEvent();
+            }
+        }
+
+        public void Move(Point destination)
+        {
+            var distance = MapDisplay.PointDifference(_Position, destination);
+            if (distance <= MovesLeft)
+            {
+                MovesLeft -= distance;
+                _Position = destination;
+            }
+            else
+            {
+                throw new Exception("Illegal move.");
+            }
+        }
+
+        public virtual void ResetProperties(bool initialSetup)
+        {
+            MovesLeft = Type.Speed;
             LightShotsLeft = 1;
             HeavyShotsLeft = 1;
             RepairsLeft = 1;
+            BuildsLeft = 1;
+        }
+
+        protected string GenerateUnitName(Faction faction)
+        {
+            // todo
+            //switch (unit.Player.Faction)
+            //{
+            //    case Faction.USA:
+            //        switch (unit.Type)
+            //        {
+            //            case UnitType.Destroyer:
+            //                while (Units.Any(i => i.Name == unit.Name))
+            //                {
+            //                    unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 0 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
+            //                    if (_NameIteration == 2) _NameIteration = 0;
+            //                    else _NameIteration++;
+            //                }
+            //                break;
+
+            //            case UnitType.Battleship:
+            //                unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 1 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
+            //                if (_NameIteration == 2) _NameIteration = 0;
+            //                else _NameIteration++;
+            //                break;
+
+            //            case UnitType.Minesweeper:
+            //                unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 2 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
+            //                if (_NameIteration == 2) _NameIteration = 0;
+            //                else _NameIteration++;
+            //                break;
+
+            //            default:
+            //                unit.Name = "Unnamed unit";
+            //                break;
+            //        }
+            //        break;
+            //}
+
+            return "Unit";
         }
     }
 }

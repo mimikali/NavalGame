@@ -23,6 +23,7 @@ namespace NavalGame
         private List<Point> _PossibleLightShots;
         private List<Point> _PossibleHeavyShots;
         private List<Point> _PossibleRepairs;
+        private List<Point> _PossibleBuilds;
         private Unit _LastSelectedUnit;
         private Bitmap[] CachedTiles;
         private OrdersDisplay _OrdersDisplay;
@@ -151,6 +152,7 @@ namespace NavalGame
             _PossibleLightShots = new List<Point>();
             _PossibleHeavyShots = new List<Point>();
             _PossibleRepairs = new List<Point>();
+            _PossibleBuilds = new List<Point>();
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -232,7 +234,7 @@ namespace NavalGame
                                         pe.Graphics.DrawImage(englandCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
                                         break;
                                 }
-                                pe.Graphics.DrawImage(Bitmaps.Get(unit.Bitmap), new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
+                                pe.Graphics.DrawImage(unit.Type.Bitmap, new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
                                 RectangleF stringRectangle = new RectangleF(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale));
                                 stringRectangle.Inflate(-0.05f * CameraScale, -0.05f * CameraScale);
                                 StringFormat stringFormat = new StringFormat()
@@ -241,7 +243,12 @@ namespace NavalGame
                                     LineAlignment = StringAlignment.Far
                                 };
                                 pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, stringFormat);
-                                if (Game.SelectedUnit == unit) pe.Graphics.DrawImage(selected, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                if (Game.SelectedUnit == unit)
+                                {
+                                    Rectangle rectangle = new Rectangle(displayPos, new Size(CameraScale, CameraScale));
+                                    rectangle.Inflate((int)Math.Round(CameraScale / 16f), (int)Math.Round(CameraScale / 16f));
+                                    pe.Graphics.DrawImage(selected, rectangle);
+                                }
                             }
                         }
                     }
@@ -278,7 +285,7 @@ namespace NavalGame
                     {
                         if (_PossibleMoves.Contains(mapClickPosition))
                         {
-                            Game.SelectedUnit.Position = mapClickPosition;
+                            Game.SelectedUnit.Move(mapClickPosition);
                             PlaySound("Data\\Sailing.wav");
                             a = false;
                         }
@@ -336,7 +343,17 @@ namespace NavalGame
                         if (_PossibleRepairs.Contains(mapClickPosition))
                         {
                             int repairs = Game.Repair(mapClickPosition, Game.SelectedUnit);
+                            Game.SelectedUnit.RepairsLeft -= 1;
                             _ToolTip.Show("Repaired " + repairs.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                        }
+                    }
+
+                    //Build
+                    else if (CurrentOrder == Order.Build)
+                    {
+                        if (_PossibleBuilds.Contains(mapClickPosition))
+                        {
+                            new BuildForm(Game, Game.SelectedUnit, mapClickPosition).ShowDialog();
                         }
                     }
                 }
@@ -559,7 +576,7 @@ namespace NavalGame
                     // Draw Light Artillery Range
                     if (CurrentOrder == Order.LightArtillery && Game.SelectedUnit != null)
                     {
-                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.LightRange)
+                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.Type.LightRange)
                         {
                             graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
                             if (Game.SelectedUnit.LightShotsLeft >= 1)
@@ -572,7 +589,7 @@ namespace NavalGame
                     // Draw Heavy Artillery Range
                     if (CurrentOrder == Order.HeavyArtillery && Game.SelectedUnit != null)
                     {
-                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.HeavyRange)
+                        if (PointDifference(Game.SelectedUnit.Position, new Point(x, y)) <= Game.SelectedUnit.Type.HeavyRange)
                         {
                             graphics.DrawImage(highlight, new Rectangle(p, CachedTiles[0].Size));
                             if (Game.SelectedUnit.HeavyShotsLeft >= 1)
@@ -591,6 +608,7 @@ namespace NavalGame
             _PossibleMoves.Clear();
             _PossibleHeavyShots.Clear();
             _PossibleRepairs.Clear();
+            _PossibleBuilds.Clear();
 
             _TileRenderer.TileSize = CameraScale;
             _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
@@ -614,24 +632,24 @@ namespace NavalGame
                             if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.MovesLeft)
                             {
                                 result |= _RangesLayerId;
-                                if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea)
+                                if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea && p != Game.SelectedUnit.Position)
                                 {
                                     if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
                                 }
                             }
                             break;
                         case Order.LightArtillery:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.LightRange)
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.Type.LightRange)
                             {
                                 result |= _RangesLayerId;
-                                if (Game.SelectedUnit.LightShotsLeft >= 1) _PossibleLightShots.Add(p);
+                                if (Game.SelectedUnit.LightShotsLeft >= 1 && p != Game.SelectedUnit.Position) _PossibleLightShots.Add(p);
                             }
                             break;
                         case Order.HeavyArtillery:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.HeavyRange)
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.Type.HeavyRange)
                             {
                                 result |= _RangesLayerId;
-                                if (Game.SelectedUnit.HeavyShotsLeft >= 1)
+                                if (Game.SelectedUnit.HeavyShotsLeft >= 1 && p != Game.SelectedUnit.Position)
                                 {
                                     _PossibleHeavyShots.Add(p);
                                 }
@@ -641,7 +659,26 @@ namespace NavalGame
                             if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
                             {
                                 result |= _RangesLayerId;
-                                if (Game.SelectedUnit.RepairsLeft >= 1) _PossibleRepairs.Add(p);
+                                if (Game.SelectedUnit.RepairsLeft >= 1 && Game.SelectedUnit.Position != p) _PossibleRepairs.Add(p);
+                            }
+                            break;
+                        case Order.Build:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                            {
+                                if (Game.SelectedUnit.BuildsLeft >= 1 && Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea)
+                                {
+                                    bool a = true;
+                                    foreach (Unit unit in Game.Units)
+                                    {
+                                        if (unit.Position == p) a = false;
+                                    }
+
+                                    if (a)
+                                    {
+                                        result |= _RangesLayerId;
+                                        _PossibleBuilds.Add(p);
+                                    }
+                                }
                             }
                             break;
                     }
@@ -757,14 +794,7 @@ namespace NavalGame
             Bitmap result;
             if (!_Cache.TryGetValue(filename, out result))
             {
-                try
-                {
-                    result = (Bitmap)Image.FromFile(filename);
-                }
-                catch (Exception)
-                {
-                    
-                }
+                result = (Bitmap)Image.FromFile(filename);
                 _Cache.Add(filename, result);
             }
             return result;

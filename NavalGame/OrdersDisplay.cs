@@ -15,12 +15,21 @@ namespace NavalGame
         public OrdersDisplay()
         {
             InitializeComponent();
+
+            MovePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            MovePictureBox.Image = Bitmaps.Get("Data\\Move.png");
+            LightArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            LightArtilleryPictureBox.Image = Bitmaps.Get("Data\\LightArtillery.png");
+            HeavyArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            HeavyArtilleryPictureBox.Image = Bitmaps.Get("Data\\HeavyArtillery.png");
+            RepairPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            RepairPictureBox.Image = Bitmaps.Get("Data\\Repair.png");
+            BuildPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            BuildPictureBox.Image = Bitmaps.Get("Data\\Build.png");
         }
 
         MapDisplay _MapDisplay;
-        private Player _NextPlayer;
-        List<Rectangle> ButtonLocations = new List<Rectangle>();
-        List<Rectangle> CounterLocations = new List<Rectangle>();
+        Player _NextPlayer;
 
         public MapDisplay MapDisplay
         {
@@ -37,63 +46,48 @@ namespace NavalGame
 
         public void GameChanged()
         {
-            MovePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            MovePictureBox.Image = Bitmaps.Get("Data\\Move.png");
-            LightArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            LightArtilleryPictureBox.Image = Bitmaps.Get("Data\\LightArtillery.png");
-            HeavyArtilleryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            HeavyArtilleryPictureBox.Image = Bitmaps.Get("Data\\HeavyArtillery.png");
-            RepairPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            RepairPictureBox.Image = Bitmaps.Get("Data\\Repair.png");
+            if (MapDisplay.Game.CurrentPlayer != null)
+            {
+                FlagBox.Image = Game.GetFactionFlag(MapDisplay.Game.CurrentPlayer.Faction);
+                GreetingText.Text = Game.GetFactionGreetings(MapDisplay.Game.CurrentPlayer.Faction);
+                GreetingText.BackColor = Game.GetFactionColor(MapDisplay.Game.CurrentPlayer.Faction);
+            }
+            else
+            {
+                FlagBox.Image = null;
+                GreetingText.Text = "Press the Begin Turn button.";
+                GreetingText.BackColor = SystemColors.Control;
+            }
 
-            if (MapDisplay.Game.SelectedUnit != null)
+            var selectedUnit = MapDisplay.Game.SelectedUnit;
+            if (selectedUnit != null)
             {
                 UnitPanel.Show();
                 OrdersPanel.Show();
                 InfoPanel.Show();
 
                 UnitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                UnitPictureBox.Image = Bitmaps.Get(MapDisplay.Game.SelectedUnit.LargeBitmap);
-                UnitTextBox.Text = MapDisplay.Game.SelectedUnit.Name + "\r\nHealth: " + Math.Round(MapDisplay.Game.SelectedUnit.Health * 100).ToString() + "%";
-
-                MoveBox.Hide();
-                LightArtilleryBox.Hide();
-                HeavyArtilleryBox.Hide();
-                RepairBox.Hide();
-                foreach (Order ability in MapDisplay.Game.SelectedUnit.Abilities)
+                UnitPictureBox.Image = MapDisplay.Game.SelectedUnit.Type.LargeBitmap;
+                UnitTextBox.Text = selectedUnit.Name;
+                UnitTextBox.Text += Environment.NewLine + selectedUnit.Type.Name;
+                UnitTextBox.Text += Environment.NewLine + "Health: " + Math.Round(selectedUnit.Health * 100).ToString() + "%";
+                if (selectedUnit.TurnsUntilCompletion > 0)
                 {
-                    switch (ability)
-                    {
-                        case Order.Move:
-                            MoveBox.Show();
-                            break;
-
-                        case Order.LightArtillery:
-                            LightArtilleryBox.Show();
-                            break;
-
-                        case Order.HeavyArtillery:
-                            HeavyArtilleryBox.Show();
-                            break;
-
-                        case Order.Repair:
-                            RepairBox.Show();
-                            break;
-                    }
+                    UnitTextBox.Text += Environment.NewLine + "Turns until completion: " + selectedUnit.TurnsUntilCompletion;
                 }
 
-                HealthBar.Minimum = 0;
-                HealthBar.Maximum = 100;
-                HealthBar.Value = (int)(MapDisplay.Game.SelectedUnit.Health * 100);
+                if (selectedUnit.Type.Abilities.Contains(Order.Move)) MoveBox.Show(); else MoveBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.LightArtillery)) LightArtilleryBox.Show(); else LightArtilleryBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.HeavyArtillery)) HeavyArtilleryBox.Show(); else HeavyArtilleryBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.Repair)) RepairBox.Show(); else RepairBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.Build)) BuildBox.Show(); else BuildBox.Hide();
+                MoveBox.Enabled = selectedUnit.MovesLeft >= 1;
+                LightArtilleryBox.Enabled = selectedUnit.LightShotsLeft >= 1;
+                HeavyArtilleryBox.Enabled = selectedUnit.HeavyShotsLeft >= 1;
+                RepairBox.Enabled = selectedUnit.RepairsLeft >= 1;
+                BuildBox.Enabled = selectedUnit.BuildsLeft >= 1;
 
-                if (MapDisplay.Game.SelectedUnit.MovesLeft < 1) MoveBox.Enabled = false;
-                else MoveBox.Enabled = true;
-                if (MapDisplay.Game.SelectedUnit.LightShotsLeft < 1) LightArtilleryBox.Enabled = false;
-                else LightArtilleryBox.Enabled = true;
-                if (MapDisplay.Game.SelectedUnit.HeavyShotsLeft < 1) HeavyArtilleryBox.Enabled = false;
-                else HeavyArtilleryBox.Enabled = true;
-                if (MapDisplay.Game.SelectedUnit.RepairsLeft < 1) RepairBox.Enabled = false;
-                else RepairBox.Enabled = true;
+                HealthBar.Value = (int)(selectedUnit.Health * 100);
             }
             else
             {
@@ -142,6 +136,11 @@ namespace NavalGame
         private void RepairButtonClick(object sender, EventArgs e)
         {
             MapDisplay.CurrentOrder = Order.Repair;
+        }
+
+        private void BuildButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.Build;
         }
     }
 }
