@@ -46,6 +46,12 @@
             this.BuildBox = new System.Windows.Forms.GroupBox();
             this.BuildPictureBox = new System.Windows.Forms.PictureBox();
             this.BuildButton = new System.Windows.Forms.Button();
+            this.LoadBox = new System.Windows.Forms.GroupBox();
+            this.LoadPictureBox = new System.Windows.Forms.PictureBox();
+            this.LoadButton = new System.Windows.Forms.Button();
+            this.UnloadBox = new System.Windows.Forms.GroupBox();
+            this.UnloadPictureBox = new System.Windows.Forms.PictureBox();
+            this.UnloadButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
             this.UnitTextBox = new System.Windows.Forms.RichTextBox();
@@ -64,6 +70,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.RepairPictureBox)).BeginInit();
             this.BuildBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BuildPictureBox)).BeginInit();
+            this.LoadBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LoadPictureBox)).BeginInit();
+            this.UnloadBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.UnloadPictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
@@ -106,7 +116,7 @@
             // 
             this.NextTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextTurnButton.Location = new System.Drawing.Point(131, 628);
+            this.NextTurnButton.Location = new System.Drawing.Point(131, 843);
             this.NextTurnButton.Name = "NextTurnButton";
             this.NextTurnButton.Size = new System.Drawing.Size(112, 53);
             this.NextTurnButton.TabIndex = 1;
@@ -118,7 +128,7 @@
             // 
             this.BeginTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.BeginTurnButton.Location = new System.Drawing.Point(131, 628);
+            this.BeginTurnButton.Location = new System.Drawing.Point(131, 843);
             this.BeginTurnButton.Name = "BeginTurnButton";
             this.BeginTurnButton.Size = new System.Drawing.Size(119, 53);
             this.BeginTurnButton.TabIndex = 2;
@@ -136,9 +146,11 @@
             this.OrdersPanel.Controls.Add(this.HeavyArtilleryBox);
             this.OrdersPanel.Controls.Add(this.RepairBox);
             this.OrdersPanel.Controls.Add(this.BuildBox);
-            this.OrdersPanel.Location = new System.Drawing.Point(6, 315);
+            this.OrdersPanel.Controls.Add(this.LoadBox);
+            this.OrdersPanel.Controls.Add(this.UnloadBox);
+            this.OrdersPanel.Location = new System.Drawing.Point(6, 283);
             this.OrdersPanel.Name = "OrdersPanel";
-            this.OrdersPanel.Size = new System.Drawing.Size(247, 307);
+            this.OrdersPanel.Size = new System.Drawing.Size(247, 522);
             this.OrdersPanel.TabIndex = 3;
             this.OrdersPanel.Visible = false;
             // 
@@ -270,6 +282,70 @@
             this.BuildButton.UseVisualStyleBackColor = true;
             this.BuildButton.Click += new System.EventHandler(this.BuildButtonClick);
             // 
+            // LoadBox
+            // 
+            this.LoadBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadBox.Controls.Add(this.LoadPictureBox);
+            this.LoadBox.Controls.Add(this.LoadButton);
+            this.LoadBox.Location = new System.Drawing.Point(3, 298);
+            this.LoadBox.Name = "LoadBox";
+            this.LoadBox.Size = new System.Drawing.Size(241, 53);
+            this.LoadBox.TabIndex = 5;
+            this.LoadBox.TabStop = false;
+            // 
+            // LoadPictureBox
+            // 
+            this.LoadPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.LoadPictureBox.Name = "LoadPictureBox";
+            this.LoadPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.LoadPictureBox.TabIndex = 2;
+            this.LoadPictureBox.TabStop = false;
+            // 
+            // LoadButton
+            // 
+            this.LoadButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.LoadButton.Location = new System.Drawing.Point(6, 19);
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadButton.TabIndex = 0;
+            this.LoadButton.Text = "Load";
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButtonClick);
+            // 
+            // UnloadBox
+            // 
+            this.UnloadBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.UnloadBox.Controls.Add(this.UnloadPictureBox);
+            this.UnloadBox.Controls.Add(this.UnloadButton);
+            this.UnloadBox.Location = new System.Drawing.Point(3, 357);
+            this.UnloadBox.Name = "UnloadBox";
+            this.UnloadBox.Size = new System.Drawing.Size(241, 53);
+            this.UnloadBox.TabIndex = 6;
+            this.UnloadBox.TabStop = false;
+            // 
+            // UnloadPictureBox
+            // 
+            this.UnloadPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.UnloadPictureBox.Name = "UnloadPictureBox";
+            this.UnloadPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.UnloadPictureBox.TabIndex = 2;
+            this.UnloadPictureBox.TabStop = false;
+            // 
+            // UnloadButton
+            // 
+            this.UnloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.UnloadButton.Location = new System.Drawing.Point(6, 19);
+            this.UnloadButton.Name = "UnloadButton";
+            this.UnloadButton.Size = new System.Drawing.Size(75, 23);
+            this.UnloadButton.TabIndex = 0;
+            this.UnloadButton.Text = "Unload";
+            this.UnloadButton.UseVisualStyleBackColor = true;
+            this.UnloadButton.Click += new System.EventHandler(this.UnloadButtonClick);
+            // 
             // HealthBar
             // 
             this.HealthBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -296,6 +372,7 @@
             // 
             this.UnitTextBox.Location = new System.Drawing.Point(3, 89);
             this.UnitTextBox.Name = "UnitTextBox";
+            this.UnitTextBox.ReadOnly = true;
             this.UnitTextBox.Size = new System.Drawing.Size(241, 76);
             this.UnitTextBox.TabIndex = 2;
             this.UnitTextBox.Text = "";
@@ -317,7 +394,7 @@
             this.InfoPanel.Controls.Add(this.HealthBar);
             this.InfoPanel.Location = new System.Drawing.Point(6, 246);
             this.InfoPanel.Name = "InfoPanel";
-            this.InfoPanel.Size = new System.Drawing.Size(247, 63);
+            this.InfoPanel.Size = new System.Drawing.Size(247, 31);
             this.InfoPanel.TabIndex = 6;
             this.InfoPanel.Visible = false;
             // 
@@ -325,7 +402,7 @@
             // 
             this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FlagBox.Location = new System.Drawing.Point(6, 628);
+            this.FlagBox.Location = new System.Drawing.Point(6, 843);
             this.FlagBox.Name = "FlagBox";
             this.FlagBox.Size = new System.Drawing.Size(106, 53);
             this.FlagBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -354,7 +431,7 @@
             this.Controls.Add(this.BeginTurnButton);
             this.Controls.Add(this.NextTurnButton);
             this.Name = "OrdersDisplay";
-            this.Size = new System.Drawing.Size(256, 684);
+            this.Size = new System.Drawing.Size(256, 899);
             this.MoveBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).EndInit();
             this.OrdersPanel.ResumeLayout(false);
@@ -366,6 +443,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.RepairPictureBox)).EndInit();
             this.BuildBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.BuildPictureBox)).EndInit();
+            this.LoadBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.LoadPictureBox)).EndInit();
+            this.UnloadBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.UnloadPictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
@@ -401,5 +482,11 @@
         private System.Windows.Forms.Button BuildButton;
         private System.Windows.Forms.PictureBox FlagBox;
         private System.Windows.Forms.Label GreetingText;
+        private System.Windows.Forms.Button UnloadButton;
+        private System.Windows.Forms.PictureBox UnloadPictureBox;
+        private System.Windows.Forms.GroupBox UnloadBox;
+        private System.Windows.Forms.Button LoadButton;
+        private System.Windows.Forms.PictureBox LoadPictureBox;
+        private System.Windows.Forms.GroupBox LoadBox;
     }
 }

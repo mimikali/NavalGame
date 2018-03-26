@@ -19,6 +19,8 @@ namespace NavalGame
         private int _RepairsLeft;
         private int _BuildsLeft;
         private int _TurnsUntilCompletion;
+        private int _Cargo;
+        private int _LoadsLeft;
 
         protected Unit(UnitType type, Player player, Point position)
         {
@@ -181,6 +183,32 @@ namespace NavalGame
             }
         }
 
+        public int Cargo
+        {
+            get
+            {
+                return _Cargo;
+            }
+
+            set
+            {
+                _Cargo = Math.Min(Type.Capacity, Math.Max(0, value));
+            }
+        }
+
+        public int LoadsLeft
+        {
+            get
+            {
+                return _LoadsLeft;
+            }
+
+            set
+            {
+                _LoadsLeft = value;
+            }
+        }
+
         public void Move(Point destination)
         {
             var distance = MapDisplay.PointDifference(_Position, destination);
@@ -202,6 +230,7 @@ namespace NavalGame
             HeavyShotsLeft = 1;
             RepairsLeft = 1;
             BuildsLeft = 1;
+            LoadsLeft = 1;
         }
 
         protected string GenerateUnitName(Faction faction)

@@ -33,6 +33,7 @@
             this._CancelButton = new System.Windows.Forms.Button();
             this._BuildButton = new System.Windows.Forms.Button();
             this.UnitDescription = new System.Windows.Forms.RichTextBox();
+            this.SpendText = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.UnitView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -42,9 +43,9 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.UnitList.DisplayMember = "Name";
             this.UnitList.IntegralHeight = false;
-            this.UnitList.Location = new System.Drawing.Point(13, 13);
+            this.UnitList.Location = new System.Drawing.Point(13, 57);
             this.UnitList.Name = "UnitList";
-            this.UnitList.Size = new System.Drawing.Size(120, 334);
+            this.UnitList.Size = new System.Drawing.Size(120, 290);
             this.UnitList.TabIndex = 0;
             this.UnitList.SelectedIndexChanged += new System.EventHandler(this.UnitListSelectedIndexChanged);
             // 
@@ -95,6 +96,15 @@
             this.UnitDescription.TabIndex = 4;
             this.UnitDescription.Text = "";
             // 
+            // SpendText
+            // 
+            this.SpendText.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.SpendText.Location = new System.Drawing.Point(13, 13);
+            this.SpendText.Name = "SpendText";
+            this.SpendText.Size = new System.Drawing.Size(120, 41);
+            this.SpendText.TabIndex = 5;
+            this.SpendText.Text = "Available to spend: ";
+            // 
             // BuildForm
             // 
             this.AcceptButton = this._BuildButton;
@@ -102,6 +112,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._CancelButton;
             this.ClientSize = new System.Drawing.Size(460, 366);
+            this.Controls.Add(this.SpendText);
             this.Controls.Add(this.UnitDescription);
             this.Controls.Add(this._BuildButton);
             this.Controls.Add(this._CancelButton);
@@ -122,5 +133,6 @@
         private System.Windows.Forms.Button _CancelButton;
         private System.Windows.Forms.Button _BuildButton;
         private System.Windows.Forms.RichTextBox UnitDescription;
+        private System.Windows.Forms.Label SpendText;
     }
 }

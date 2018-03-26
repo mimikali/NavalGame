@@ -24,6 +24,7 @@ namespace NavalGame
         private List<Point> _PossibleHeavyShots;
         private List<Point> _PossibleRepairs;
         private List<Point> _PossibleBuilds;
+        private List<Point> _PossibleLoads;
         private Unit _LastSelectedUnit;
         private Bitmap[] CachedTiles;
         private OrdersDisplay _OrdersDisplay;
@@ -58,10 +59,16 @@ namespace NavalGame
 
         private void GameChanged()
         {
-            if (Game.SelectedUnit != _LastSelectedUnit)
+            if (Game.SelectedUnit != null && Game.SelectedUnit != _LastSelectedUnit)
             {
-                CurrentOrder = Order.Move;
-                _PossibleMoves.Clear();
+                if (Game.SelectedUnit.Player == Game.CurrentPlayer)
+                {
+                    if (Game.SelectedUnit != null && Game.SelectedUnit.Type.Abilities.Contains(Order.Move))
+                    {
+                        CurrentOrder = Order.Move;
+                        _PossibleMoves.Clear();
+                    }
+                }
             }
             _LastSelectedUnit = Game.SelectedUnit;
             Invalidate();
@@ -153,6 +160,7 @@ namespace NavalGame
             _PossibleHeavyShots = new List<Point>();
             _PossibleRepairs = new List<Point>();
             _PossibleBuilds = new List<Point>();
+            _PossibleLoads = new List<Point>();
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -200,6 +208,7 @@ namespace NavalGame
             var germanyCounter = Bitmaps.Get("Data\\GermanyCounter.png");
             var japanCounter = Bitmaps.Get("Data\\JapanCounter.png");
             var englandCounter = Bitmaps.Get("Data\\EnglandCounter.png");
+            var neutralCounter = Bitmaps.Get("Data\\NeutralCounter.png");
             var selected = Bitmaps.Get("Data\\Selected.png");
 
             DrawMap2(pe.Graphics);
@@ -232,6 +241,10 @@ namespace NavalGame
 
                                     case Faction.England:
                                         pe.Graphics.DrawImage(englandCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                        break;
+
+                                    case Faction.Neutral:
+                                        pe.Graphics.DrawImage(neutralCounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
                                         break;
                                 }
                                 pe.Graphics.DrawImage(unit.Type.Bitmap, new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
@@ -287,7 +300,6 @@ namespace NavalGame
                         {
                             Game.SelectedUnit.Move(mapClickPosition);
                             PlaySound("Data\\Sailing.wav");
-                            a = false;
                         }
                     }
 
@@ -311,6 +323,7 @@ namespace NavalGame
                                 _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
                             a = false;
+                            CurrentOrder = null;
                         }
                     }
 
@@ -334,6 +347,7 @@ namespace NavalGame
                                 _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
                             a = false;
+                            CurrentOrder = null;
                         }
                     }
 
@@ -343,31 +357,56 @@ namespace NavalGame
                         if (_PossibleRepairs.Contains(mapClickPosition))
                         {
                             int repairs = Game.Repair(mapClickPosition, Game.SelectedUnit);
-                            Game.SelectedUnit.RepairsLeft -= 1;
                             _ToolTip.Show("Repaired " + repairs.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                         }
+                        a = false;
+                        CurrentOrder = null;
                     }
 
-                    //Build
+                    // Build
                     else if (CurrentOrder == Order.Build)
                     {
                         if (_PossibleBuilds.Contains(mapClickPosition))
                         {
                             new BuildForm(Game, Game.SelectedUnit, mapClickPosition).ShowDialog();
                         }
+                        a = false;
+                        CurrentOrder = null;
+                    }
+
+                    // Load
+                    else if (CurrentOrder == Order.Load)
+                    {
+                        if (_PossibleLoads.Contains(mapClickPosition))
+                        {
+                            int load = Game.Load(mapClickPosition, Game.SelectedUnit);
+                            _ToolTip.Show("Loaded " + load.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                        }
+                        a = false;
+                        CurrentOrder = null;
+                    }
+
+                    // Unload
+                    else if (CurrentOrder == Order.Unload)
+                    {
+                        if (_PossibleLoads.Contains(mapClickPosition))
+                        {
+                            int unload = Game.Unload(mapClickPosition, Game.SelectedUnit);
+                            _ToolTip.Show("Unloaded " + unload.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                        }
+                        a = false;
+                        CurrentOrder = null;
                     }
                 }
 
                 // Selection
                 if (a)
                 {
-                    if (Game.CurrentPlayer != null)
+                    if (Game.CurrentPlayer != null && Game.CurrentPlayer.Faction != Faction.Neutral)
                     {
-                        foreach (Unit unit in Game.CurrentPlayer.Units)
+                        foreach (Unit unit in Game.Units)
                         {
-                            PointF k = DisplayToMap(e.Location);
-                            Point j = new Point((int)Math.Floor(k.X), (int)Math.Floor(k.Y));
-                            if (unit.Position == j)
+                            if (Game.CurrentPlayer.IsTileVisible(unit.Position) && unit.Position == mapClickPosition)
                             {
                                 Game.SelectedUnit = unit;
                                 l = false;
@@ -609,6 +648,7 @@ namespace NavalGame
             _PossibleHeavyShots.Clear();
             _PossibleRepairs.Clear();
             _PossibleBuilds.Clear();
+            _PossibleLoads.Clear();
 
             _TileRenderer.TileSize = CameraScale;
             _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
@@ -677,6 +717,44 @@ namespace NavalGame
                                     {
                                         result |= _RangesLayerId;
                                         _PossibleBuilds.Add(p);
+                                    }
+                                }
+                            }
+                            break;
+                        case Order.Load:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                            {
+                                if (Game.SelectedUnit.LoadsLeft >= 1 && p != Game.SelectedUnit.Position)
+                                {
+                                    bool a = false;
+                                    foreach (Unit unit in Game.Units)
+                                    {
+                                        if (unit.Position == p && unit.Type.Capacity >= 1) a = true;
+                                    }
+
+                                    if (a)
+                                    {
+                                        result |= _RangesLayerId;
+                                        _PossibleLoads.Add(p);
+                                    }
+                                }
+                            }
+                            break;
+                        case Order.Unload:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                            {
+                                if (Game.SelectedUnit.LoadsLeft >= 1 && p != Game.SelectedUnit.Position)
+                                {
+                                    bool a = false;
+                                    foreach (Unit unit in Game.Units)
+                                    {
+                                        if (unit.Position == p && unit.Type.Capacity >= 1) a = true;
+                                    }
+
+                                    if (a)
+                                    {
+                                        result |= _RangesLayerId;
+                                        _PossibleLoads.Add(p);
                                     }
                                 }
                             }

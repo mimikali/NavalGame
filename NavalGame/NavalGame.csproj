@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AircraftCarrier.cs" />
+    <Compile Include="Battlecruiser.cs" />
     <Compile Include="Battleship.cs" />
     <Compile Include="BuildForm.cs">
       <SubType>Form</SubType>
@@ -59,6 +61,7 @@
     </Compile>
     <Compile Include="Destroyer.cs" />
     <Compile Include="Faction.cs" />
+    <Compile Include="Factory.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,7 +69,9 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Game.cs" />
+    <Compile Include="HeavyCruiser.cs" />
     <Compile Include="LightCargo.cs" />
+    <Compile Include="LightCruiser.cs" />
     <Compile Include="MapDisplay.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -95,6 +100,7 @@
       <DependentUpon>ScenarioSelectionForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ShipInProgress.cs" />
+    <Compile Include="Submarine.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileRenderer.cs" />
@@ -134,6 +140,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\ArrowRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\ArtilleryHit.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -203,13 +212,16 @@
     <Content Include="Data\LightArtilleryMiss.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\Load.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\Mine.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Minesweeper.png">
+    <Content Include="Data\Move.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Move.png">
+    <Content Include="Data\NeutralCounter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Ocean.png">
@@ -230,40 +242,94 @@
     <Content Include="Data\Selected.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\LightCargo.png">
+    <Content Include="Data\Ships\AircraftCarrier.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\LightCargoLarge.png">
+    <Content Include="Data\Ships\AircraftCarrierLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\MediumCargo.png">
+    <Content Include="Data\Ships\Battlecruiser.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\MediumCargoLarge.png">
+    <Content Include="Data\Ships\BattlecruiserLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\Port.png">
+    <Content Include="Data\Ships\Battleship.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\PortLarge.png">
+    <Content Include="Data\Ships\BattleshipLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\ShipInProgress.png">
+    <Content Include="Data\Ships\Destroyer.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\ShipInProgressLarge.png">
+    <Content Include="Data\Ships\DestroyerLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\Wreck.png">
+    <Content Include="Data\Ships\Factory.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\Miscellaneous\WreckLarge.png">
+    <Content Include="Data\Ships\FactoryLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\US\Battleship.png">
+    <Content Include="Data\Ships\HeavyCruiser.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Ships\US\BattleshipLarge.png">
+    <Content Include="Data\Ships\HeavyCruiserLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\LightCargo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\LightCargoLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\LightCruiser.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\LightCruiserLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\MediumCargo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\MediumCargoLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Minesweeper.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\MinesweeperLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Port.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\PortLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\ShipInProgress.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\ShipInProgressLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Submarine.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\SubmarineLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\TorpedoBoat.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\TorpedoBoatLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\Wreck.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Ships\WreckLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Sinking.wav">
@@ -284,14 +350,14 @@
     <Content Include="Data\UnimplementedUnit.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\Unload.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\USACounter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\Ships\England\" />
-    <Folder Include="Data\Ships\Germany\" />
-    <Folder Include="Data\Ships\Japan\" />
     <Folder Include="SourceAssets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

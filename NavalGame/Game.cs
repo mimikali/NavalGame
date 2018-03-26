@@ -95,7 +95,11 @@ namespace NavalGame
             _Players.Add(new Player(this, Faction.USA));
             _Players.Add(new Player(this, Faction.Germany));
             _Players.Add(new Player(this, Faction.England));
+            _Players.Add(new Player(this, Faction.Neutral));
             AddUnit(new Port(Players[0], new Point(10, 12)));
+            AddUnit(new MediumCargo(Players[0], new Point(9, 12)));
+            AddUnit(new MediumCargo(Players[1], new Point(9, 13)));
+            AddUnit(new Factory(Players[4], new Point(10, 13)));
             //AddUnit(new Port(new Point(9, 9), Players[0]));
         }
 
@@ -316,7 +320,76 @@ namespace NavalGame
                     unit.LightShotsLeft = 0;
                     unit.MovesLeft = 0;
                     unit.RepairsLeft = 0;
+                    unit.LoadsLeft = 0;
                     return (int)Math.Truncate(repairer.Type.RepairPower/ unit.Type.Armour * 100);
+                }
+            }
+            return 0;
+        }
+
+        public int Load(Point target, Unit loader)
+        {
+            foreach(Unit unit in Units)
+            {
+                if (unit.Player.Faction == CurrentPlayer.Faction || unit.Player.Faction == Faction.Neutral)
+                {
+                    if (unit.Position == target)
+                    {
+                        loader.HeavyShotsLeft = 0;
+                        loader.LightShotsLeft = 0;
+                        loader.MovesLeft = 0;
+                        loader.RepairsLeft = 0;
+                        loader.LoadsLeft = 0;
+
+                        if (unit.Cargo >= loader.Type.Capacity - loader.Cargo)
+                        {
+                            unit.Cargo -= loader.Type.Capacity - loader.Cargo;
+                            int r = loader.Type.Capacity - loader.Cargo;
+                            loader.Cargo = loader.Type.Capacity;
+                            return r;
+                        }
+                        else
+                        {
+                            loader.Cargo += unit.Cargo;
+                            int r = unit.Cargo;
+                            unit.Cargo = 0;
+                            return r;
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+
+        public int Unload(Point target, Unit unloader)
+        {
+            foreach (Unit unit in Units)
+            {
+                if (unit.Player.Faction == CurrentPlayer.Faction)
+                {
+                    if (unit.Position == target)
+                    {
+                        unloader.HeavyShotsLeft = 0;
+                        unloader.LightShotsLeft = 0;
+                        unloader.MovesLeft = 0;
+                        unloader.RepairsLeft = 0;
+                        unloader.LoadsLeft = 0;
+
+                        if (unit.Type.Capacity - unit.Cargo >= unloader.Cargo)
+                        {
+                            unit.Cargo += unloader.Cargo;
+                            int r = unloader.Cargo;
+                            unloader.Cargo = 0;
+                            return r;
+                        }
+                        else
+                        {
+                            unloader.Cargo -= unit.Type.Capacity - unit.Cargo;
+                            int r = unit.Type.Capacity - unit.Cargo;
+                            unit.Cargo = unit.Type.Capacity;
+                            return r;
+                        }
+                    }
                 }
             }
             return 0;
@@ -334,6 +407,8 @@ namespace NavalGame
                     return Bitmaps.Get("Data\\FlagJapan.png");
                 case Faction.USA:
                     return Bitmaps.Get("Data\\FlagUSA.png");
+                case Faction.Neutral:
+                    return Bitmaps.Get("Data\\ArrowRight.png");
                 default:
                     throw new Exception("Bad Faction.");
             }
@@ -351,6 +426,8 @@ namespace NavalGame
                     return "Issue your orders, Honourable Emperor. The samurai are prepared to die. Banzai!";
                 case Faction.USA:
                     return "Good morning Mr. President. The US Navy is ready to fight!";
+                case Faction.Neutral:
+                    return "Press the Begin Turn button";
                 default:
                     throw new Exception("Bad Faction.");
             }
@@ -368,6 +445,8 @@ namespace NavalGame
                     return Color.FromArgb(157, 23, 23);
                 case Faction.USA:
                     return Color.FromArgb(176, 92, 44);
+                case Faction.Neutral:
+                    return Color.FromArgb(128, 128, 128);
                 default:
                     throw new Exception("Bad Faction.");
             }

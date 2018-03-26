@@ -11,6 +11,6 @@ namespace NavalGame
 {
     public enum Faction
     {
-        USA, Germany, Japan, England
+        USA, Germany, Japan, England, Neutral
     }
 }

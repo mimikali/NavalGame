@@ -24,6 +24,7 @@ namespace NavalGame
 
             InitializeComponent();
             _BuildButton.Enabled = false;
+            SpendText.Text = "Available to spend: " + _Builder.Cargo;
 
             foreach (var unitType in UnitType.UnitTypes)
             {
@@ -53,8 +54,27 @@ namespace NavalGame
         {
             if (UnitList.SelectedItem != null)
             {
-                _BuildButton.Enabled = true;
-                UnitDescription.Text = ((UnitType)UnitList.SelectedItem).Name;
+                if (_Builder.Cargo >= ((UnitType)UnitList.SelectedItem).Cost)
+                {
+                    _BuildButton.Enabled = true;
+                    SpendText.BackColor = Color.Green;
+                }
+                else
+                {
+                    _BuildButton.Enabled = false;
+                    SpendText.BackColor = Color.Red;
+                }
+                UnitDescription.Text = ((UnitType)UnitList.SelectedItem).Name + Environment.NewLine;
+                UnitDescription.Text += "Cost: " + ((UnitType)UnitList.SelectedItem).Cost.ToString() + Environment.NewLine;
+                UnitDescription.Text += "Time to build: " + ((UnitType)UnitList.SelectedItem).BuildTime.ToString() + Environment.NewLine;
+                UnitDescription.Text += "Speed: " + ((UnitType)UnitList.SelectedItem).Speed.ToString() + Environment.NewLine;
+                UnitDescription.Text += "Armour: " + ((UnitType)UnitList.SelectedItem).Armour.ToString() + Environment.NewLine;
+                if (((UnitType)UnitList.SelectedItem).Capacity >= 1) UnitDescription.Text += "Cargo capacity: " + ((UnitType)UnitList.SelectedItem).Capacity.ToString() + Environment.NewLine;
+                if (((UnitType)UnitList.SelectedItem).LightPower > 0 || ((UnitType)UnitList.SelectedItem).HeavyPower > 0)
+                {
+                    UnitDescription.Text += "Power: " + Math.Max(((UnitType)UnitList.SelectedItem).LightPower, ((UnitType)UnitList.SelectedItem).HeavyPower).ToString() + Environment.NewLine;
+                    UnitDescription.Text += "Range: " + Math.Max(((UnitType)UnitList.SelectedItem).LightRange, ((UnitType)UnitList.SelectedItem).HeavyRange).ToString() + Environment.NewLine;
+                }
                 UnitView.BackColor = DefaultBackColor;
                 UnitView.Image = ((UnitType)UnitList.SelectedItem).LargeBitmap;
             }

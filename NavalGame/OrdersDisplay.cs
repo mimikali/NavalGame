@@ -26,6 +26,10 @@ namespace NavalGame
             RepairPictureBox.Image = Bitmaps.Get("Data\\Repair.png");
             BuildPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             BuildPictureBox.Image = Bitmaps.Get("Data\\Build.png");
+            LoadPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            LoadPictureBox.Image = Bitmaps.Get("Data\\Load.png");
+            UnloadPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            UnloadPictureBox.Image = Bitmaps.Get("Data\\Unload.png");
         }
 
         MapDisplay _MapDisplay;
@@ -62,30 +66,38 @@ namespace NavalGame
             var selectedUnit = MapDisplay.Game.SelectedUnit;
             if (selectedUnit != null)
             {
-                UnitPanel.Show();
-                OrdersPanel.Show();
-                InfoPanel.Show();
+                if (MapDisplay.Game.CurrentPlayer != null && MapDisplay.Game.CurrentPlayer.Faction != Faction.Neutral)
+                {
+                    if (MapDisplay.Game.CurrentPlayer == selectedUnit.Player)
+                    {
+                        OrdersPanel.Show();
+                    }
+                    UnitPanel.Show();
+                    InfoPanel.Show();
+                }
 
                 UnitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 UnitPictureBox.Image = MapDisplay.Game.SelectedUnit.Type.LargeBitmap;
                 UnitTextBox.Text = selectedUnit.Name;
                 UnitTextBox.Text += Environment.NewLine + selectedUnit.Type.Name;
                 UnitTextBox.Text += Environment.NewLine + "Health: " + Math.Round(selectedUnit.Health * 100).ToString() + "%";
-                if (selectedUnit.TurnsUntilCompletion > 0)
-                {
-                    UnitTextBox.Text += Environment.NewLine + "Turns until completion: " + selectedUnit.TurnsUntilCompletion;
-                }
+                if (selectedUnit.Type.Capacity >= 1) UnitTextBox.Text += Environment.NewLine + "Cargo: " + selectedUnit.Cargo + "/" + selectedUnit.Type.Capacity;
+                if (selectedUnit.TurnsUntilCompletion > 0) UnitTextBox.Text += Environment.NewLine + "Turns until completion: " + selectedUnit.TurnsUntilCompletion;
 
                 if (selectedUnit.Type.Abilities.Contains(Order.Move)) MoveBox.Show(); else MoveBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.LightArtillery)) LightArtilleryBox.Show(); else LightArtilleryBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.HeavyArtillery)) HeavyArtilleryBox.Show(); else HeavyArtilleryBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.Repair)) RepairBox.Show(); else RepairBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.Build)) BuildBox.Show(); else BuildBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.Load)) LoadBox.Show(); else LoadBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.Unload)) UnloadBox.Show(); else UnloadBox.Hide();
                 MoveBox.Enabled = selectedUnit.MovesLeft >= 1;
                 LightArtilleryBox.Enabled = selectedUnit.LightShotsLeft >= 1;
                 HeavyArtilleryBox.Enabled = selectedUnit.HeavyShotsLeft >= 1;
                 RepairBox.Enabled = selectedUnit.RepairsLeft >= 1;
                 BuildBox.Enabled = selectedUnit.BuildsLeft >= 1;
+                LoadBox.Enabled = selectedUnit.LoadsLeft >= 1;
+                UnloadBox.Enabled = selectedUnit.LoadsLeft >= 1;
 
                 HealthBar.Value = (int)(selectedUnit.Health * 100);
             }
@@ -111,7 +123,8 @@ namespace NavalGame
         private void NextTurnButtonClick(object sender, EventArgs e)
         {
             _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 1) % MapDisplay.Game.Players.Count];
-            MapDisplay.Game.CurrentPlayer = null;
+            if (_NextPlayer.Faction == Faction.Neutral) _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 2) % MapDisplay.Game.Players.Count];
+            MapDisplay.Game.CurrentPlayer = MapDisplay.Game.Players.First(player => player.Faction == Faction.Neutral);
             NextTurnButton.Hide();
             BeginTurnButton.Show();
         }
@@ -141,6 +154,16 @@ namespace NavalGame
         private void BuildButtonClick(object sender, EventArgs e)
         {
             MapDisplay.CurrentOrder = Order.Build;
+        }
+
+        private void LoadButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.Load;
+        }
+
+        private void UnloadButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.Unload;
         }
     }
 }
