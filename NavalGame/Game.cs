@@ -73,6 +73,11 @@ namespace NavalGame
                     {
                         unit.ResetProperties(false);
                     }
+
+                    foreach (Unit unit in Units.OfType<Factory>())
+                    {
+                        unit.ResetProperties(false);
+                    }
                 }
                 if (Changed != null) Changed();
             }
@@ -86,21 +91,20 @@ namespace NavalGame
             }
         }
 
-        public Game(Terrain terrain)
+        public Game(Terrain terrain, List<Faction> factions, List<UnitType> units, List<Faction> unitOwners, List<Point> unitPositions)
         {
             //_Terrain = GenerateTerrain(20, 20, 1);
-            _Terrain = terrain;
             _Units = new List<Unit>();
-            _Players.Add(new Player(this, Faction.Japan));
-            _Players.Add(new Player(this, Faction.USA));
-            _Players.Add(new Player(this, Faction.Germany));
-            _Players.Add(new Player(this, Faction.England));
-            _Players.Add(new Player(this, Faction.Neutral));
-            AddUnit(new Port(Players[0], new Point(10, 12)));
-            AddUnit(new MediumCargo(Players[0], new Point(9, 12)));
-            AddUnit(new MediumCargo(Players[1], new Point(9, 13)));
-            AddUnit(new Factory(Players[4], new Point(10, 13)));
-            //AddUnit(new Port(new Point(9, 9), Players[0]));
+            _Players = new List<Player>();
+            _Terrain = terrain;
+            foreach(Faction faction in factions)
+            {
+                _Players.Add(new Player(this, faction));
+            }
+            for (int i = 0; i < units.Count(); i++)
+            {
+                _Units.Add(units[i].CreateUnit(_Players[factions.IndexOf(unitOwners[i])], unitPositions[i]));
+            }
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -391,6 +395,63 @@ namespace NavalGame
                         }
                     }
                 }
+            }
+            return 0;
+        }
+
+        public int Torpedo(Point target, Unit torpedoer)
+        {
+            torpedoer.TorpedoesLeft--;
+
+            Unit targetUnit = null;
+            foreach (Unit unit in Units)
+            {
+                if (unit.Position == target)
+                {
+                    targetUnit = unit;
+                    break;
+                }
+            }
+
+            if (targetUnit == null)
+            {
+                return 0;
+            }
+
+            List<int> chances = new List<int>();
+            for (int i = 0; i < MapDisplay.PointDifference(torpedoer.Position, target); i++)
+            {
+                chances.Add(0);
+            }
+
+            for (int i = 0; i < targetUnit.Type.Speed; i++)
+            {
+                chances.Add(0);
+            }
+
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(1);
+            chances.Add(2);
+
+            int result = chances[Random.Next(0, chances.Count)];
+
+            float basedamage = torpedoer.Type.TorpedoPower / targetUnit.Type.Armour;
+            float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
+
+            switch (result)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                    targetUnit.Health -= basedamage + randomVariation;
+                    return (int)((basedamage + randomVariation) * 100);
+                case 2:
+                    targetUnit.Health -= 2 * basedamage + randomVariation;
+                    return (int)((2 * basedamage + randomVariation) * 100);
             }
             return 0;
         }

@@ -71,7 +71,7 @@
             this.Controls.Add(this.MapDisplay);
             this.FormClosed += Form1Closed;
             this.Name = "Form1";
-            this.Text = "Form";
+            this.Text = "Naval Game";
             ((System.ComponentModel.ISupportInitialize)(this.MapDisplay)).EndInit();
             this.ResumeLayout(false);
 

@@ -40,22 +40,24 @@
             // 
             this.ScenarioList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.ScenarioList.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ScenarioList.FormattingEnabled = true;
+            this.ScenarioList.ItemHeight = 19;
             this.ScenarioList.Location = new System.Drawing.Point(7, 12);
             this.ScenarioList.Name = "ScenarioList";
-            this.ScenarioList.Size = new System.Drawing.Size(190, 329);
+            this.ScenarioList.Size = new System.Drawing.Size(218, 479);
             this.ScenarioList.TabIndex = 0;
             this.ScenarioList.SelectedIndexChanged += new System.EventHandler(this.ScenarioListSelectedIndexChanged);
             // 
             // ScenarioDescriptionBox
             // 
-            this.ScenarioDescriptionBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.ScenarioDescriptionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ScenarioDescriptionBox.Location = new System.Drawing.Point(204, 203);
+            this.ScenarioDescriptionBox.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ScenarioDescriptionBox.Location = new System.Drawing.Point(231, 363);
             this.ScenarioDescriptionBox.Name = "ScenarioDescriptionBox";
             this.ScenarioDescriptionBox.ReadOnly = true;
-            this.ScenarioDescriptionBox.Size = new System.Drawing.Size(213, 97);
+            this.ScenarioDescriptionBox.Size = new System.Drawing.Size(446, 97);
             this.ScenarioDescriptionBox.TabIndex = 1;
             this.ScenarioDescriptionBox.Text = "";
             // 
@@ -63,9 +65,9 @@
             // 
             this.StartButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.StartButton.Location = new System.Drawing.Point(204, 307);
+            this.StartButton.Location = new System.Drawing.Point(231, 467);
             this.StartButton.Name = "StartButton";
-            this.StartButton.Size = new System.Drawing.Size(213, 34);
+            this.StartButton.Size = new System.Drawing.Size(446, 34);
             this.StartButton.TabIndex = 3;
             this.StartButton.Text = "Start Game";
             this.StartButton.UseVisualStyleBackColor = true;
@@ -79,9 +81,9 @@
             this.MapView.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.MapView.CameraPosition = ((System.Drawing.PointF)(resources.GetObject("MapView.CameraPosition")));
             this.MapView.CameraScale = 0;
-            this.MapView.Location = new System.Drawing.Point(204, 13);
+            this.MapView.Location = new System.Drawing.Point(231, 13);
             this.MapView.Name = "MapView";
-            this.MapView.Size = new System.Drawing.Size(213, 184);
+            this.MapView.Size = new System.Drawing.Size(446, 344);
             this.MapView.TabIndex = 2;
             this.MapView.TabStop = false;
             this.MapView.Terrain = null;
@@ -90,7 +92,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(429, 351);
+            this.ClientSize = new System.Drawing.Size(689, 511);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.MapView);
             this.Controls.Add(this.ScenarioDescriptionBox);

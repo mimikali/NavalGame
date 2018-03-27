@@ -15,14 +15,15 @@ namespace NavalGame
         Game Game;
         Form ScenarioSelectionForm;
 
-        public Form1(Terrain terrain, Form scenarioSelectionForm)
+        public Form1(Terrain terrain, Form scenarioSelectionForm, List<Faction> factions, List<UnitType> units, List<Faction> unitOwners, List<Point> unitPositions)
         {
             InitializeComponent();
             ScenarioSelectionForm = scenarioSelectionForm;
-            Game = new Game(terrain);
+            Game = new Game(terrain, factions, units, unitOwners, unitPositions);
             MapDisplay.Game = Game;
             MapDisplay.OrdersDisplay = OrdersDisplay;
             OrdersDisplay.MapDisplay = MapDisplay;
+            WindowState = FormWindowState.Maximized;
         }
 
 

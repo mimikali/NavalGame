@@ -6,10 +6,10 @@ using System.Drawing;
 
 namespace NavalGame
 {
-    public class AircraftCarrier : Unit
-    {
-        public AircraftCarrier(Player player, Point position) : base(UnitType.AircraftCarrier, player, position)
-        {
-        }
-    }
+    //public class AircraftCarrier : Unit
+    //{
+    //    public AircraftCarrier(Player player, Point position) : base(UnitType.AircraftCarrier, player, position)
+    //    {
+    //    }
+    //}
 }

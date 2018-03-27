@@ -33,6 +33,8 @@ namespace NavalGame
                     UnitList.Items.Add(unitType);
                 }
             }
+
+            if (UnitList.Items.Count >= 1) UnitList.SelectedIndex = 0;
         }
 
         private void CancelButtonClick(object sender, EventArgs e)
@@ -47,6 +49,7 @@ namespace NavalGame
             newShip.ShipType = (UnitType)UnitList.SelectedItem;
             _Game.AddUnit(newShip);
             _Builder.BuildsLeft--;
+            _Builder.Cargo -= newShip.ShipType.Cost;
             Close();
         }
 

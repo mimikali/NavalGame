@@ -6,9 +6,9 @@ using System.Drawing;
 
 namespace NavalGame
 {
-    public class MediumCargo : Unit
+    public class TorpedoBoat: Unit
     {
-        public MediumCargo(Player player, Point position) : base(UnitType.MediumCargo, player, position)
+        public TorpedoBoat(Player player, Point position) : base(UnitType.TorpedoBoat, player, position)
         {
         }
     }

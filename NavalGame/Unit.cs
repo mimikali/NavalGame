@@ -12,6 +12,7 @@ namespace NavalGame
         private Player _Player;
         private string _Name = "Unit";
         private Point _Position;
+        private bool _IsSubmerged;
         private float _Health = 1;
         private float _MovesLeft;
         private int _LightShotsLeft;
@@ -21,6 +22,8 @@ namespace NavalGame
         private int _TurnsUntilCompletion;
         private int _Cargo;
         private int _LoadsLeft;
+        private int _TorpedoesLeft;
+        private int _DivesLeft;
 
         protected Unit(UnitType type, Player player, Point position)
         {
@@ -209,6 +212,46 @@ namespace NavalGame
             }
         }
 
+        public int TorpedoesLeft
+        {
+            get
+            {
+                return _TorpedoesLeft;
+            }
+
+            set
+            {
+                _TorpedoesLeft = value;
+            }
+        }
+
+        public int DivesLeft
+        {
+            get
+            {
+                return _DivesLeft;
+            }
+
+            set
+            {
+                _DivesLeft = value;
+            }
+        }
+
+        public bool IsSubmerged
+        {
+            get
+            {
+                return _IsSubmerged;
+            }
+
+            set
+            {
+                _IsSubmerged = value;
+                Player.Game.FireChangedEvent();
+            }
+        }
+
         public void Move(Point destination)
         {
             var distance = MapDisplay.PointDifference(_Position, destination);
@@ -223,6 +266,15 @@ namespace NavalGame
             }
         }
 
+        public void DiveOrSurface()
+        {
+            if (DivesLeft >= 1)
+            {
+                IsSubmerged = !IsSubmerged;
+                DivesLeft--;
+            }
+        }
+
         public virtual void ResetProperties(bool initialSetup)
         {
             MovesLeft = Type.Speed;
@@ -231,6 +283,8 @@ namespace NavalGame
             RepairsLeft = 1;
             BuildsLeft = 1;
             LoadsLeft = 1;
+            TorpedoesLeft = 1;
+            DivesLeft = 1;
         }
 
         protected string GenerateUnitName(Faction faction)

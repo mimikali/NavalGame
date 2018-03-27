@@ -104,6 +104,7 @@
     <Compile Include="Terrain.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileRenderer.cs" />
+    <Compile Include="TorpedoBoat.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnitType.cs" />
     <Compile Include="Wreck.cs" />

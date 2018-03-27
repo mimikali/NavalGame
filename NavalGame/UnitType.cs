@@ -22,6 +22,7 @@ namespace NavalGame
         public float RepairPower;
         public int BuildTime;
         public int Cost;
+        public int TorpedoPower;
         public Func<Player, Point, Unit> CreateUnit;
 
         public static UnitType Battleship;
@@ -42,7 +43,7 @@ namespace NavalGame
 
         public static UnitType Submarine;
 
-        public static UnitType AircraftCarrier;
+        //public static UnitType AircraftCarrier;
 
         public static UnitType Wreck;
 
@@ -51,6 +52,8 @@ namespace NavalGame
         public static UnitType Port;
 
         public static UnitType Factory;
+
+        public static UnitType TorpedoBoat;
 
         public static List<UnitType> UnitTypes;
 
@@ -68,6 +71,7 @@ namespace NavalGame
                 HeavyRange = 12,
                 LightPower = 2,
                 LightRange = 6,
+                TorpedoPower = 0,
                 Armour = 18,
                 Capacity = 0,
                 RepairPower = 0,
@@ -88,6 +92,7 @@ namespace NavalGame
                 HeavyRange = 11,
                 LightPower = 2,
                 LightRange = 6,
+                TorpedoPower = 0,
                 Armour = 12,
                 Capacity = 0,
                 RepairPower = 0,
@@ -109,6 +114,7 @@ namespace NavalGame
                 HeavyRange = 9,
                 LightPower = 3,
                 LightRange = 6,
+                TorpedoPower = 0,
                 Armour = 12,
                 Capacity = 0,
                 RepairPower = 0,
@@ -129,6 +135,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 4,
                 LightRange = 7,
+                TorpedoPower = 9,
                 Armour = 9,
                 Capacity = 0,
                 RepairPower = 0,
@@ -149,12 +156,34 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 2,
                 LightRange = 5,
+                TorpedoPower = 9,
                 Armour = 4,
                 Capacity = 0,
                 RepairPower = 0,
                 BuildTime = 3,
                 Cost = 7,
                 CreateUnit = (player, position) => new Destroyer(player, position)
+            };
+
+            TorpedoBoat = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.Torpedo },
+                Name = "Torpedo Boat",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\TorpedoBoatLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\TorpedoBoat.png"),
+                Speed = 7,
+                ViewDistance = 8,
+                HeavyPower = 0,
+                HeavyRange = 0,
+                LightPower = 0,
+                LightRange = 0,
+                TorpedoPower = 9,
+                Armour = 0.1f,
+                Capacity = 0,
+                RepairPower = 0,
+                BuildTime = 1,
+                Cost = 3,
+                CreateUnit = (player, position) => new TorpedoBoat(player, position)
             };
 
             Minesweeper = new UnitType
@@ -169,6 +198,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 1,
                 LightRange = 4,
+                TorpedoPower = 0,
                 Armour = 4,
                 Capacity = 0,
                 RepairPower = 0,
@@ -189,6 +219,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
+                TorpedoPower = 0,
                 Armour = 2,
                 Capacity = 5,
                 RepairPower = 0,
@@ -209,6 +240,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
+                TorpedoPower = 0,
                 Armour = 3,
                 Capacity = 8,
                 RepairPower = 0,
@@ -229,6 +261,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 1,
                 LightRange = 4,
+                TorpedoPower = 9,
                 Armour = 2,
                 Capacity = 0,
                 RepairPower = 0,
@@ -237,25 +270,26 @@ namespace NavalGame
                 CreateUnit = (player, position) => new Submarine(player, position)
             };
 
-            AircraftCarrier = new UnitType
-            {
-                Abilities = new List<Order> { Order.Move, Order.LightArtillery },
-                Name = "Aircraft Carrier",
-                LargeBitmap = Bitmaps.Get("Data\\Ships\\AircraftCarrierLarge.png"),
-                Bitmap = Bitmaps.Get("Data\\Ships\\AircraftCarrier.png"),
-                Speed = 4,
-                ViewDistance = 9,
-                HeavyPower = 0,
-                HeavyRange = 0,
-                LightPower = 3,
-                LightRange = 6,
-                Armour = 10,
-                Capacity = 0,
-                RepairPower = 0,
-                BuildTime = 12,
-                Cost = 35,
-                CreateUnit = (player, position) => new AircraftCarrier(player, position)
-            };
+            //AircraftCarrier = new UnitType
+            //{
+            //    Abilities = new List<Order> { Order.Move, Order.LightArtillery },
+            //    Name = "Aircraft Carrier",
+            //    LargeBitmap = Bitmaps.Get("Data\\Ships\\AircraftCarrierLarge.png"),
+            //    Bitmap = Bitmaps.Get("Data\\Ships\\AircraftCarrier.png"),
+            //    Speed = 4,
+            //    ViewDistance = 9,
+            //    HeavyPower = 0,
+            //    HeavyRange = 0,
+            //    LightPower = 3,
+            //    LightRange = 6,
+            //    TorpedoPower = 0,
+            //    Armour = 10,
+            //    Capacity = 0,
+            //    RepairPower = 0,
+            //    BuildTime = 12,
+            //    Cost = 35,
+            //    CreateUnit = (player, position) => new AircraftCarrier(player, position)
+            //};
 
             Wreck = new UnitType
             {
@@ -269,6 +303,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
+                TorpedoPower = 0,
                 Armour = 0.1f,
                 Capacity = 0,
                 RepairPower = 0,
@@ -289,6 +324,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
+                TorpedoPower = 0,
                 Armour = 0.1f,
                 Capacity = 0,
                 RepairPower = 0,
@@ -309,6 +345,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
+                TorpedoPower = 0,
                 Armour = 100,
                 Capacity = 80,
                 RepairPower = 0,
@@ -324,11 +361,12 @@ namespace NavalGame
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\FactoryLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Factory.png"),
                 Speed = 0,
-                ViewDistance = 0,
+                ViewDistance = 100,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
+                TorpedoPower = 0,
                 Armour = 100,
                 Capacity = 20,
                 RepairPower = 0,
@@ -339,7 +377,7 @@ namespace NavalGame
 
             UnitTypes = new List<UnitType>
             {
-                LightCargo, MediumCargo, Destroyer, LightCruiser, HeavyCruiser, Battlecruiser, Battleship, Minesweeper, Submarine, AircraftCarrier, Wreck, ShipInProgress, Port, Factory
+                LightCargo, MediumCargo, TorpedoBoat, Destroyer, LightCruiser, HeavyCruiser, Battlecruiser, Battleship, Minesweeper, Submarine, Wreck, ShipInProgress, Port, Factory
             };
         }
     }

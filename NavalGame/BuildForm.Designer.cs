@@ -120,7 +120,7 @@
             this.Controls.Add(this.UnitList);
             this.MinimumSize = new System.Drawing.Size(476, 404);
             this.Name = "BuildForm";
-            this.Text = "BuildForm";
+            this.Text = "Build Unit";
             ((System.ComponentModel.ISupportInitialize)(this.UnitView)).EndInit();
             this.ResumeLayout(false);
 

@@ -25,6 +25,7 @@ namespace NavalGame
         private List<Point> _PossibleRepairs;
         private List<Point> _PossibleBuilds;
         private List<Point> _PossibleLoads;
+        private List<Point> _PossibleTorpedoes;
         private Unit _LastSelectedUnit;
         private Bitmap[] CachedTiles;
         private OrdersDisplay _OrdersDisplay;
@@ -161,6 +162,7 @@ namespace NavalGame
             _PossibleRepairs = new List<Point>();
             _PossibleBuilds = new List<Point>();
             _PossibleLoads = new List<Point>();
+            _PossibleTorpedoes = new List<Point>();
         }
 
         //private void RunCamera(object sender, EventArgs e)
@@ -228,7 +230,7 @@ namespace NavalGame
                                 switch (unit.Player.Faction)
                                 {
                                     case Faction.USA:
-                                        pe.Graphics.DrawImage(USACounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
+                                            pe.Graphics.DrawImage(USACounter, new Rectangle(displayPos, new Size(CameraScale, CameraScale)));
                                         break;
 
                                     case Faction.Germany:
@@ -250,12 +252,19 @@ namespace NavalGame
                                 pe.Graphics.DrawImage(unit.Type.Bitmap, new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
                                 RectangleF stringRectangle = new RectangleF(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale));
                                 stringRectangle.Inflate(-0.05f * CameraScale, -0.05f * CameraScale);
-                                StringFormat stringFormat = new StringFormat()
+                                StringFormat bottomStringFormat = new StringFormat()
                                 {
                                     Alignment = StringAlignment.Center,
                                     LineAlignment = StringAlignment.Far
                                 };
-                                pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, stringFormat);
+                                StringFormat topStringFormat = new StringFormat()
+                                {
+                                    Alignment = StringAlignment.Center,
+                                    LineAlignment = StringAlignment.Near
+                                };
+                                pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, bottomStringFormat);
+                                if (unit.IsSubmerged)
+                                    pe.Graphics.DrawString("(Submerged)", new Font("Tahoma", CameraScale * 0.1f), Brushes.Black, stringRectangle, topStringFormat);
                                 if (Game.SelectedUnit == unit)
                                 {
                                     Rectangle rectangle = new Rectangle(displayPos, new Size(CameraScale, CameraScale));
@@ -288,8 +297,7 @@ namespace NavalGame
             if (PointDifference((Point)_ClickPoint, e.Location) < 2)
             {
                 // Click
-                bool l = true;
-                bool a = true;
+                bool selectionPossible = true;
                 Point mapClickPosition = Point.Truncate(DisplayToMap(e.Location));
                 if (Game.SelectedUnit != null)
                 {
@@ -300,6 +308,7 @@ namespace NavalGame
                         {
                             Game.SelectedUnit.Move(mapClickPosition);
                             PlaySound("Data\\Sailing.wav");
+                            selectionPossible = false;
                         }
                     }
 
@@ -322,7 +331,6 @@ namespace NavalGame
                                 _ToolTip.IsBalloon = true;
                                 _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
-                            a = false;
                             CurrentOrder = null;
                         }
                     }
@@ -346,7 +354,7 @@ namespace NavalGame
                                 _ToolTip.IsBalloon = true;
                                 _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
-                            a = false;
+                            selectionPossible = false;
                             CurrentOrder = null;
                         }
                     }
@@ -359,7 +367,7 @@ namespace NavalGame
                             int repairs = Game.Repair(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Repaired " + repairs.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                         }
-                        a = false;
+                        selectionPossible = false;
                         CurrentOrder = null;
                     }
 
@@ -370,7 +378,7 @@ namespace NavalGame
                         {
                             new BuildForm(Game, Game.SelectedUnit, mapClickPosition).ShowDialog();
                         }
-                        a = false;
+                        selectionPossible = false;
                         CurrentOrder = null;
                     }
 
@@ -382,7 +390,7 @@ namespace NavalGame
                             int load = Game.Load(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Loaded " + load.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                         }
-                        a = false;
+                        selectionPossible = false;
                         CurrentOrder = null;
                     }
 
@@ -394,26 +402,38 @@ namespace NavalGame
                             int unload = Game.Unload(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Unloaded " + unload.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                         }
-                        a = false;
+                        selectionPossible = false;
+                        CurrentOrder = null;
+                    }
+
+                    // Torpedo
+                    else if (CurrentOrder == Order.Torpedo)
+                    {
+                        if (_PossibleTorpedoes.Contains(mapClickPosition))
+                        {
+                            int damage = Game.Torpedo(mapClickPosition, Game.SelectedUnit);
+                            if (damage != 0) _ToolTip.Show("Hit " + damage.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                            else _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                        }
+                        selectionPossible = false;
                         CurrentOrder = null;
                     }
                 }
 
                 // Selection
-                if (a)
+                if (selectionPossible)
                 {
                     if (Game.CurrentPlayer != null && Game.CurrentPlayer.Faction != Faction.Neutral)
                     {
+                        Game.SelectedUnit = null;
                         foreach (Unit unit in Game.Units)
                         {
                             if (Game.CurrentPlayer.IsTileVisible(unit.Position) && unit.Position == mapClickPosition)
                             {
                                 Game.SelectedUnit = unit;
-                                l = false;
                             }
                         }
                     }
-                    if (l) Game.SelectedUnit = null;
                 }
             }
             // Drag
@@ -649,6 +669,7 @@ namespace NavalGame
             _PossibleRepairs.Clear();
             _PossibleBuilds.Clear();
             _PossibleLoads.Clear();
+            _PossibleTorpedoes.Clear();
 
             _TileRenderer.TileSize = CameraScale;
             _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
@@ -671,10 +692,22 @@ namespace NavalGame
                         case Order.Move:
                             if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.MovesLeft)
                             {
-                                result |= _RangesLayerId;
-                                if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea && p != Game.SelectedUnit.Position)
+                                bool a = true;
+
+                                foreach(Unit unit in Game.Units)
                                 {
-                                    if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
+                                    if (unit.Position == p)
+                                    {
+                                        a = false;
+                                    }
+                                }
+                                result |= _RangesLayerId;
+                                if (a)
+                                {
+                                    if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea && p != Game.SelectedUnit.Position)
+                                    {
+                                        if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
+                                    }
                                 }
                             }
                             break;
@@ -729,7 +762,7 @@ namespace NavalGame
                                     bool a = false;
                                     foreach (Unit unit in Game.Units)
                                     {
-                                        if (unit.Position == p && unit.Type.Capacity >= 1) a = true;
+                                        if (unit.Position == p && unit.Type.Capacity >= 1 && (unit.Player == Game.CurrentPlayer || unit.Player.Faction == Faction.Neutral)) a = true;
                                     }
 
                                     if (a)
@@ -748,13 +781,35 @@ namespace NavalGame
                                     bool a = false;
                                     foreach (Unit unit in Game.Units)
                                     {
-                                        if (unit.Position == p && unit.Type.Capacity >= 1) a = true;
+                                        if (unit.Position == p && unit.Type.Capacity >= 1 && (unit.Player == Game.CurrentPlayer || unit.Player.Faction == Faction.Neutral)) a = true;
                                     }
 
                                     if (a)
                                     {
                                         result |= _RangesLayerId;
                                         _PossibleLoads.Add(p);
+                                    }
+                                }
+                            }
+                            break;
+                        case Order.Torpedo:
+                            if (PointDifference(Game.SelectedUnit.Position, p) <= 2)
+                            {
+                                if (Game.SelectedUnit.TorpedoesLeft >= 1 && p != Game.SelectedUnit.Position)
+                                {
+                                    result |= _RangesLayerId;
+                                    bool a = false;
+                                    foreach (Unit unit in Game.Units)
+                                    {
+                                        if (unit.Position == p)
+                                        {
+                                            a = true;
+                                            break;
+                                        }
+                                    }
+                                    if (a)
+                                    {
+                                        _PossibleTorpedoes.Add(p);
                                     }
                                 }
                             }

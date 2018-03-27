@@ -30,6 +30,8 @@ namespace NavalGame
             LoadPictureBox.Image = Bitmaps.Get("Data\\Load.png");
             UnloadPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             UnloadPictureBox.Image = Bitmaps.Get("Data\\Unload.png");
+            TorpedoPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            TorpedoPictureBox.Image = Bitmaps.Get("Data\\Torpedo.png");
         }
 
         MapDisplay _MapDisplay;
@@ -50,6 +52,53 @@ namespace NavalGame
 
         public void GameChanged()
         {
+            MovePictureBox.BorderStyle = BorderStyle.None;
+            BuildPictureBox.BorderStyle = BorderStyle.None;
+            LoadPictureBox.BorderStyle = BorderStyle.None;
+            UnloadPictureBox.BorderStyle = BorderStyle.None;
+            RepairPictureBox.BorderStyle = BorderStyle.None;
+            LightArtilleryPictureBox.BorderStyle = BorderStyle.None;
+            HeavyArtilleryPictureBox.BorderStyle = BorderStyle.None;
+            TorpedoPictureBox.BorderStyle = BorderStyle.None;
+
+            switch (MapDisplay.CurrentOrder)
+            {
+                case null:
+                    break;
+
+                case Order.Move:
+                    MovePictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.Build:
+                    BuildPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.LightArtillery:
+                    LightArtilleryPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.HeavyArtillery:
+                    HeavyArtilleryPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.Repair:
+                    RepairPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.Load:
+                    LoadPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.Unload:
+                    UnloadPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.Torpedo:
+                    TorpedoPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+            }
+
             if (MapDisplay.Game.CurrentPlayer != null)
             {
                 FlagBox.Image = Game.GetFactionFlag(MapDisplay.Game.CurrentPlayer.Faction);
@@ -91,13 +140,63 @@ namespace NavalGame
                 if (selectedUnit.Type.Abilities.Contains(Order.Build)) BuildBox.Show(); else BuildBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.Load)) LoadBox.Show(); else LoadBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.Unload)) UnloadBox.Show(); else UnloadBox.Hide();
-                MoveBox.Enabled = selectedUnit.MovesLeft >= 1;
-                LightArtilleryBox.Enabled = selectedUnit.LightShotsLeft >= 1;
-                HeavyArtilleryBox.Enabled = selectedUnit.HeavyShotsLeft >= 1;
-                RepairBox.Enabled = selectedUnit.RepairsLeft >= 1;
-                BuildBox.Enabled = selectedUnit.BuildsLeft >= 1;
-                LoadBox.Enabled = selectedUnit.LoadsLeft >= 1;
-                UnloadBox.Enabled = selectedUnit.LoadsLeft >= 1;
+                if (selectedUnit.Type.Abilities.Contains(Order.Torpedo)) TorpedoBox.Show(); else TorpedoBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.DiveOrSurface)) DiveBox.Show(); else DiveBox.Hide();
+
+                if (selectedUnit.MovesLeft >= 1) MoveBox.Enabled = true;
+                else
+                {
+                    MoveBox.Enabled = false;
+                }
+                if (selectedUnit.LightShotsLeft >= 1) LightArtilleryBox.Enabled = true;
+                else
+                {
+                    LightArtilleryBox.Enabled = false;
+                }
+                if (selectedUnit.HeavyShotsLeft >= 1) HeavyArtilleryBox.Enabled = true;
+                else
+                {
+                    HeavyArtilleryBox.Enabled = false;
+                }
+                if (selectedUnit.BuildsLeft >= 1) BuildBox.Enabled = true;
+                else
+                {
+                    BuildBox.Enabled = false;
+                }
+                if (selectedUnit.RepairsLeft >= 1) RepairBox.Enabled = true;
+                else
+                {
+                    RepairBox.Enabled = false;
+                }
+                if (selectedUnit.LoadsLeft >= 1) LoadBox.Enabled = true;
+                else
+                {
+                    LoadBox.Enabled = false;
+                }
+                if (selectedUnit.LoadsLeft >= 1) UnloadBox.Enabled = true;
+                else
+                {
+                    UnloadBox.Enabled = false;
+                }
+                if (selectedUnit.TorpedoesLeft >= 1) TorpedoBox.Enabled = true;
+                else
+                {
+                    TorpedoBox.Enabled = false;
+                }
+                if (selectedUnit.DivesLeft >= 1) DiveBox.Enabled = true;
+                else
+                {
+                    DiveBox.Enabled = false;
+                }
+
+                if (MapDisplay.CurrentOrder == Order.Move && selectedUnit.MovesLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.LightArtillery && selectedUnit.LightShotsLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.HeavyArtillery && selectedUnit.HeavyShotsLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.Build && selectedUnit.BuildsLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.Repair && selectedUnit.RepairsLeft< 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.Load && selectedUnit.LoadsLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.Unload && selectedUnit.LoadsLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.Torpedo && selectedUnit.TorpedoesLeft < 1) MapDisplay.CurrentOrder = null;
 
                 HealthBar.Value = (int)(selectedUnit.Health * 100);
             }
@@ -117,14 +216,16 @@ namespace NavalGame
 
         private void MoveButtonClicked(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.Move;
+            if (MapDisplay.CurrentOrder == Order.Move) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.Move;
+            GameChanged();
         }
 
         private void NextTurnButtonClick(object sender, EventArgs e)
         {
             _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 1) % MapDisplay.Game.Players.Count];
             if (_NextPlayer.Faction == Faction.Neutral) _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 2) % MapDisplay.Game.Players.Count];
-            MapDisplay.Game.CurrentPlayer = MapDisplay.Game.Players.First(player => player.Faction == Faction.Neutral);
+            MapDisplay.Game.CurrentPlayer = null;
             NextTurnButton.Hide();
             BeginTurnButton.Show();
         }
@@ -138,32 +239,60 @@ namespace NavalGame
 
         private void LightArtilleryButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.LightArtillery;
+            if (MapDisplay.CurrentOrder == Order.LightArtillery) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.LightArtillery;
+            GameChanged();
         }
 
         private void HeavyArtilleryButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.HeavyArtillery;
+            if (MapDisplay.CurrentOrder == Order.HeavyArtillery) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.HeavyArtillery;
+            GameChanged();
         }
 
         private void RepairButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.Repair;
+            if (MapDisplay.CurrentOrder == Order.Repair) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.Repair;
+            GameChanged();
         }
 
         private void BuildButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.Build;
+            if (MapDisplay.CurrentOrder == Order.Build) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.Build;
+            GameChanged();
         }
 
         private void LoadButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.Load;
+            if (MapDisplay.CurrentOrder == Order.Load) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.Load;
+            GameChanged();
         }
 
         private void UnloadButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.CurrentOrder = Order.Unload;
+            if (MapDisplay.CurrentOrder == Order.Unload) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.Unload;
+            GameChanged();
+        }
+
+        private void TorpedoButtonClick(object sender, EventArgs e)
+        {
+            if (MapDisplay.CurrentOrder == Order.Torpedo) MapDisplay.CurrentOrder = null;
+            else MapDisplay.CurrentOrder = Order.Torpedo;
+            GameChanged();
+        }
+
+        private void DiveButtonClick(object sender, EventArgs e)
+        {
+            if (MapDisplay.Game.SelectedUnit.DivesLeft >= 1)
+            {
+                MapDisplay.Game.SelectedUnit.DiveOrSurface();
+            }
+            GameChanged();
         }
     }
 }

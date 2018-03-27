@@ -52,6 +52,12 @@
             this.UnloadBox = new System.Windows.Forms.GroupBox();
             this.UnloadPictureBox = new System.Windows.Forms.PictureBox();
             this.UnloadButton = new System.Windows.Forms.Button();
+            this.TorpedoBox = new System.Windows.Forms.GroupBox();
+            this.TorpedoPictureBox = new System.Windows.Forms.PictureBox();
+            this.TorpedoButton = new System.Windows.Forms.Button();
+            this.DiveBox = new System.Windows.Forms.GroupBox();
+            this.DivePictureBox = new System.Windows.Forms.PictureBox();
+            this.DiveButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
             this.UnitTextBox = new System.Windows.Forms.RichTextBox();
@@ -74,6 +80,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.LoadPictureBox)).BeginInit();
             this.UnloadBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnloadPictureBox)).BeginInit();
+            this.TorpedoBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TorpedoPictureBox)).BeginInit();
+            this.DiveBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DivePictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
@@ -148,9 +158,11 @@
             this.OrdersPanel.Controls.Add(this.BuildBox);
             this.OrdersPanel.Controls.Add(this.LoadBox);
             this.OrdersPanel.Controls.Add(this.UnloadBox);
+            this.OrdersPanel.Controls.Add(this.TorpedoBox);
+            this.OrdersPanel.Controls.Add(this.DiveBox);
             this.OrdersPanel.Location = new System.Drawing.Point(6, 283);
             this.OrdersPanel.Name = "OrdersPanel";
-            this.OrdersPanel.Size = new System.Drawing.Size(247, 522);
+            this.OrdersPanel.Size = new System.Drawing.Size(247, 545);
             this.OrdersPanel.TabIndex = 3;
             this.OrdersPanel.Visible = false;
             // 
@@ -346,6 +358,70 @@
             this.UnloadButton.UseVisualStyleBackColor = true;
             this.UnloadButton.Click += new System.EventHandler(this.UnloadButtonClick);
             // 
+            // TorpedoBox
+            // 
+            this.TorpedoBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TorpedoBox.Controls.Add(this.TorpedoPictureBox);
+            this.TorpedoBox.Controls.Add(this.TorpedoButton);
+            this.TorpedoBox.Location = new System.Drawing.Point(3, 416);
+            this.TorpedoBox.Name = "TorpedoBox";
+            this.TorpedoBox.Size = new System.Drawing.Size(241, 53);
+            this.TorpedoBox.TabIndex = 7;
+            this.TorpedoBox.TabStop = false;
+            // 
+            // TorpedoPictureBox
+            // 
+            this.TorpedoPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.TorpedoPictureBox.Name = "TorpedoPictureBox";
+            this.TorpedoPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.TorpedoPictureBox.TabIndex = 2;
+            this.TorpedoPictureBox.TabStop = false;
+            // 
+            // TorpedoButton
+            // 
+            this.TorpedoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.TorpedoButton.Location = new System.Drawing.Point(6, 19);
+            this.TorpedoButton.Name = "TorpedoButton";
+            this.TorpedoButton.Size = new System.Drawing.Size(75, 23);
+            this.TorpedoButton.TabIndex = 0;
+            this.TorpedoButton.Text = "Torpedo";
+            this.TorpedoButton.UseVisualStyleBackColor = true;
+            this.TorpedoButton.Click += new System.EventHandler(this.TorpedoButtonClick);
+            // 
+            // DiveBox
+            // 
+            this.DiveBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiveBox.Controls.Add(this.DivePictureBox);
+            this.DiveBox.Controls.Add(this.DiveButton);
+            this.DiveBox.Location = new System.Drawing.Point(3, 475);
+            this.DiveBox.Name = "DiveBox";
+            this.DiveBox.Size = new System.Drawing.Size(241, 53);
+            this.DiveBox.TabIndex = 8;
+            this.DiveBox.TabStop = false;
+            // 
+            // DivePictureBox
+            // 
+            this.DivePictureBox.Location = new System.Drawing.Point(122, 14);
+            this.DivePictureBox.Name = "DivePictureBox";
+            this.DivePictureBox.Size = new System.Drawing.Size(97, 33);
+            this.DivePictureBox.TabIndex = 2;
+            this.DivePictureBox.TabStop = false;
+            // 
+            // DiveButton
+            // 
+            this.DiveButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DiveButton.Location = new System.Drawing.Point(6, 19);
+            this.DiveButton.Name = "DiveButton";
+            this.DiveButton.Size = new System.Drawing.Size(75, 23);
+            this.DiveButton.TabIndex = 0;
+            this.DiveButton.Text = "Dive";
+            this.DiveButton.UseVisualStyleBackColor = true;
+            this.DiveButton.Click += new System.EventHandler(this.DiveButtonClick);
+            // 
             // HealthBar
             // 
             this.HealthBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -447,6 +523,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.LoadPictureBox)).EndInit();
             this.UnloadBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnloadPictureBox)).EndInit();
+            this.TorpedoBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.TorpedoPictureBox)).EndInit();
+            this.DiveBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DivePictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
@@ -488,5 +568,11 @@
         private System.Windows.Forms.Button LoadButton;
         private System.Windows.Forms.PictureBox LoadPictureBox;
         private System.Windows.Forms.GroupBox LoadBox;
+        private System.Windows.Forms.GroupBox TorpedoBox;
+        private System.Windows.Forms.PictureBox TorpedoPictureBox;
+        private System.Windows.Forms.Button TorpedoButton;
+        private System.Windows.Forms.GroupBox DiveBox;
+        private System.Windows.Forms.PictureBox DivePictureBox;
+        private System.Windows.Forms.Button DiveButton;
     }
 }

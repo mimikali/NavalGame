@@ -11,6 +11,7 @@ namespace NavalGame
 
         public Port(Player player, Point position) : base(UnitType.Port, player, position)
         {
+            Cargo = 15;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace NavalGame
         public override void ResetProperties(bool initialSetup)
         {
             base.ResetProperties(initialSetup);
-            Cargo++;
+            if (!initialSetup) Cargo++;
         }
     }
 }
