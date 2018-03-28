@@ -106,8 +106,8 @@ namespace NavalGame
             {
                 AddUnit(units[i].CreateUnit(_Players[factions.IndexOf(unitOwners[i])], unitPositions[i]));
             }
-            AddUnit(UnitType.HeavyCruiser.CreateUnit(Players[0], new Point(15, 15)));
-            AddUnit(UnitType.Submarine.CreateUnit(Players[1], new Point(17, 15)));
+            AddUnit(UnitType.Destroyer.CreateUnit(Players[0], new Point(15, 15)));
+            AddUnit(UnitType.Submarine.CreateUnit(Players[1], new Point(19, 15)));
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -490,7 +490,9 @@ namespace NavalGame
                 {
                     if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.MovesLeft)
                     {
-                        if (GetUnitAt(new Point(x, y)) == null)
+                        Unit testUnit = GetUnitAt(new Point(x, y));
+
+                        if (testUnit == null || !IsUnitVisibleForPlayer(unit.Player, testUnit))
                         {
                             if (Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
                             {

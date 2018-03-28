@@ -249,6 +249,7 @@ namespace NavalGame
 
             set
             {
+                IsDetected = !value;
                 _IsSubmerged = value;
                 Player.Game.FireChangedEvent();
             }
@@ -271,8 +272,11 @@ namespace NavalGame
 
             set
             {
-                _IsDetected = value;
-                Game.FireChangedEvent();
+                if (value != _IsDetected)
+                {
+                    _IsDetected = value;
+                    Game.FireChangedEvent();
+                }
             }
         }
 
@@ -281,8 +285,16 @@ namespace NavalGame
             var distance = MapDisplay.PointDifference(_Position, destination);
             if (distance <= MovesLeft)
             {
-                MovesLeft -= distance;
-                _Position = destination;
+                Unit unit = Game.GetUnitAt(destination);
+                if (unit == null)
+                {
+                    MovesLeft -= distance;
+                    _Position = destination;
+                }
+                else
+                {
+                    unit.IsDetected = true;
+                }
             }
             else
             {
@@ -313,6 +325,8 @@ namespace NavalGame
 
         public virtual void OnGameChanged()
         {
+            bool isDetected = IsDetected;
+            bool inSonarRange = false;
             if (Health <= 0)
             {
                 Game.RemoveUnit(this);
@@ -320,6 +334,33 @@ namespace NavalGame
                 wreck.Name = Name;
                 Game.AddUnit(wreck);
             }
+
+            if (!IsSubmerged) isDetected = true;
+            else
+            {
+                Random r = new Random(Game.TurnIndex);
+                if (r.NextDouble() < 0.4)
+                {
+                    isDetected = false;
+                }
+
+                foreach (Unit unit in Game.Units)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, Position) <= unit.Type.SonarRange && unit.Player.Faction != Player.Faction)
+                    {
+                        inSonarRange = true;
+                    }
+                }
+                if (inSonarRange)
+                {
+                    if (r.NextDouble() < 0.4) isDetected = true;
+                }
+                else
+                {
+                    isDetected = false;
+                }
+            }
+            IsDetected = isDetected;
         }
 
         protected string GenerateUnitName(Faction faction)

@@ -8,6 +8,9 @@
 - Add diving sounds
 - Wreck is invincible (infinite armour)
 - Set amount of torpedoes
+- Disallow shooting from underwater
+- Add depth charges
+- Add ping sound when sub is detected
 
 * Change build/cancel buttons to side-by-side
 * Make textboxes read-only

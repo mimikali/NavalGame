@@ -309,14 +309,6 @@ namespace NavalGame
                             PlaySound("Data\\Sailing.wav");
                             selectionPossible = false;
                         }
-                        else
-                        {
-                            Unit unit = Game.GetUnitAt(mapClickPosition);
-                            if (unit != null)
-                            {
-                                unit.IsDetected = true;
-                            }
-                        }
                     }
 
                     // Light Artillery
