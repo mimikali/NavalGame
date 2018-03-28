@@ -16,6 +16,7 @@ namespace NavalGame
         private List<Player> _Players = new List<Player>();
         private Player _CurrentPlayer;
         public event Action Changed;
+        public int TurnIndex;
         public Random Random = new Random();
 
         public Unit SelectedUnit
@@ -103,8 +104,10 @@ namespace NavalGame
             }
             for (int i = 0; i < units.Count(); i++)
             {
-                _Units.Add(units[i].CreateUnit(_Players[factions.IndexOf(unitOwners[i])], unitPositions[i]));
+                AddUnit(units[i].CreateUnit(_Players[factions.IndexOf(unitOwners[i])], unitPositions[i]));
             }
+            AddUnit(UnitType.HeavyCruiser.CreateUnit(Players[0], new Point(15, 15)));
+            AddUnit(UnitType.Submarine.CreateUnit(Players[1], new Point(17, 15)));
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -130,7 +133,7 @@ namespace NavalGame
         {
             if (Units.Contains(unit)) throw new Exception("Bad unit addition.");
             _Units.Add(unit);
-            if (Changed != null) Changed();
+            FireChangedEvent();
         }
 
         public void RemoveUnit(Unit unit)
@@ -138,40 +141,16 @@ namespace NavalGame
             if (!Units.Contains(unit)) throw new Exception("Bad unit removal.");
             if (SelectedUnit == unit) SelectedUnit = null;
             _Units.Remove(unit);
-            if (Changed != null) Changed();
+            FireChangedEvent();
         }
 
         public void FireChangedEvent()
         {
-            List<Unit> toRemove = new List<Unit>();
-            List<Unit> toBuild = new List<Unit>();
-
-            foreach(Unit unit in Units)
+            foreach (Unit unit in Units.ToArray())
             {
-                if (unit.Health <= 0)
-                {
-                    toRemove.Add(unit);
-                }
-                if (unit.GetType() == typeof(ShipInProgress) && unit.TurnsUntilCompletion <= 0)
-                {
-                    toBuild.Add(unit);
-                }
+                unit.OnGameChanged();
             }
 
-            foreach(Unit unit in toRemove)
-            {
-                _Units.Remove(unit);
-                Wreck wreck = new Wreck(unit.Player, unit.Position);
-                wreck.Name = unit.Name;
-                _Units.Add(wreck);
-            }
-            foreach(ShipInProgress unit in toBuild)
-            {
-                _Units.Remove(unit);
-                Unit newUnit = unit.ShipType.CreateUnit(unit.Player, unit.Position);
-                newUnit.Name = unit.Name;
-                _Units.Add(newUnit);
-            }
             if (Changed != null) Changed();
         }
 
@@ -181,15 +160,7 @@ namespace NavalGame
             shooter.LightShotsLeft -= 1;
 
             // Determine whether there is a target unit
-            Unit targetUnit = null;
-            foreach(Unit unit in Units)
-            {
-                if (unit.Position == target)
-                {
-                    targetUnit = unit;
-                    break;
-                }
-            }
+            Unit targetUnit = GetUnitAt(target);
 
             // Return as no hit if there is no target unit
             if (targetUnit == null)
@@ -248,15 +219,7 @@ namespace NavalGame
             shooter.HeavyShotsLeft -= 1;
 
             // Determine whether there is a target unit
-            Unit targetUnit = null;
-            foreach (Unit unit in Units)
-            {
-                if (unit.Position == target)
-                {
-                    targetUnit = unit;
-                    break;
-                }
-            }
+            Unit targetUnit = GetUnitAt(target);
 
             // Return as no hit if there is no target unit
             if (targetUnit == null)
@@ -314,19 +277,18 @@ namespace NavalGame
 
         public int Repair(Point target, Unit repairer)
         {
-            foreach(Unit unit in Units)
+            Unit unit = GetUnitAt(target);
+
+            if (unit != null)
             {
-                if (unit.Position == target)
-                {
-                    repairer.RepairsLeft -= 1;
-                    unit.Health += repairer.Type.RepairPower / unit.Type.Armour;
-                    unit.HeavyShotsLeft = 0;
-                    unit.LightShotsLeft = 0;
-                    unit.MovesLeft = 0;
-                    unit.RepairsLeft = 0;
-                    unit.LoadsLeft = 0;
-                    return (int)Math.Truncate(repairer.Type.RepairPower/ unit.Type.Armour * 100);
-                }
+                repairer.RepairsLeft -= 1;
+                unit.Health += repairer.Type.RepairPower / unit.Type.Armour;
+                unit.HeavyShotsLeft = 0;
+                unit.LightShotsLeft = 0;
+                unit.MovesLeft = 0;
+                unit.RepairsLeft = 0;
+                unit.LoadsLeft = 0;
+                return (int)Math.Truncate(repairer.Type.RepairPower/ unit.Type.Armour * 100);
             }
             return 0;
         }
@@ -367,33 +329,29 @@ namespace NavalGame
 
         public int Unload(Point target, Unit unloader)
         {
-            foreach (Unit unit in Units)
-            {
-                if (unit.Player.Faction == CurrentPlayer.Faction)
-                {
-                    if (unit.Position == target)
-                    {
-                        unloader.HeavyShotsLeft = 0;
-                        unloader.LightShotsLeft = 0;
-                        unloader.MovesLeft = 0;
-                        unloader.RepairsLeft = 0;
-                        unloader.LoadsLeft = 0;
+            Unit unit = GetUnitAt(target);
 
-                        if (unit.Type.Capacity - unit.Cargo >= unloader.Cargo)
-                        {
-                            unit.Cargo += unloader.Cargo;
-                            int r = unloader.Cargo;
-                            unloader.Cargo = 0;
-                            return r;
-                        }
-                        else
-                        {
-                            unloader.Cargo -= unit.Type.Capacity - unit.Cargo;
-                            int r = unit.Type.Capacity - unit.Cargo;
-                            unit.Cargo = unit.Type.Capacity;
-                            return r;
-                        }
-                    }
+            if (unit != null && unit.Player.Faction == CurrentPlayer.Faction)
+            {
+                unloader.HeavyShotsLeft = 0;
+                unloader.LightShotsLeft = 0;
+                unloader.MovesLeft = 0;
+                unloader.RepairsLeft = 0;
+                unloader.LoadsLeft = 0;
+
+                if (unit.Type.Capacity - unit.Cargo >= unloader.Cargo)
+                {
+                    unit.Cargo += unloader.Cargo;
+                    int r = unloader.Cargo;
+                    unloader.Cargo = 0;
+                    return r;
+                }
+                else
+                {
+                    unloader.Cargo -= unit.Type.Capacity - unit.Cargo;
+                    int r = unit.Type.Capacity - unit.Cargo;
+                    unit.Cargo = unit.Type.Capacity;
+                    return r;
                 }
             }
             return 0;
@@ -403,15 +361,7 @@ namespace NavalGame
         {
             torpedoer.TorpedoesLeft--;
 
-            Unit targetUnit = null;
-            foreach (Unit unit in Units)
-            {
-                if (unit.Position == target)
-                {
-                    targetUnit = unit;
-                    break;
-                }
-            }
+            Unit targetUnit = GetUnitAt(target);
 
             if (targetUnit == null)
             {
@@ -511,6 +461,218 @@ namespace NavalGame
                 default:
                     throw new Exception("Bad Faction.");
             }
+        }
+
+        public bool IsUnitVisibleForPlayer(Player player, Unit unit)
+        {
+            return unit.Player == player || (player.IsTileVisible(unit.Position) && unit.IsDetected);
+        }
+
+        public Unit GetUnitAt(Point position)
+        {
+            foreach(Unit unit in Units)
+            {
+                if (unit.Position == position)
+                {
+                    return unit;
+                }
+            }
+            return null;
+        }
+
+        public HashSet<Point> GetPossibleMoves(Unit unit)
+        {
+            HashSet<Point> possibleMoves = new HashSet<Point>();
+
+            for(int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.MovesLeft)
+                    {
+                        if (GetUnitAt(new Point(x, y)) == null)
+                        {
+                            if (Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
+                            {
+                                if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2) possibleMoves.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleMoves;
+        }
+
+        public HashSet<Point> GetPossibleLightShots(Unit unit)
+        {
+            HashSet<Point> possibleShots = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange)
+                    {
+                        Unit target = GetUnitAt(new Point(x, y));
+
+                        if (target != null && IsUnitVisibleForPlayer(unit.Player, target))
+                        {
+                            if (unit.LightShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
+                        }
+                    }
+
+                }
+            }
+
+            return possibleShots;
+        }
+
+        public HashSet<Point> GetPossibleHeavyShots(Unit unit)
+        {
+            HashSet<Point> possibleShots = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange)
+                    {
+                        Unit target = GetUnitAt(new Point(x, y));
+
+                        if (target != null && IsUnitVisibleForPlayer(unit.Player, target))
+                        {
+                            if (unit.HeavyShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
+                        }
+                    }
+
+                }
+            }
+
+            return possibleShots;
+        }
+
+        public HashSet<Point> GetPossibleRepairs(Unit unit)
+        {
+            HashSet<Point> possibleRepairs = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5)
+                    {
+                        if (unit.RepairsLeft >= 1 && unit.Position != new Point(x, y)) possibleRepairs.Add(new Point(x, y));
+                    }
+
+                }
+            }
+
+            return possibleRepairs;
+        }
+
+        public HashSet<Point> GetPossibleBuilds(Unit unit)
+        {
+            HashSet<Point> possibleBuilds = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5)
+                    {
+                        if (GetUnitAt(new Point(x, y)) == null)
+                        {
+                            if (unit.BuildsLeft >= 1 && Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
+                            {
+                                possibleBuilds.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleBuilds;
+        }
+
+        public HashSet<Point> GetPossibleLoads(Unit unit)
+        {
+            HashSet<Point> possibleLoads = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5)
+                    {
+                        if (unit.LoadsLeft >= 1 && new Point(x, y) != unit.Position)
+                        {
+                            Unit target = GetUnitAt(new Point(x, y));
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && (unit.Type.Capacity >= 1 && (target.Player == unit.Player || target.Player.Faction == Faction.Neutral)))
+                            {
+                                possibleLoads.Add(new Point(x, y));
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return possibleLoads;
+        }
+
+        public HashSet<Point> GetPossibleUnloads(Unit unit)
+        {
+            HashSet<Point> possibleLoads = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5)
+                    {
+                        if (unit.LoadsLeft >= 1 && new Point(x, y) != unit.Position)
+                        {
+                            Unit target = GetUnitAt(new Point(x, y));
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && (unit.Type.Capacity >= 1 && (target.Player == unit.Player || target.Player.Faction == Faction.Neutral)))
+                            {
+                                possibleLoads.Add(new Point(x, y));
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return possibleLoads;
+        }
+
+        public HashSet<Point> GetPossibleTorpedoes(Unit unit)
+        {
+            HashSet<Point> possibleTorpedoes = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 2)
+                    {
+                        if (unit.TorpedoesLeft >= 1 && new Point(x, y) != unit.Position)
+                        {
+
+                            Unit target = GetUnitAt(new Point(x, y));
+
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target))
+                            {
+                                possibleTorpedoes.Add(new Point(x, y));
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return possibleTorpedoes;
         }
     }
 }

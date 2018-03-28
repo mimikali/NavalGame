@@ -220,7 +220,7 @@ namespace NavalGame
             {
                 foreach (Unit unit in Game.Units)
                 {
-                    if (Game.CurrentPlayer.IsTileVisible(unit.Position))
+                    if (Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
                     {
                         Point displayPos = MapToDisplay(unit.Position);
                         if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
@@ -263,8 +263,7 @@ namespace NavalGame
                                     LineAlignment = StringAlignment.Near
                                 };
                                 pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, bottomStringFormat);
-                                if (unit.IsSubmerged)
-                                    pe.Graphics.DrawString("(Submerged)", new Font("Tahoma", CameraScale * 0.1f), Brushes.Black, stringRectangle, topStringFormat);
+                                pe.Graphics.DrawString(unit.Information, new Font("Tahoma", CameraScale * 0.1f), Brushes.Black, stringRectangle, topStringFormat);
                                 if (Game.SelectedUnit == unit)
                                 {
                                     Rectangle rectangle = new Rectangle(displayPos, new Size(CameraScale, CameraScale));
@@ -304,18 +303,26 @@ namespace NavalGame
                     // Move
                     if (CurrentOrder == Order.Move)
                     {
-                        if (_PossibleMoves.Contains(mapClickPosition))
+                        if (Game.GetPossibleMoves(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             Game.SelectedUnit.Move(mapClickPosition);
                             PlaySound("Data\\Sailing.wav");
                             selectionPossible = false;
+                        }
+                        else
+                        {
+                            Unit unit = Game.GetUnitAt(mapClickPosition);
+                            if (unit != null)
+                            {
+                                unit.IsDetected = true;
+                            }
                         }
                     }
 
                     // Light Artillery
                     else if (CurrentOrder == Order.LightArtillery)
                     {
-                        if (_PossibleLightShots.Contains(mapClickPosition))
+                        if (Game.GetPossibleLightShots(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             int hit = Game.LightArtillery(mapClickPosition, Game.SelectedUnit);
                             if (hit == 0)
@@ -331,6 +338,7 @@ namespace NavalGame
                                 _ToolTip.IsBalloon = true;
                                 _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
+                            selectionPossible = false;
                             CurrentOrder = null;
                         }
                     }
@@ -338,7 +346,7 @@ namespace NavalGame
                     // Heavy Artillery
                     else if (CurrentOrder == Order.HeavyArtillery)
                     {
-                        if (_PossibleHeavyShots.Contains(mapClickPosition))
+                        if (Game.GetPossibleHeavyShots(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             int hit = Game.HeavyArtillery(mapClickPosition, Game.SelectedUnit);
                             if (hit == 0)
@@ -362,7 +370,7 @@ namespace NavalGame
                     // Repair
                     else if (CurrentOrder == Order.Repair)
                     {
-                        if (_PossibleRepairs.Contains(mapClickPosition))
+                        if (Game.GetPossibleRepairs(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             int repairs = Game.Repair(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Repaired " + repairs.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
@@ -374,7 +382,7 @@ namespace NavalGame
                     // Build
                     else if (CurrentOrder == Order.Build)
                     {
-                        if (_PossibleBuilds.Contains(mapClickPosition))
+                        if (Game.GetPossibleBuilds(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             new BuildForm(Game, Game.SelectedUnit, mapClickPosition).ShowDialog();
                         }
@@ -385,7 +393,7 @@ namespace NavalGame
                     // Load
                     else if (CurrentOrder == Order.Load)
                     {
-                        if (_PossibleLoads.Contains(mapClickPosition))
+                        if (Game.GetPossibleLoads(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             int load = Game.Load(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Loaded " + load.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
@@ -397,7 +405,7 @@ namespace NavalGame
                     // Unload
                     else if (CurrentOrder == Order.Unload)
                     {
-                        if (_PossibleLoads.Contains(mapClickPosition))
+                        if (Game.GetPossibleUnloads(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             int unload = Game.Unload(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Unloaded " + unload.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
@@ -409,11 +417,19 @@ namespace NavalGame
                     // Torpedo
                     else if (CurrentOrder == Order.Torpedo)
                     {
-                        if (_PossibleTorpedoes.Contains(mapClickPosition))
+                        if (Game.GetPossibleTorpedoes(Game.SelectedUnit).Contains(mapClickPosition))
                         {
                             int damage = Game.Torpedo(mapClickPosition, Game.SelectedUnit);
-                            if (damage != 0) _ToolTip.Show("Hit " + damage.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
-                            else _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                            if (damage != 0)
+                            {
+                                _ToolTip.Show("Hit " + damage.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                                PlaySound("Data\\TorpedoLaunchHit.wav");
+                            }
+                            else
+                            {
+                                _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                                PlaySound("Data\\TorpedoLaunch.wav");
+                            }
                         }
                         selectionPossible = false;
                         CurrentOrder = null;
@@ -426,12 +442,11 @@ namespace NavalGame
                     if (Game.CurrentPlayer != null && Game.CurrentPlayer.Faction != Faction.Neutral)
                     {
                         Game.SelectedUnit = null;
-                        foreach (Unit unit in Game.Units)
+
+                        Unit unit = Game.GetUnitAt(mapClickPosition);
+                        if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
                         {
-                            if (Game.CurrentPlayer.IsTileVisible(unit.Position) && unit.Position == mapClickPosition)
-                            {
-                                Game.SelectedUnit = unit;
-                            }
+                            Game.SelectedUnit = unit;
                         }
                     }
                 }
@@ -671,6 +686,41 @@ namespace NavalGame
             _PossibleLoads.Clear();
             _PossibleTorpedoes.Clear();
 
+            HashSet<Point> range = new HashSet<Point>();
+
+            if (Game.SelectedUnit != null && Game.SelectedUnit.Player == Game.CurrentPlayer)
+            {
+                switch (CurrentOrder)
+                {
+                    case Order.Move:
+                        range = Game.GetPossibleMoves(Game.SelectedUnit);
+                        break;
+
+                    case Order.LightArtillery:
+                        range = Game.GetPossibleLightShots(Game.SelectedUnit);
+                        break;
+
+                    case Order.HeavyArtillery:
+                        range = Game.GetPossibleHeavyShots(Game.SelectedUnit);
+                        break;
+                    case Order.Repair:
+                        range = Game.GetPossibleRepairs(Game.SelectedUnit);
+                        break;
+                    case Order.Build:
+                        range = Game.GetPossibleBuilds(Game.SelectedUnit);
+                        break;
+                    case Order.Load:
+                        range = Game.GetPossibleLoads(Game.SelectedUnit);
+                        break;
+                    case Order.Unload:
+                        range = Game.GetPossibleUnloads(Game.SelectedUnit);
+                        break;
+                    case Order.Torpedo:
+                        range = Game.GetPossibleTorpedoes(Game.SelectedUnit);
+                        break;
+                }
+            }
+
             _TileRenderer.TileSize = CameraScale;
             _TileRenderer.DrawTiles(graphics, MapToDisplay(new Point(0, 0)), new Rectangle(0, 0, Game.Terrain.Width, Game.Terrain.Height), p =>
             {
@@ -683,139 +733,126 @@ namespace NavalGame
                     result |= _FogOfWarLayerId;
                 }
 
-                if (Game.SelectedUnit != null)
+                if (range.Contains(p))
                 {
-
-                    switch (CurrentOrder)
-                    {
-                        case null: break;
-                        case Order.Move:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.MovesLeft)
-                            {
-                                bool a = true;
-
-                                foreach(Unit unit in Game.Units)
-                                {
-                                    if (unit.Position == p)
-                                    {
-                                        a = false;
-                                    }
-                                }
-                                result |= _RangesLayerId;
-                                if (a)
-                                {
-                                    if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea && p != Game.SelectedUnit.Position)
-                                    {
-                                        if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
-                                    }
-                                }
-                            }
-                            break;
-                        case Order.LightArtillery:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.Type.LightRange)
-                            {
-                                result |= _RangesLayerId;
-                                if (Game.SelectedUnit.LightShotsLeft >= 1 && p != Game.SelectedUnit.Position) _PossibleLightShots.Add(p);
-                            }
-                            break;
-                        case Order.HeavyArtillery:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.Type.HeavyRange)
-                            {
-                                result |= _RangesLayerId;
-                                if (Game.SelectedUnit.HeavyShotsLeft >= 1 && p != Game.SelectedUnit.Position)
-                                {
-                                    _PossibleHeavyShots.Add(p);
-                                }
-                            }
-                            break;
-                        case Order.Repair:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
-                            {
-                                result |= _RangesLayerId;
-                                if (Game.SelectedUnit.RepairsLeft >= 1 && Game.SelectedUnit.Position != p) _PossibleRepairs.Add(p);
-                            }
-                            break;
-                        case Order.Build:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
-                            {
-                                if (Game.SelectedUnit.BuildsLeft >= 1 && Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea)
-                                {
-                                    bool a = true;
-                                    foreach (Unit unit in Game.Units)
-                                    {
-                                        if (unit.Position == p) a = false;
-                                    }
-
-                                    if (a)
-                                    {
-                                        result |= _RangesLayerId;
-                                        _PossibleBuilds.Add(p);
-                                    }
-                                }
-                            }
-                            break;
-                        case Order.Load:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
-                            {
-                                if (Game.SelectedUnit.LoadsLeft >= 1 && p != Game.SelectedUnit.Position)
-                                {
-                                    bool a = false;
-                                    foreach (Unit unit in Game.Units)
-                                    {
-                                        if (unit.Position == p && unit.Type.Capacity >= 1 && (unit.Player == Game.CurrentPlayer || unit.Player.Faction == Faction.Neutral)) a = true;
-                                    }
-
-                                    if (a)
-                                    {
-                                        result |= _RangesLayerId;
-                                        _PossibleLoads.Add(p);
-                                    }
-                                }
-                            }
-                            break;
-                        case Order.Unload:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
-                            {
-                                if (Game.SelectedUnit.LoadsLeft >= 1 && p != Game.SelectedUnit.Position)
-                                {
-                                    bool a = false;
-                                    foreach (Unit unit in Game.Units)
-                                    {
-                                        if (unit.Position == p && unit.Type.Capacity >= 1 && (unit.Player == Game.CurrentPlayer || unit.Player.Faction == Faction.Neutral)) a = true;
-                                    }
-
-                                    if (a)
-                                    {
-                                        result |= _RangesLayerId;
-                                        _PossibleLoads.Add(p);
-                                    }
-                                }
-                            }
-                            break;
-                        case Order.Torpedo:
-                            if (PointDifference(Game.SelectedUnit.Position, p) <= 2)
-                            {
-                                if (Game.SelectedUnit.TorpedoesLeft >= 1 && p != Game.SelectedUnit.Position)
-                                {
-                                    result |= _RangesLayerId;
-                                    bool a = false;
-                                    foreach (Unit unit in Game.Units)
-                                    {
-                                        if (unit.Position == p)
-                                        {
-                                            a = true;
-                                            break;
-                                        }
-                                    }
-                                    if (a)
-                                    {
-                                        _PossibleTorpedoes.Add(p);
-                                    }
-                                }
-                            }
-                            break;
-                    }
+                    result |= _RangesLayerId;
                 }
+
+                //if (Game.SelectedUnit != null)
+                //{
+
+                //    switch (CurrentOrder)
+                //    {
+                //        case null: break;
+                //        case Order.Move:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.MovesLeft)
+                //            {
+                //                bool a = true;
+
+                //                if (Game.GetUnitAt(p) != null) a = false;
+
+                //                result |= _RangesLayerId;
+                //                if (a)
+                //                {
+                //                    if (Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea && p != Game.SelectedUnit.Position)
+                //                    {
+                //                        if (PointDifference(Game.SelectedUnit.Position, p) < 2) _PossibleMoves.Add(p);
+                //                    }
+                //                }
+                //            }
+                //            break;
+                //        case Order.LightArtillery:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.Type.LightRange)
+                //            {
+                //                result |= _RangesLayerId;
+
+                //                Unit unit = Game.GetUnitAt(p);
+
+                //                if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
+                //                {
+                //                    if (Game.SelectedUnit.LightShotsLeft >= 1 && p != Game.SelectedUnit.Position) _PossibleLightShots.Add(p);
+                //                }
+                //            }
+                //            break;
+                //        case Order.HeavyArtillery:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= Game.SelectedUnit.Type.HeavyRange)
+                //            {
+                //                result |= _RangesLayerId;
+                //                Unit unit = Game.GetUnitAt(p);
+                //                if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
+                //                {
+                //                    if (Game.SelectedUnit.HeavyShotsLeft >= 1 && p != Game.SelectedUnit.Position) _PossibleHeavyShots.Add(p);
+                //                }
+                //            }
+                //            break;
+                //        case Order.Repair:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                //            {
+                //                result |= _RangesLayerId;
+                //                if (Game.SelectedUnit.RepairsLeft >= 1 && Game.SelectedUnit.Position != p) _PossibleRepairs.Add(p);
+                //            }
+                //            break;
+                //        case Order.Build:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                //            {
+                //                Unit unit = Game.GetUnitAt(p);
+                //                if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
+                //                {
+                //                    if (Game.SelectedUnit.BuildsLeft >= 1 && Game.Terrain.Get(p.X, p.Y, TerrainType.Land) == TerrainType.Sea)
+                //                    {
+                //                        result |= _RangesLayerId;
+                //                        _PossibleBuilds.Add(p);
+                //                    }
+                //                }
+                //            }
+                //            break;
+                //        case Order.Load:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                //            {
+                //                if (Game.SelectedUnit.LoadsLeft >= 1 && p != Game.SelectedUnit.Position)
+                //                {
+                //                    Unit unit = Game.GetUnitAt(p);
+                //                    if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit) && (unit.Type.Capacity >= 1 && (unit.Player == Game.CurrentPlayer || unit.Player.Faction == Faction.Neutral)))
+                //                    {
+                //                        result |= _RangesLayerId;
+                //                        _PossibleLoads.Add(p);
+                //                    }
+                //                }
+                //            }
+                //            break;
+                //        case Order.Unload:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= 1.5)
+                //            {
+                //                if (Game.SelectedUnit.LoadsLeft >= 1 && p != Game.SelectedUnit.Position)
+                //                {
+                //                    Unit unit = Game.GetUnitAt(p);
+
+                //                    if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit) && (unit.Type.Capacity >= 1 && (unit.Player == Game.CurrentPlayer || unit.Player.Faction == Faction.Neutral)))
+                //                    {
+                //                        result |= _RangesLayerId;
+                //                        _PossibleLoads.Add(p);
+                //                    }
+                //                }
+                //            }
+                //            break;
+                //        case Order.Torpedo:
+                //            if (PointDifference(Game.SelectedUnit.Position, p) <= 2)
+                //            {
+                //                if (Game.SelectedUnit.TorpedoesLeft >= 1 && p != Game.SelectedUnit.Position)
+                //                {
+                //                    result |= _RangesLayerId;
+
+                //                    Unit unit = Game.GetUnitAt(p);
+
+                //                    if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
+                //                    {
+                //                        _PossibleTorpedoes.Add(p);
+                //                    }
+                //                }
+                //            }
+                //            break;
+                //    }
+                //}
                 switch(t)
                 {
                     case TerrainType.Sea: result |= _OceanLayerId; break;

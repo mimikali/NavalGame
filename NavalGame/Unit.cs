@@ -13,6 +13,7 @@ namespace NavalGame
         private string _Name = "Unit";
         private Point _Position;
         private bool _IsSubmerged;
+        private bool _IsDetected;
         private float _Health = 1;
         private float _MovesLeft;
         private int _LightShotsLeft;
@@ -30,6 +31,7 @@ namespace NavalGame
             _Type = type;
             _Player = player;
             _Position = position;
+            _IsDetected = true;
             Name = GenerateUnitName(player.Faction);
             ResetProperties(true);
         }
@@ -252,6 +254,28 @@ namespace NavalGame
             }
         }
 
+        public virtual string Information
+        {
+            get
+            {
+                return "";
+            }
+        }
+
+        public virtual bool IsDetected
+        {
+            get
+            {
+                return _IsDetected;
+            }
+
+            set
+            {
+                _IsDetected = value;
+                Game.FireChangedEvent();
+            }
+        }
+
         public void Move(Point destination)
         {
             var distance = MapDisplay.PointDifference(_Position, destination);
@@ -285,6 +309,17 @@ namespace NavalGame
             LoadsLeft = 1;
             TorpedoesLeft = 1;
             DivesLeft = 1;
+        }
+
+        public virtual void OnGameChanged()
+        {
+            if (Health <= 0)
+            {
+                Game.RemoveUnit(this);
+                Wreck wreck = new Wreck(Player, Position);
+                wreck.Name = Name;
+                Game.AddUnit(wreck);
+            }
         }
 
         protected string GenerateUnitName(Faction faction)

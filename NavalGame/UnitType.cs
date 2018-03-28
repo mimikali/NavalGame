@@ -13,16 +13,17 @@ namespace NavalGame
         public Bitmap Bitmap;
         public float Speed;
         public float ViewDistance;
+        public float SonarRange;
         public float HeavyPower;
         public float HeavyRange;
         public float LightPower;
         public float LightRange;
+        public int TorpedoPower;
         public float Armour;
         public int Capacity;
         public float RepairPower;
         public int BuildTime;
         public int Cost;
-        public int TorpedoPower;
         public Func<Player, Point, Unit> CreateUnit;
 
         public static UnitType Battleship;
@@ -67,6 +68,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Battleship.png"),
                 Speed = 4,
                 ViewDistance = 9,
+                SonarRange = 0,
                 HeavyPower = 7,
                 HeavyRange = 12,
                 LightPower = 2,
@@ -88,6 +90,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Battlecruiser.png"),
                 Speed = 5,
                 ViewDistance = 9,
+                SonarRange = 0,
                 HeavyPower = 6,
                 HeavyRange = 11,
                 LightPower = 2,
@@ -110,6 +113,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\HeavyCruiser.png"),
                 Speed = 4,
                 ViewDistance = 9,
+                SonarRange = 0,
                 HeavyPower = 5,
                 HeavyRange = 9,
                 LightPower = 3,
@@ -131,6 +135,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\LightCruiser.png"),
                 Speed = 5,
                 ViewDistance = 9,
+                SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 4,
@@ -152,6 +157,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Destroyer.png"),
                 Speed = 6,
                 ViewDistance = 9,
+                SonarRange = 2,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 2,
@@ -173,6 +179,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\TorpedoBoat.png"),
                 Speed = 7,
                 ViewDistance = 8,
+                SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,
@@ -194,6 +201,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Minesweeper.png"),
                 Speed = 4,
                 ViewDistance = 8,
+                SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 1,
@@ -215,6 +223,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\LightCargo.png"),
                 Speed = 5,
                 ViewDistance = 8,
+                SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,
@@ -236,6 +245,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\MediumCargo.png"),
                 Speed = 3,
                 ViewDistance = 8,
+                SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,
@@ -257,6 +267,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Submarine.png"),
                 Speed = 4,
                 ViewDistance = 8,
+                SonarRange = 1,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 1,
@@ -348,7 +359,7 @@ namespace NavalGame
                 TorpedoPower = 0,
                 Armour = 100,
                 Capacity = 80,
-                RepairPower = 0,
+                RepairPower = 2.5f,
                 BuildTime = 0,
                 Cost = 0,
                 CreateUnit = (player, position) => new Port(player, position)

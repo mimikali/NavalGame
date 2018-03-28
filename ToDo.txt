@@ -1,12 +1,13 @@
 - Land buildings full size counter
 - Rename Form1 to GameForm
-- Repair icon is blurred
 - Add likely outcome tooltip 1/2
-- Resources
 - Make Order buttons checkboxes
-- Units moving behind other units???!
 - Add leader head next to greetings
 - Remove flags from unit bitmaps
+- Unit Names
+- Add diving sounds
+- Wreck is invincible (infinite armour)
+- Set amount of torpedoes
 
 * Change build/cancel buttons to side-by-side
 * Make textboxes read-only
@@ -16,3 +17,8 @@
 * Stretch health bar
 * Flag of country on ordersDisplay next to next turn button
 * Add more unit icons
+* Resources
+* Units moving behind other units???!
+* Repair icon is blurred
+* Make ShipInProgress icon an hourglass
+* Add torpedo sounds

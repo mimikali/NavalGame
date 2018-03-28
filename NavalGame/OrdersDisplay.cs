@@ -141,7 +141,12 @@ namespace NavalGame
                 if (selectedUnit.Type.Abilities.Contains(Order.Load)) LoadBox.Show(); else LoadBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.Unload)) UnloadBox.Show(); else UnloadBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.Torpedo)) TorpedoBox.Show(); else TorpedoBox.Hide();
-                if (selectedUnit.Type.Abilities.Contains(Order.DiveOrSurface)) DiveBox.Show(); else DiveBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.DiveOrSurface))
+                {
+                    DiveBox.Show();
+                    DiveButton.Text = selectedUnit.IsSubmerged ? "Surface" : "Dive";
+                }
+                else DiveBox.Hide();
 
                 if (selectedUnit.MovesLeft >= 1) MoveBox.Enabled = true;
                 else
@@ -232,6 +237,7 @@ namespace NavalGame
 
         private void BeginTurnButtonClick(object sender, EventArgs e)
         {
+            if (_NextPlayer == MapDisplay.Game.Players[0]) MapDisplay.Game.TurnIndex++;
             MapDisplay.Game.CurrentPlayer = _NextPlayer ?? MapDisplay.Game.Players[0]; //_NextPlayer != null ? _NextPlayer : MapDisplay.Game.Players[0];
             BeginTurnButton.Hide();
             NextTurnButton.Show();

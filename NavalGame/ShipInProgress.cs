@@ -32,5 +32,18 @@ namespace NavalGame
             base.ResetProperties(initialSetup);
             if (!initialSetup) TurnsUntilCompletion--;
         }
+
+        public override void OnGameChanged()
+        {
+            base.OnGameChanged();
+
+            if (TurnsUntilCompletion <= 0)
+            {
+                Game.RemoveUnit(this);
+                Unit newUnit = ShipType.CreateUnit(Player, Position);
+                newUnit.Name = Name;
+                Game.AddUnit(newUnit);
+            }
+        }
     }
 }
