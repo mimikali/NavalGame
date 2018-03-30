@@ -39,9 +39,11 @@ namespace NavalGame
         public override void ResetProperties(bool initialSetup)
         {
             base.ResetProperties(initialSetup);
+            if (IsSubmerged)
+                OxygenLeft--;
+            else
+                OxygenLeft = 15;
             if (OxygenLeft <= 0) IsSubmerged = false;
-            if (IsSubmerged) OxygenLeft--;
-            else OxygenLeft = 15;
         }
     }
 }

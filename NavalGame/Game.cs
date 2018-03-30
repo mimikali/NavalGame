@@ -16,6 +16,8 @@ namespace NavalGame
         private List<Player> _Players = new List<Player>();
         private Player _CurrentPlayer;
         public event Action Changed;
+        public event Action Sinking;
+        public event Action SubmarineDetected;
         public int TurnIndex;
         public Random Random = new Random();
 
@@ -162,6 +164,16 @@ namespace NavalGame
             }
 
             if (Changed != null) Changed();
+        }
+
+        public void FireSinkingEvent()
+        {
+            if (Sinking != null) Sinking();
+        }
+
+        public void FireSubmarineDetectedEvent()
+        {
+            if (SubmarineDetected != null) SubmarineDetected();
         }
 
         public int LightArtillery(Point target, Unit shooter)
@@ -530,7 +542,7 @@ namespace NavalGame
                         {
                             Unit target = GetUnitAt(new Point(x, y));
 
-                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged)
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player)
                             {
                                 if (unit.LightShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
                             }
@@ -556,7 +568,7 @@ namespace NavalGame
                         {
                             Unit target = GetUnitAt(new Point(x, y));
 
-                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged)
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player)
                             {
                                 if (unit.HeavyShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
                             }
@@ -573,15 +585,23 @@ namespace NavalGame
         {
             HashSet<Point> possibleRepairs = new HashSet<Point>();
 
-            for (int x = 0; x < Terrain.Width; x++)
+            if (!unit.IsSubmerged)
             {
-                for (int y = 0; y < Terrain.Height; y++)
+                for (int x = 0; x < Terrain.Width; x++)
                 {
-                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5)
+                    for (int y = 0; y < Terrain.Height; y++)
                     {
-                        if (unit.RepairsLeft >= 1 && unit.Position != new Point(x, y)) possibleRepairs.Add(new Point(x, y));
-                    }
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5f)
+                        {
+                            Unit target = GetUnitAt(new Point(x, y));
+                            if (target != null && !target.IsSubmerged && target.Player == unit.Player &&
+                                unit.RepairsLeft >= 1 && new Point(x, y) != unit.Position)
+                            {
+                                possibleRepairs.Add(new Point(x, y));
+                            }
+                        }
 
+                    }
                 }
             }
 
@@ -685,7 +705,7 @@ namespace NavalGame
 
                             Unit target = GetUnitAt(new Point(x, y));
 
-                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged)
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player)
                             {
                                 possibleTorpedoes.Add(new Point(x, y));
                             }

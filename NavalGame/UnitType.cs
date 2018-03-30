@@ -12,6 +12,7 @@ namespace NavalGame
         public Bitmap LargeBitmap;
         public Bitmap Bitmap;
         public float Speed;
+        public float SubmergedSpeed;
         public float ViewDistance;
         public float SonarRange;
         public float HeavyPower;
@@ -266,6 +267,7 @@ namespace NavalGame
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\SubmarineLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Submarine.png"),
                 Speed = 4,
+                SubmergedSpeed = 3,
                 ViewDistance = 8,
                 SonarRange = 1,
                 HeavyPower = 0,
@@ -357,7 +359,7 @@ namespace NavalGame
                 LightPower = 0,
                 LightRange = 0,
                 TorpedoPower = 0,
-                Armour = 100,
+                Armour = float.PositiveInfinity,
                 Capacity = 80,
                 RepairPower = 2.5f,
                 BuildTime = 0,
@@ -378,7 +380,7 @@ namespace NavalGame
                 LightPower = 0,
                 LightRange = 0,
                 TorpedoPower = 0,
-                Armour = 100,
+                Armour = float.PositiveInfinity,
                 Capacity = 20,
                 RepairPower = 0,
                 BuildTime = 0,

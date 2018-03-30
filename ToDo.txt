@@ -4,13 +4,10 @@
 - Make Order buttons checkboxes
 - Add leader head next to greetings
 - Remove flags from unit bitmaps
-- Unit Names
-- Add diving sounds
 - Set amount of torpedoes
-- Disallow shooting from underwater!!!
 - Add depth charges
-- Add ping sound when sub is detected
 - No torpedoing onshore targets!!!
+- Display gun and torpedo range, not possible targets.
 
 * Change build/cancel buttons to side-by-side
 * Make textboxes read-only
@@ -26,3 +23,7 @@
 * Make ShipInProgress icon an hourglass
 * Add torpedo sounds
 * Wreck is invincible (infinite armour)
+* Add ping sound when sub is detected
+* Disallow shooting from underwater!!!
+* Unit Names
+* Add diving sounds

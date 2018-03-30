@@ -138,6 +138,7 @@ namespace NavalGame
                 if (selectedUnit.Type.Capacity >= 1) UnitTextBox.Text += Environment.NewLine + "Cargo: " + selectedUnit.Cargo + "/" + selectedUnit.Type.Capacity;
                 if (selectedUnit.TurnsUntilCompletion > 0) UnitTextBox.Text += Environment.NewLine + "Turns until completion: " + selectedUnit.TurnsUntilCompletion;
                 if (selectedUnit.Type == UnitType.Submarine && selectedUnit.IsSubmerged) UnitTextBox.Text += Environment.NewLine + "Oxygen left: " + ((Submarine)selectedUnit).OxygenLeft.ToString();
+                UnitTextBox.Text += Environment.NewLine + "Moves Left: " + selectedUnit.MovesLeft.ToString("0.0");
 
                 if (selectedUnit.Type.Abilities.Contains(Order.Move)) MoveBox.Show(); else MoveBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.LightArtillery)) LightArtilleryBox.Show(); else LightArtilleryBox.Hide();
@@ -267,8 +268,8 @@ namespace NavalGame
             if (MapDisplay.Game.SelectedUnit.DivesLeft >= 1)
             {
                 MapDisplay.Game.SelectedUnit.DiveOrSurface();
+                MapDisplay.PlaySound("Data\\Klaxon.wav");
             }
-            GameChanged();
         }
     }
 }

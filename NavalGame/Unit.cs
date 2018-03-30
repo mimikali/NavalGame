@@ -199,6 +199,7 @@ namespace NavalGame
             set
             {
                 _Cargo = Math.Min(Type.Capacity, Math.Max(0, value));
+                Player.Game.FireChangedEvent();
             }
         }
 
@@ -212,6 +213,7 @@ namespace NavalGame
             set
             {
                 _LoadsLeft = value;
+                Player.Game.FireChangedEvent();
             }
         }
 
@@ -225,6 +227,7 @@ namespace NavalGame
             set
             {
                 _TorpedoesLeft = value;
+                Player.Game.FireChangedEvent();
             }
         }
 
@@ -238,6 +241,7 @@ namespace NavalGame
             set
             {
                 _DivesLeft = value;
+                Player.Game.FireChangedEvent();
             }
         }
 
@@ -294,7 +298,7 @@ namespace NavalGame
             }
         }
 
-        public void Move(Point destination)
+        public bool Move(Point destination)
         {
             var distance = MapDisplay.PointDifference(_Position, destination);
             if (distance <= MovesLeft)
@@ -304,16 +308,15 @@ namespace NavalGame
                 {
                     MovesLeft -= distance;
                     _Position = destination;
+                    return true;
                 }
                 else
                 {
+                    if (!unit.IsDetected && unit.IsSubmerged) Game.FireSubmarineDetectedEvent();
                     unit.IsDetected = true;
                 }
             }
-            else
-            {
-                throw new Exception("Illegal move.");
-            }
+            return false;
         }
 
         public void DiveOrSurface()
@@ -327,7 +330,7 @@ namespace NavalGame
 
         public virtual void ResetProperties(bool initialSetup)
         {
-            MovesLeft = Type.Speed;
+            MovesLeft = IsSubmerged ? Type.SubmergedSpeed : Type.Speed;
             LightShotsLeft = 1;
             HeavyShotsLeft = 1;
             RepairsLeft = 1;
@@ -350,6 +353,7 @@ namespace NavalGame
                 Wreck wreck = new Wreck(Player, Position);
                 wreck.Name = Name;
                 Game.AddUnit(wreck);
+                Game.FireSinkingEvent();
             }
 
             bool isDetected = IsDetected;
@@ -361,6 +365,7 @@ namespace NavalGame
             {
                 isDetected = Game.Units.Any(u => MapDisplay.PointDifference(u.Position, Position) <= u.Type.SonarRange && u.Player.Faction != Player.Faction);
             }
+            if (IsDetected != isDetected && isDetected && IsSubmerged) Game.FireSubmarineDetectedEvent(); 
             IsDetected = isDetected;
         }
     }
