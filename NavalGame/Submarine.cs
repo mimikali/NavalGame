@@ -8,6 +8,21 @@ namespace NavalGame
 {
     public class Submarine : Unit
     {
+        private int _OxygenLeft;
+
+        public int OxygenLeft
+        {
+            get
+            {
+                return _OxygenLeft;
+            }
+
+            private set
+            {
+                _OxygenLeft = value;
+            }
+        }
+
         public Submarine(Player player, Point position) : base(UnitType.Submarine, player, position)
         {
 
@@ -17,25 +32,16 @@ namespace NavalGame
         {
             get
             {
-                return IsSubmerged ? "(Submerged)" : "";
+                return (IsSubmerged ? "Submerged" : "") + IsDetected;
             }
         }
 
-        public override bool IsDetected
+        public override void ResetProperties(bool initialSetup)
         {
-            get
-            {
-                if (!IsSubmerged) return true;
-                Random r = new Random(Game.TurnIndex);
-                foreach (Unit unit in Game.Units)
-                {
-                    if (MapDisplay.PointDifference(unit.Position, Position) <= unit.Type.SonarRange && unit.Player.Faction != Player.Faction)
-                    {
-                        if (r.NextDouble() < 0.5) return true;
-                    }
-                }
-                return false;
-            }
+            base.ResetProperties(initialSetup);
+            if (OxygenLeft <= 0) IsSubmerged = false;
+            if (IsSubmerged) OxygenLeft--;
+            else OxygenLeft = 15;
         }
     }
 }

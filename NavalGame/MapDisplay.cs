@@ -251,19 +251,24 @@ namespace NavalGame
                                 }
                                 pe.Graphics.DrawImage(unit.Type.Bitmap, new Rectangle(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale)));
                                 RectangleF stringRectangle = new RectangleF(new Point(displayPos.X, displayPos.Y), new Size(CameraScale, CameraScale));
-                                stringRectangle.Inflate(-0.05f * CameraScale, -0.05f * CameraScale);
+                                stringRectangle.Inflate(-0.1f * CameraScale, -0.1f * CameraScale);
                                 StringFormat bottomStringFormat = new StringFormat()
                                 {
                                     Alignment = StringAlignment.Center,
                                     LineAlignment = StringAlignment.Far
                                 };
-                                StringFormat topStringFormat = new StringFormat()
+                                Font nameFont = GetFontFromSize(stringRectangle.Width, unit.Name, 0.1f * CameraScale, 0.16f * CameraScale, pe.Graphics);
+                                pe.Graphics.DrawString(unit.Name, nameFont, Brushes.Black, stringRectangle, bottomStringFormat);
+                                if (!string.IsNullOrEmpty(unit.Information))
                                 {
-                                    Alignment = StringAlignment.Center,
-                                    LineAlignment = StringAlignment.Near
-                                };
-                                pe.Graphics.DrawString(unit.Name, new Font("Tahoma", CameraScale * 0.15f), Brushes.Black, stringRectangle, bottomStringFormat);
-                                pe.Graphics.DrawString(unit.Information, new Font("Tahoma", CameraScale * 0.1f), Brushes.Black, stringRectangle, topStringFormat);
+                                    StringFormat topStringFormat = new StringFormat()
+                                    {
+                                        Alignment = StringAlignment.Center,
+                                        LineAlignment = StringAlignment.Near,
+                                    };
+                                    Font infoFont = GetFontFromSize(stringRectangle.Width, unit.Information, 0.1f * CameraScale, nameFont.Size, pe.Graphics);
+                                    pe.Graphics.DrawString(unit.Information, infoFont, Brushes.Black, stringRectangle, topStringFormat);
+                                }
                                 if (Game.SelectedUnit == unit)
                                 {
                                     Rectangle rectangle = new Rectangle(displayPos, new Size(CameraScale, CameraScale));
@@ -276,6 +281,14 @@ namespace NavalGame
                 }
             }
             OrdersDisplay.Invalidate();
+        }
+
+        static Font GetFontFromSize(float space, string text, float minFontSize, float maxFontSize, Graphics graphics)
+        {
+            Font font = new Font("Tahoma", 10);
+            float width = graphics.MeasureString(text, font).Width;
+            float size = Math.Max(Math.Min(space / width * font.Size, maxFontSize), minFontSize);
+            return new Font("Tahoma", size);
         }
 
         protected override void OnSizeChanged(EventArgs e)
@@ -434,6 +447,7 @@ namespace NavalGame
                     if (Game.CurrentPlayer != null && Game.CurrentPlayer.Faction != Faction.Neutral)
                     {
                         Game.SelectedUnit = null;
+                        CurrentOrder = null;
 
                         Unit unit = Game.GetUnitAt(mapClickPosition);
                         if (unit != null && Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))

@@ -315,7 +315,7 @@ namespace NavalGame
                 LightPower = 0,
                 LightRange = 0,
                 TorpedoPower = 0,
-                Armour = 0.1f,
+                Armour = float.PositiveInfinity,
                 Capacity = 0,
                 RepairPower = 0,
                 BuildTime = 0,

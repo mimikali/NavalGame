@@ -20,11 +20,13 @@ namespace NavalGame
             set
             {
                 _ShipType = value;
+                Name = Player.GetUnitName(this);
             }
         }
 
         public ShipInProgress(Player player, Point position) : base(UnitType.ShipInProgress, player, position)
         {
+            
         }
 
         public override void ResetProperties(bool initialSetup)

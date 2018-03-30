@@ -108,6 +108,16 @@ namespace NavalGame
             }
             AddUnit(UnitType.Destroyer.CreateUnit(Players[0], new Point(15, 15)));
             AddUnit(UnitType.Submarine.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -510,20 +520,23 @@ namespace NavalGame
         {
             HashSet<Point> possibleShots = new HashSet<Point>();
 
-            for (int x = 0; x < Terrain.Width; x++)
+            if (!unit.IsSubmerged)
             {
-                for (int y = 0; y < Terrain.Height; y++)
+                for (int x = 0; x < Terrain.Width; x++)
                 {
-                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange)
+                    for (int y = 0; y < Terrain.Height; y++)
                     {
-                        Unit target = GetUnitAt(new Point(x, y));
-
-                        if (target != null && IsUnitVisibleForPlayer(unit.Player, target))
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange)
                         {
-                            if (unit.LightShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
-                        }
-                    }
+                            Unit target = GetUnitAt(new Point(x, y));
 
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged)
+                            {
+                                if (unit.LightShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
+                            }
+                        }
+
+                    }
                 }
             }
 
@@ -533,21 +546,23 @@ namespace NavalGame
         public HashSet<Point> GetPossibleHeavyShots(Unit unit)
         {
             HashSet<Point> possibleShots = new HashSet<Point>();
-
-            for (int x = 0; x < Terrain.Width; x++)
+            if (!unit.IsSubmerged)
             {
-                for (int y = 0; y < Terrain.Height; y++)
+                for (int x = 0; x < Terrain.Width; x++)
                 {
-                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange)
+                    for (int y = 0; y < Terrain.Height; y++)
                     {
-                        Unit target = GetUnitAt(new Point(x, y));
-
-                        if (target != null && IsUnitVisibleForPlayer(unit.Player, target))
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange)
                         {
-                            if (unit.HeavyShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
-                        }
-                    }
+                            Unit target = GetUnitAt(new Point(x, y));
 
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged)
+                            {
+                                if (unit.HeavyShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
+                            }
+                        }
+
+                    }
                 }
             }
 
@@ -612,7 +627,10 @@ namespace NavalGame
                             Unit target = GetUnitAt(new Point(x, y));
                             if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && (unit.Type.Capacity >= 1 && (target.Player == unit.Player || target.Player.Faction == Faction.Neutral)))
                             {
-                                possibleLoads.Add(new Point(x, y));
+                                if (!target.IsSubmerged)
+                                {
+                                    possibleLoads.Add(new Point(x, y));
+                                }
                             }
                         }
                     }
@@ -638,7 +656,10 @@ namespace NavalGame
                             Unit target = GetUnitAt(new Point(x, y));
                             if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && (unit.Type.Capacity >= 1 && (target.Player == unit.Player || target.Player.Faction == Faction.Neutral)))
                             {
-                                possibleLoads.Add(new Point(x, y));
+                                if (!target.IsSubmerged)
+                                {
+                                    possibleLoads.Add(new Point(x, y));
+                                }
                             }
                         }
                     }
@@ -664,7 +685,7 @@ namespace NavalGame
 
                             Unit target = GetUnitAt(new Point(x, y));
 
-                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target))
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged)
                             {
                                 possibleTorpedoes.Add(new Point(x, y));
                             }

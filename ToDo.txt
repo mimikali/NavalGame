@@ -6,11 +6,11 @@
 - Remove flags from unit bitmaps
 - Unit Names
 - Add diving sounds
-- Wreck is invincible (infinite armour)
 - Set amount of torpedoes
-- Disallow shooting from underwater
+- Disallow shooting from underwater!!!
 - Add depth charges
 - Add ping sound when sub is detected
+- No torpedoing onshore targets!!!
 
 * Change build/cancel buttons to side-by-side
 * Make textboxes read-only
@@ -25,3 +25,4 @@
 * Repair icon is blurred
 * Make ShipInProgress icon an hourglass
 * Add torpedo sounds
+* Wreck is invincible (infinite armour)

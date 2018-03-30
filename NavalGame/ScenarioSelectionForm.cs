@@ -138,9 +138,9 @@ namespace NavalGame
 
             #region Four Corners
             ScenarioDescriptions.Add("Four Corners", "This is a large, slower paced map.");
-            ScenarioFactions.Add("Four Corners", new List<Faction>() { Faction.USA, Faction.Japan, Faction.Neutral });
+            ScenarioFactions.Add("Four Corners", new List<Faction>() { Faction.USA, Faction.Germany, Faction.Neutral });
             ScenarioUnits.Add("Four Corners", new List<UnitType>() { UnitType.Port, UnitType.Factory, UnitType.Port, UnitType.Factory, UnitType.Factory, UnitType.Factory, UnitType.Factory, UnitType.Factory, UnitType.Factory, UnitType.Factory, UnitType.Port, UnitType.Port, UnitType.Factory, UnitType.Factory, UnitType.Factory, UnitType.Factory });
-            ScenarioUnitOwners.Add("Four Corners", new List<Faction>() { Faction.USA, Faction.Neutral, Faction.Japan, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.USA, Faction.Japan, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral });
+            ScenarioUnitOwners.Add("Four Corners", new List<Faction>() { Faction.USA, Faction.Neutral, Faction.Germany, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.USA, Faction.Germany, Faction.Neutral, Faction.Neutral, Faction.Neutral, Faction.Neutral });
             ScenarioUnitPositions.Add("Four Corners", new List<Point>() { new Point(5, 59), new Point(6, 63), new Point(58, 4), new Point(51, 2), new Point(59, 59), new Point(58, 55), new Point(13, 1), new Point(0, 8), new Point(10, 16), new Point(47, 43), new Point(19, 44), new Point(38, 16), new Point(29, 39), new Point(43, 36), new Point(23, 31), new Point(42, 29)});
 
             ScenarioList.Items.Add("Four Corners");

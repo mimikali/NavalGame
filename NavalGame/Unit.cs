@@ -22,6 +22,7 @@ namespace NavalGame
         private int _BuildsLeft;
         private int _TurnsUntilCompletion;
         private int _Cargo;
+        private int _Torpedoes;
         private int _LoadsLeft;
         private int _TorpedoesLeft;
         private int _DivesLeft;
@@ -32,7 +33,7 @@ namespace NavalGame
             _Player = player;
             _Position = position;
             _IsDetected = true;
-            Name = GenerateUnitName(player.Faction);
+            Name = player.GetUnitName(this);
             ResetProperties(true);
         }
 
@@ -249,8 +250,8 @@ namespace NavalGame
 
             set
             {
-                IsDetected = !value;
                 _IsSubmerged = value;
+                IsDetected = !value;
                 Player.Game.FireChangedEvent();
             }
         }
@@ -277,6 +278,19 @@ namespace NavalGame
                     _IsDetected = value;
                     Game.FireChangedEvent();
                 }
+            }
+        }
+
+        public int Torpedoes
+        {
+            get
+            {
+                return _Torpedoes;
+            }
+
+            set
+            {
+                _Torpedoes = value;
             }
         }
 
@@ -321,12 +335,15 @@ namespace NavalGame
             LoadsLeft = 1;
             TorpedoesLeft = 1;
             DivesLeft = 1;
+
+            if (IsSubmerged && new Random(GetHashCode()).NextDouble() <= 0.7)
+            {
+                IsDetected = false;
+            }
         }
 
         public virtual void OnGameChanged()
         {
-            bool isDetected = IsDetected;
-            bool inSonarRange = false;
             if (Health <= 0)
             {
                 Game.RemoveUnit(this);
@@ -335,71 +352,16 @@ namespace NavalGame
                 Game.AddUnit(wreck);
             }
 
-            if (!IsSubmerged) isDetected = true;
-            else
+            bool isDetected = IsDetected;
+            if (!IsSubmerged)
             {
-                Random r = new Random(Game.TurnIndex);
-                if (r.NextDouble() < 0.4)
-                {
-                    isDetected = false;
-                }
-
-                foreach (Unit unit in Game.Units)
-                {
-                    if (MapDisplay.PointDifference(unit.Position, Position) <= unit.Type.SonarRange && unit.Player.Faction != Player.Faction)
-                    {
-                        inSonarRange = true;
-                    }
-                }
-                if (inSonarRange)
-                {
-                    if (r.NextDouble() < 0.4) isDetected = true;
-                }
-                else
-                {
-                    isDetected = false;
-                }
+                isDetected = true;
+            }
+            else if (!IsDetected && new Random(Game.TurnIndex * GetHashCode()).NextDouble() < 0.3)
+            {
+                isDetected = Game.Units.Any(u => MapDisplay.PointDifference(u.Position, Position) <= u.Type.SonarRange && u.Player.Faction != Player.Faction);
             }
             IsDetected = isDetected;
-        }
-
-        protected string GenerateUnitName(Faction faction)
-        {
-            // todo
-            //switch (unit.Player.Faction)
-            //{
-            //    case Faction.USA:
-            //        switch (unit.Type)
-            //        {
-            //            case UnitType.Destroyer:
-            //                while (Units.Any(i => i.Name == unit.Name))
-            //                {
-            //                    unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 0 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
-            //                    if (_NameIteration == 2) _NameIteration = 0;
-            //                    else _NameIteration++;
-            //                }
-            //                break;
-
-            //            case UnitType.Battleship:
-            //                unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 1 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
-            //                if (_NameIteration == 2) _NameIteration = 0;
-            //                else _NameIteration++;
-            //                break;
-
-            //            case UnitType.Minesweeper:
-            //                unit.Name = UnitNames[0 * Enum.GetNames(typeof(Faction)).Length * Enum.GetNames(typeof(UnitType)).Length * 3 + 2 * Enum.GetNames(typeof(UnitType)).Length * 3 + _NameIteration];
-            //                if (_NameIteration == 2) _NameIteration = 0;
-            //                else _NameIteration++;
-            //                break;
-
-            //            default:
-            //                unit.Name = "Unnamed unit";
-            //                break;
-            //        }
-            //        break;
-            //}
-
-            return "Unit";
         }
     }
 }

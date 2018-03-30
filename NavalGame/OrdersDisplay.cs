@@ -32,6 +32,8 @@ namespace NavalGame
             UnloadPictureBox.Image = Bitmaps.Get("Data\\Unload.png");
             TorpedoPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             TorpedoPictureBox.Image = Bitmaps.Get("Data\\Torpedo.png");
+            DivePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            DivePictureBox.Image = Bitmaps.Get("Data\\Dive.png");
         }
 
         MapDisplay _MapDisplay;
@@ -60,6 +62,9 @@ namespace NavalGame
             LightArtilleryPictureBox.BorderStyle = BorderStyle.None;
             HeavyArtilleryPictureBox.BorderStyle = BorderStyle.None;
             TorpedoPictureBox.BorderStyle = BorderStyle.None;
+            DivePictureBox.BorderStyle = BorderStyle.None;
+
+            if (MapDisplay.Game.SelectedUnit != null) DivePictureBox.Image = MapDisplay.Game.SelectedUnit.IsSubmerged ? Bitmaps.Get("Data\\Surface.png") : Bitmaps.Get("Data\\Dive.png");
 
             switch (MapDisplay.CurrentOrder)
             {
@@ -132,6 +137,7 @@ namespace NavalGame
                 UnitTextBox.Text += Environment.NewLine + "Health: " + Math.Round(selectedUnit.Health * 100).ToString() + "%";
                 if (selectedUnit.Type.Capacity >= 1) UnitTextBox.Text += Environment.NewLine + "Cargo: " + selectedUnit.Cargo + "/" + selectedUnit.Type.Capacity;
                 if (selectedUnit.TurnsUntilCompletion > 0) UnitTextBox.Text += Environment.NewLine + "Turns until completion: " + selectedUnit.TurnsUntilCompletion;
+                if (selectedUnit.Type == UnitType.Submarine && selectedUnit.IsSubmerged) UnitTextBox.Text += Environment.NewLine + "Oxygen left: " + ((Submarine)selectedUnit).OxygenLeft.ToString();
 
                 if (selectedUnit.Type.Abilities.Contains(Order.Move)) MoveBox.Show(); else MoveBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.LightArtillery)) LightArtilleryBox.Show(); else LightArtilleryBox.Hide();
@@ -148,51 +154,15 @@ namespace NavalGame
                 }
                 else DiveBox.Hide();
 
-                if (selectedUnit.MovesLeft >= 1) MoveBox.Enabled = true;
-                else
-                {
-                    MoveBox.Enabled = false;
-                }
-                if (selectedUnit.LightShotsLeft >= 1) LightArtilleryBox.Enabled = true;
-                else
-                {
-                    LightArtilleryBox.Enabled = false;
-                }
-                if (selectedUnit.HeavyShotsLeft >= 1) HeavyArtilleryBox.Enabled = true;
-                else
-                {
-                    HeavyArtilleryBox.Enabled = false;
-                }
-                if (selectedUnit.BuildsLeft >= 1) BuildBox.Enabled = true;
-                else
-                {
-                    BuildBox.Enabled = false;
-                }
-                if (selectedUnit.RepairsLeft >= 1) RepairBox.Enabled = true;
-                else
-                {
-                    RepairBox.Enabled = false;
-                }
-                if (selectedUnit.LoadsLeft >= 1) LoadBox.Enabled = true;
-                else
-                {
-                    LoadBox.Enabled = false;
-                }
-                if (selectedUnit.LoadsLeft >= 1) UnloadBox.Enabled = true;
-                else
-                {
-                    UnloadBox.Enabled = false;
-                }
-                if (selectedUnit.TorpedoesLeft >= 1) TorpedoBox.Enabled = true;
-                else
-                {
-                    TorpedoBox.Enabled = false;
-                }
-                if (selectedUnit.DivesLeft >= 1) DiveBox.Enabled = true;
-                else
-                {
-                    DiveBox.Enabled = false;
-                }
+                MoveBox.Enabled = selectedUnit.MovesLeft >= 1;
+                LightArtilleryBox.Enabled = selectedUnit.LightShotsLeft >= 1 && !selectedUnit.IsSubmerged;
+                HeavyArtilleryBox.Enabled = selectedUnit.HeavyShotsLeft >= 1 && !selectedUnit.IsSubmerged;
+                BuildBox.Enabled = selectedUnit.BuildsLeft >= 1 && !selectedUnit.IsSubmerged;
+                RepairBox.Enabled = selectedUnit.RepairsLeft >= 1 && !selectedUnit.IsSubmerged;
+                LoadBox.Enabled = selectedUnit.LoadsLeft >= 1 && !selectedUnit.IsSubmerged;
+                UnloadBox.Enabled = selectedUnit.LoadsLeft >= 1 && !selectedUnit.IsSubmerged;
+                TorpedoBox.Enabled = selectedUnit.TorpedoesLeft >= 1;
+                DiveBox.Enabled = selectedUnit.DivesLeft >= 1;
 
                 if (MapDisplay.CurrentOrder == Order.Move && selectedUnit.MovesLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.LightArtillery && selectedUnit.LightShotsLeft < 1) MapDisplay.CurrentOrder = null;
