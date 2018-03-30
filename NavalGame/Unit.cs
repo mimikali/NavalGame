@@ -19,7 +19,7 @@ namespace NavalGame
         private int _LightShotsLeft;
         private int _HeavyShotsLeft;
         private int _RepairsLeft;
-        private int _BuildsLeft;
+        private int _DepthChargesLeft;
         private int _TurnsUntilCompletion;
         private int _Cargo;
         private int _Torpedoes;
@@ -33,6 +33,7 @@ namespace NavalGame
             _Player = player;
             _Position = position;
             _IsDetected = true;
+            _Torpedoes = Type.MaxTorpedoes;
             Name = player.GetUnitName(this);
             ResetProperties(true);
         }
@@ -161,20 +162,6 @@ namespace NavalGame
             }
         }
 
-        public int BuildsLeft
-        {
-            get
-            {
-                return _BuildsLeft;
-            }
-
-            set
-            {
-                _BuildsLeft = value;
-                Game.FireChangedEvent();
-            }
-        }
-
         public int TurnsUntilCompletion
         {
             get
@@ -264,7 +251,7 @@ namespace NavalGame
         {
             get
             {
-                return "";
+                return Health < 1 ? (Health * 100).ToString("0") + "%" : "";
             }
         }
 
@@ -295,6 +282,21 @@ namespace NavalGame
             set
             {
                 _Torpedoes = value;
+                Game.FireChangedEvent();
+            }
+        }
+
+        public int DepthChargesLeft
+        {
+            get
+            {
+                return _DepthChargesLeft;
+            }
+
+            set
+            {
+                _DepthChargesLeft = value;
+                Game.FireChangedEvent();
             }
         }
 
@@ -331,13 +333,14 @@ namespace NavalGame
         public virtual void ResetProperties(bool initialSetup)
         {
             MovesLeft = IsSubmerged ? Type.SubmergedSpeed : Type.Speed;
+            if (Health < 0.6) MovesLeft = (float)Math.Round(Math.Max(1, MovesLeft * 0.7f));
             LightShotsLeft = 1;
             HeavyShotsLeft = 1;
             RepairsLeft = 1;
-            BuildsLeft = 1;
             LoadsLeft = 1;
             TorpedoesLeft = 1;
             DivesLeft = 1;
+            DepthChargesLeft = 1;
 
             if (IsSubmerged && new Random(GetHashCode()).NextDouble() <= 0.7)
             {

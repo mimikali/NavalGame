@@ -32,7 +32,7 @@ namespace NavalGame
         {
             get
             {
-                return (IsSubmerged ? "Submerged" : "") + IsDetected;
+                return (IsSubmerged ? "Submerged\n" : "") + base.Information;
             }
         }
 

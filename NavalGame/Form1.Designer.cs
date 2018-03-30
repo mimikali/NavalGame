@@ -61,6 +61,8 @@
             this.MapDisplay.Size = new System.Drawing.Size(511, 430);
             this.MapDisplay.TabIndex = 0;
             this.MapDisplay.TabStop = false;
+            this.MapDisplay.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.MapDisplay.BackColor = System.Drawing.Color.Black;// System.Drawing.SystemColors.ControlDark;
             // 
             // Form1
             // 

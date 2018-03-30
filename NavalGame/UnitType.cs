@@ -14,12 +14,15 @@ namespace NavalGame
         public float Speed;
         public float SubmergedSpeed;
         public float ViewDistance;
+        public bool AlwaysVisible;
         public float SonarRange;
         public float HeavyPower;
         public float HeavyRange;
         public float LightPower;
         public float LightRange;
         public int TorpedoPower;
+        public int MaxTorpedoes;
+        public float TorpedoHitProbability;
         public float Armour;
         public int Capacity;
         public float RepairPower;
@@ -71,10 +74,10 @@ namespace NavalGame
                 ViewDistance = 9,
                 SonarRange = 0,
                 HeavyPower = 7,
-                HeavyRange = 12,
+                HeavyRange = 9,
                 LightPower = 2,
                 LightRange = 6,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.4f,
                 Armour = 18,
                 Capacity = 0,
                 RepairPower = 0,
@@ -93,10 +96,10 @@ namespace NavalGame
                 ViewDistance = 9,
                 SonarRange = 0,
                 HeavyPower = 6,
-                HeavyRange = 11,
+                HeavyRange = 9,
                 LightPower = 2,
                 LightRange = 6,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.4f,
                 Armour = 12,
                 Capacity = 0,
                 RepairPower = 0,
@@ -119,7 +122,7 @@ namespace NavalGame
                 HeavyRange = 9,
                 LightPower = 3,
                 LightRange = 6,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.4f,
                 Armour = 12,
                 Capacity = 0,
                 RepairPower = 0,
@@ -142,6 +145,7 @@ namespace NavalGame
                 LightPower = 4,
                 LightRange = 7,
                 TorpedoPower = 9,
+                TorpedoHitProbability = 0.2f,
                 Armour = 9,
                 Capacity = 0,
                 RepairPower = 0,
@@ -152,7 +156,7 @@ namespace NavalGame
 
             Destroyer = new UnitType
             {
-                Abilities = new List<Order> { Order.Move, Order.LightArtillery, Order.Torpedo, Order.DepthCharge },
+                Abilities = new List<Order> { Order.Move, Order.LightArtillery, Order.Torpedo, Order.DepthCharge, Order.LoadTorpedoes },
                 Name = "Destroyer",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\DestroyerLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Destroyer.png"),
@@ -164,6 +168,8 @@ namespace NavalGame
                 LightPower = 2,
                 LightRange = 5,
                 TorpedoPower = 9,
+                TorpedoHitProbability = 0.2f,
+                MaxTorpedoes = 4,
                 Armour = 4,
                 Capacity = 0,
                 RepairPower = 0,
@@ -174,23 +180,25 @@ namespace NavalGame
 
             TorpedoBoat = new UnitType
             {
-                Abilities = new List<Order> { Order.Move, Order.Torpedo },
+                Abilities = new List<Order> { Order.Move, Order.Torpedo, Order.LoadTorpedoes },
                 Name = "Torpedo Boat",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\TorpedoBoatLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\TorpedoBoat.png"),
-                Speed = 7,
+                Speed = 6,
                 ViewDistance = 8,
                 SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
-                TorpedoPower = 9,
+                TorpedoPower = 6,
+                MaxTorpedoes = 2,
+                TorpedoHitProbability = 0.2f,
                 Armour = 0.1f,
                 Capacity = 0,
                 RepairPower = 0,
-                BuildTime = 1,
-                Cost = 3,
+                BuildTime = 2,
+                Cost = 4,
                 CreateUnit = (player, position) => new TorpedoBoat(player, position)
             };
 
@@ -207,7 +215,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 1,
                 LightRange = 4,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.2f,
                 Armour = 4,
                 Capacity = 0,
                 RepairPower = 0,
@@ -222,14 +230,14 @@ namespace NavalGame
                 Name = "Light Cargo Ship",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\LightCargoLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\LightCargo.png"),
-                Speed = 5,
+                Speed = 4,
                 ViewDistance = 8,
                 SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.4f,
                 Armour = 2,
                 Capacity = 5,
                 RepairPower = 0,
@@ -251,9 +259,9 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.4f,
                 Armour = 3,
-                Capacity = 8,
+                Capacity = 10,
                 RepairPower = 0,
                 BuildTime = 3,
                 Cost = 7,
@@ -262,7 +270,7 @@ namespace NavalGame
 
             Submarine = new UnitType
             {
-                Abilities = new List<Order> { Order.Move, Order.Torpedo, Order.LightArtillery, Order.DiveOrSurface },
+                Abilities = new List<Order> { Order.Move, Order.Torpedo, Order.LightArtillery, Order.DiveOrSurface, Order.LoadTorpedoes },
                 Name = "Submarine",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\SubmarineLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Submarine.png"),
@@ -275,6 +283,8 @@ namespace NavalGame
                 LightPower = 1,
                 LightRange = 4,
                 TorpedoPower = 9,
+                MaxTorpedoes = 4,
+                TorpedoHitProbability = 0.2f,
                 Armour = 2,
                 Capacity = 0,
                 RepairPower = 0,
@@ -337,7 +347,7 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
-                TorpedoPower = 0,
+                TorpedoHitProbability = 0.8f,
                 Armour = 0.1f,
                 Capacity = 0,
                 RepairPower = 0,
@@ -348,14 +358,15 @@ namespace NavalGame
 
             Port = new UnitType
             {
-                Abilities = new List<Order> { Order.Build, Order.Repair },
+                Abilities = new List<Order> { Order.Build, Order.Repair, Order.HeavyArtillery },
                 Name = "Port",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\PortLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Port.png"),
                 Speed = 0,
                 ViewDistance = 10,
-                HeavyPower = 0,
-                HeavyRange = 0,
+                AlwaysVisible = true,
+                HeavyPower = 7,
+                HeavyRange = 9,
                 LightPower = 0,
                 LightRange = 0,
                 TorpedoPower = 0,
@@ -375,6 +386,7 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Factory.png"),
                 Speed = 0,
                 ViewDistance = 100,
+                AlwaysVisible = true,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 0,

@@ -15,17 +15,23 @@ namespace NavalGame
         Game Game;
         Form ScenarioSelectionForm;
 
-        public Form1(Terrain terrain, Form scenarioSelectionForm, List<Faction> factions, List<UnitType> units, List<Faction> unitOwners, List<Point> unitPositions)
+        public Form1(Bitmap map, ScenarioSelectionForm scenarioSelectionForm)
         {
             InitializeComponent();
             ScenarioSelectionForm = scenarioSelectionForm;
-            Game = new Game(terrain, factions, units, unitOwners, unitPositions);
+            Game = new Game(map);
+            Game.PlayerChanged += GamePlayerChanged;
             MapDisplay.Game = Game;
             MapDisplay.OrdersDisplay = OrdersDisplay;
             OrdersDisplay.MapDisplay = MapDisplay;
             WindowState = FormWindowState.Maximized;
+            GamePlayerChanged();
         }
 
+        private void GamePlayerChanged()
+        {
+            Text = "Naval Game - Turn " + (Game.TurnIndex + 1);
+        }
 
         private void Form1Closed(object sender, FormClosedEventArgs e)
         {

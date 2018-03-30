@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace NavalGame
 {
@@ -34,10 +35,13 @@ namespace NavalGame
             TorpedoPictureBox.Image = Bitmaps.Get("Data\\Torpedo.png");
             DivePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             DivePictureBox.Image = Bitmaps.Get("Data\\Dive.png");
+            LoadTorpedoesPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            LoadTorpedoesPictureBox.Image = Bitmaps.Get("Data\\LoadTorpedoes.png");
+            DepthChargePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            DepthChargePictureBox.Image = Bitmaps.Get("Data\\DepthCharge.png");
         }
 
         MapDisplay _MapDisplay;
-        Player _NextPlayer;
 
         public MapDisplay MapDisplay
         {
@@ -63,6 +67,8 @@ namespace NavalGame
             HeavyArtilleryPictureBox.BorderStyle = BorderStyle.None;
             TorpedoPictureBox.BorderStyle = BorderStyle.None;
             DivePictureBox.BorderStyle = BorderStyle.None;
+            LoadTorpedoesPictureBox.BorderStyle = BorderStyle.None;
+            DepthChargePictureBox.BorderStyle = BorderStyle.None;
 
             if (MapDisplay.Game.SelectedUnit != null) DivePictureBox.Image = MapDisplay.Game.SelectedUnit.IsSubmerged ? Bitmaps.Get("Data\\Surface.png") : Bitmaps.Get("Data\\Dive.png");
 
@@ -102,6 +108,18 @@ namespace NavalGame
                 case Order.Torpedo:
                     TorpedoPictureBox.BorderStyle = BorderStyle.Fixed3D;
                     break;
+
+                case Order.DiveOrSurface:
+                    DivePictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.LoadTorpedoes:
+                    LoadTorpedoesPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.DepthCharge:
+                    DepthChargePictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
             }
 
             if (MapDisplay.Game.CurrentPlayer != null)
@@ -133,12 +151,16 @@ namespace NavalGame
                 UnitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 UnitPictureBox.Image = MapDisplay.Game.SelectedUnit.Type.LargeBitmap;
                 UnitTextBox.Text = selectedUnit.Name;
-                UnitTextBox.Text += Environment.NewLine + selectedUnit.Type.Name;
-                UnitTextBox.Text += Environment.NewLine + "Health: " + Math.Round(selectedUnit.Health * 100).ToString() + "%";
+                UnitTextBox.Text += " : " + selectedUnit.Type.Name;
+                UnitTextBox.Text += Environment.NewLine + "Integrity: " + Math.Round(selectedUnit.Health * 100).ToString() + "%";
                 if (selectedUnit.Type.Capacity >= 1) UnitTextBox.Text += Environment.NewLine + "Cargo: " + selectedUnit.Cargo + "/" + selectedUnit.Type.Capacity;
                 if (selectedUnit.TurnsUntilCompletion > 0) UnitTextBox.Text += Environment.NewLine + "Turns until completion: " + selectedUnit.TurnsUntilCompletion;
                 if (selectedUnit.Type == UnitType.Submarine && selectedUnit.IsSubmerged) UnitTextBox.Text += Environment.NewLine + "Oxygen left: " + ((Submarine)selectedUnit).OxygenLeft.ToString();
-                UnitTextBox.Text += Environment.NewLine + "Moves Left: " + selectedUnit.MovesLeft.ToString("0.0");
+                if (selectedUnit.Type.Abilities.Contains(Order.Torpedo)) UnitTextBox.Text += Environment.NewLine + "Torpedo salvoes left: " + selectedUnit.Torpedoes;
+                if (selectedUnit.Type.Abilities.Contains(Order.Move)) UnitTextBox.Text += Environment.NewLine + "Moves Left: " + selectedUnit.MovesLeft.ToString("0.0");
+                if (selectedUnit.Type.Abilities.Contains(Order.LightArtillery)) UnitTextBox.Text += Environment.NewLine + "Light Artillery " + "Power: " + selectedUnit.Type.LightPower + ", Range: " + selectedUnit.Type.LightRange;
+                if (selectedUnit.Type.Abilities.Contains(Order.HeavyArtillery)) UnitTextBox.Text += Environment.NewLine + "Heavy Artillery " + "Power: " + selectedUnit.Type.HeavyPower + ", Range: " + selectedUnit.Type.HeavyRange;
+                if (!float.IsPositiveInfinity(selectedUnit.Type.Armour)) UnitTextBox.Text += Environment.NewLine + "Armour: " + selectedUnit.Type.Armour;
 
                 if (selectedUnit.Type.Abilities.Contains(Order.Move)) MoveBox.Show(); else MoveBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.LightArtillery)) LightArtilleryBox.Show(); else LightArtilleryBox.Hide();
@@ -154,25 +176,30 @@ namespace NavalGame
                     DiveButton.Text = selectedUnit.IsSubmerged ? "Surface" : "Dive";
                 }
                 else DiveBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.LoadTorpedoes)) LoadTorpedoesBox.Show(); else LoadTorpedoesBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.DepthCharge)) DepthChargeBox.Show(); else DepthChargeBox.Hide();
 
                 MoveBox.Enabled = selectedUnit.MovesLeft >= 1;
                 LightArtilleryBox.Enabled = selectedUnit.LightShotsLeft >= 1 && !selectedUnit.IsSubmerged;
                 HeavyArtilleryBox.Enabled = selectedUnit.HeavyShotsLeft >= 1 && !selectedUnit.IsSubmerged;
-                BuildBox.Enabled = selectedUnit.BuildsLeft >= 1 && !selectedUnit.IsSubmerged;
+                BuildBox.Enabled = !selectedUnit.IsSubmerged;
                 RepairBox.Enabled = selectedUnit.RepairsLeft >= 1 && !selectedUnit.IsSubmerged;
                 LoadBox.Enabled = selectedUnit.LoadsLeft >= 1 && !selectedUnit.IsSubmerged;
                 UnloadBox.Enabled = selectedUnit.LoadsLeft >= 1 && !selectedUnit.IsSubmerged;
                 TorpedoBox.Enabled = selectedUnit.TorpedoesLeft >= 1;
                 DiveBox.Enabled = selectedUnit.DivesLeft >= 1;
+                LoadTorpedoesBox.Enabled = selectedUnit.Torpedoes < 4;
+                DepthChargeBox.Enabled = selectedUnit.DepthChargesLeft >= 1;
 
                 if (MapDisplay.CurrentOrder == Order.Move && selectedUnit.MovesLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.LightArtillery && selectedUnit.LightShotsLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.HeavyArtillery && selectedUnit.HeavyShotsLeft < 1) MapDisplay.CurrentOrder = null;
-                if (MapDisplay.CurrentOrder == Order.Build && selectedUnit.BuildsLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.Repair && selectedUnit.RepairsLeft< 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.Load && selectedUnit.LoadsLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.Unload && selectedUnit.LoadsLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.Torpedo && selectedUnit.TorpedoesLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.LoadTorpedoes && selectedUnit.Torpedoes == selectedUnit.Type.MaxTorpedoes) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.DepthCharge && selectedUnit.DepthChargesLeft < 1) MapDisplay.CurrentOrder = null;
 
                 HealthBar.Value = (int)(selectedUnit.Health * 100);
             }
@@ -199,17 +226,15 @@ namespace NavalGame
 
         private void NextTurnButtonClick(object sender, EventArgs e)
         {
-            _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 1) % MapDisplay.Game.Players.Count];
-            if (_NextPlayer.Faction == Faction.Neutral) _NextPlayer = MapDisplay.Game.Players[(MapDisplay.Game.Players.IndexOf(MapDisplay.Game.CurrentPlayer) + 2) % MapDisplay.Game.Players.Count];
             MapDisplay.Game.CurrentPlayer = null;
             NextTurnButton.Hide();
             BeginTurnButton.Show();
+            MapDisplay.PlaySound("Data\\Bell.wav");
         }
 
         private void BeginTurnButtonClick(object sender, EventArgs e)
         {
-            if (_NextPlayer == MapDisplay.Game.Players[0]) MapDisplay.Game.TurnIndex++;
-            MapDisplay.Game.CurrentPlayer = _NextPlayer ?? MapDisplay.Game.Players[0]; //_NextPlayer != null ? _NextPlayer : MapDisplay.Game.Players[0];
+            MapDisplay.Game.NextPlayer();
             BeginTurnButton.Hide();
             NextTurnButton.Show();
         }
@@ -270,6 +295,16 @@ namespace NavalGame
                 MapDisplay.Game.SelectedUnit.DiveOrSurface();
                 MapDisplay.PlaySound("Data\\Klaxon.wav");
             }
+        }
+
+        private void LoadTorpedoesButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.LoadTorpedoes;
+        }
+
+        private void DepthChargeButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.DepthCharge;
         }
     }
 }

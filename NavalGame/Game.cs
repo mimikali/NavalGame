@@ -18,6 +18,8 @@ namespace NavalGame
         public event Action Changed;
         public event Action Sinking;
         public event Action SubmarineDetected;
+        public event Action PlayerChanged;
+        public Player _NextPlayer;
         public int TurnIndex;
         public Random Random = new Random();
 
@@ -76,13 +78,9 @@ namespace NavalGame
                     {
                         unit.ResetProperties(false);
                     }
-
-                    foreach (Unit unit in Units.OfType<Factory>())
-                    {
-                        unit.ResetProperties(false);
-                    }
                 }
                 if (Changed != null) Changed();
+                FirePlayerChangedEvent();
             }
         }
 
@@ -94,32 +92,83 @@ namespace NavalGame
             }
         }
 
-        public Game(Terrain terrain, List<Faction> factions, List<UnitType> units, List<Faction> unitOwners, List<Point> unitPositions)
+        public Game(Bitmap map)
         {
-            //_Terrain = GenerateTerrain(20, 20, 1);
             _Units = new List<Unit>();
             _Players = new List<Player>();
-            _Terrain = terrain;
-            foreach(Faction faction in factions)
+            _Terrain = new Terrain(map);
+
+            for (int y = 0; y < map.Height; y++)
             {
-                _Players.Add(new Player(this, faction));
+                for (int x = 0; x < map.Width; x++)
+                {
+                    Color pixel = map.GetPixel(x, y);
+
+                    if (pixel == GetFactionColor(Faction.England))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.England))
+                        {
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.England), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.England));
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.England), new Point(x, y)));
+                        }
+                    }
+                    else if (pixel == GetFactionColor(Faction.USA))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.USA))
+                        {
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.USA), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.USA));
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.USA), new Point(x, y)));
+                        }
+                    }
+                    else if (pixel == GetFactionColor(Faction.Germany))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Germany))
+                        {
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Germany), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.Germany));
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Germany), new Point(x, y)));
+                        }
+                    }
+                    else if (pixel == GetFactionColor(Faction.Japan))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Japan))
+                        {
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Japan), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.Japan));
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Japan), new Point(x, y)));
+                        }
+                    }
+
+                    else if (pixel == GetFactionColor(Faction.Neutral))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Neutral))
+                        {
+                            AddUnit(new Factory(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.Neutral));
+                            AddUnit(new Factory(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
+                        }
+                    }
+                }
             }
-            for (int i = 0; i < units.Count(); i++)
-            {
-                AddUnit(units[i].CreateUnit(_Players[factions.IndexOf(unitOwners[i])], unitPositions[i]));
-            }
-            AddUnit(UnitType.Destroyer.CreateUnit(Players[0], new Point(15, 15)));
-            AddUnit(UnitType.Submarine.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
-            AddUnit(UnitType.Battleship.CreateUnit(Players[1], new Point(19, 15)));
+
+            _NextPlayer = Players[0];
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -156,6 +205,20 @@ namespace NavalGame
             FireChangedEvent();
         }
 
+        public void NextPlayer()
+        {
+            CurrentPlayer = _NextPlayer;
+            _NextPlayer = Players[(Players.IndexOf(CurrentPlayer) + 1) % Players.Count];
+            if (_NextPlayer == Players[0])
+            {
+                TurnIndex++;
+            }
+            if (CurrentPlayer.Faction == Faction.Neutral)
+            {
+                NextPlayer();
+            }
+        }
+
         public void FireChangedEvent()
         {
             foreach (Unit unit in Units.ToArray())
@@ -174,6 +237,11 @@ namespace NavalGame
         public void FireSubmarineDetectedEvent()
         {
             if (SubmarineDetected != null) SubmarineDetected();
+        }
+
+        public void FirePlayerChangedEvent()
+        {
+            if (PlayerChanged != null) PlayerChanged();
         }
 
         public int LightArtillery(Point target, Unit shooter)
@@ -381,7 +449,10 @@ namespace NavalGame
 
         public int Torpedo(Point target, Unit torpedoer)
         {
+            if (torpedoer.TorpedoesLeft <= 0 || torpedoer.Torpedoes <= 0) return 0;
+
             torpedoer.TorpedoesLeft--;
+            torpedoer.Torpedoes--;
 
             Unit targetUnit = GetUnitAt(target);
 
@@ -390,26 +461,19 @@ namespace NavalGame
                 return 0;
             }
 
-            List<int> chances = new List<int>();
-            for (int i = 0; i < MapDisplay.PointDifference(torpedoer.Position, target); i++)
+            int result = 0;
+
+            if (Random.NextDouble() <= targetUnit.Type.TorpedoHitProbability)
             {
-                chances.Add(0);
+                if (Random.NextDouble() <= 0.1)
+                {
+                    result = 2;
+                }
+                else
+                {
+                    result = 1;
+                }
             }
-
-            for (int i = 0; i < targetUnit.Type.Speed; i++)
-            {
-                chances.Add(0);
-            }
-
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(2);
-
-            int result = chances[Random.Next(0, chances.Count)];
 
             float basedamage = torpedoer.Type.TorpedoPower / targetUnit.Type.Armour;
             float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
@@ -426,6 +490,58 @@ namespace NavalGame
                     return (int)((2 * basedamage + randomVariation) * 100);
             }
             return 0;
+        }
+
+        public int LoadTorpedoes(Point target, Unit loader)
+        {
+            Unit targetUnit = GetUnitAt(target);
+
+            if (targetUnit == null) return 0;
+            if (targetUnit == loader) return 0;
+            if (targetUnit.Player != loader.Player) return 0;
+            if (targetUnit.Type != UnitType.Port) return 0;
+            if (targetUnit.Cargo < 1) return 0;
+            if (!IsUnitVisibleForPlayer(loader.Player, targetUnit)) return 0;
+            if (targetUnit.IsSubmerged) return 0;
+
+            targetUnit.Cargo--;
+            loader.Torpedoes = loader.Type.MaxTorpedoes;
+            return 1;
+        }
+
+        public int DepthCharge(Point target, Unit charger)
+        {
+            Unit targetUnit = GetUnitAt(target);
+
+            if (targetUnit == null) return 0;
+            if (!targetUnit.IsSubmerged) return 0;
+            if (targetUnit == charger) return 0;
+            if (targetUnit.Player == charger.Player) return 0;
+            if (charger.DepthChargesLeft < 1) return 0;
+
+            charger.DepthChargesLeft--;
+            float r = (float)Random.NextDouble();
+            if (r < 0.1f)
+            {
+                targetUnit.Health = 0;
+                return 100;
+            }
+            else if (r < 0.3f)
+            {
+                float r2 = (float)(Random.NextDouble() * 0.1f - 0.05f);
+                targetUnit.Health -= (float)(0.6 + r2);
+                return (int)(60 + r2 * 100);
+            }
+            else if (r < 0.6f)
+            {
+                float r2 = (float)(Random.NextDouble() * 0.1 - 0.05);
+                targetUnit.Health -= (float)(0.3 + r2);
+                return (int)(30 + r2 * 100);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public static Bitmap GetFactionFlag(Faction faction)
@@ -538,7 +654,7 @@ namespace NavalGame
                 {
                     for (int y = 0; y < Terrain.Height; y++)
                     {
-                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange)
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange && Terrain.Get(x, y) == TerrainType.Sea)
                         {
                             Unit target = GetUnitAt(new Point(x, y));
 
@@ -564,7 +680,7 @@ namespace NavalGame
                 {
                     for (int y = 0; y < Terrain.Height; y++)
                     {
-                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange)
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange && Terrain.Get(x, y) == TerrainType.Sea)
                         {
                             Unit target = GetUnitAt(new Point(x, y));
 
@@ -620,7 +736,7 @@ namespace NavalGame
                     {
                         if (GetUnitAt(new Point(x, y)) == null)
                         {
-                            if (unit.BuildsLeft >= 1 && Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
+                            if (Terrain.Get(x, y, TerrainType.Land) == TerrainType.Sea)
                             {
                                 possibleBuilds.Add(new Point(x, y));
                             }
@@ -700,7 +816,7 @@ namespace NavalGame
                 {
                     if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 2)
                     {
-                        if (unit.TorpedoesLeft >= 1 && new Point(x, y) != unit.Position)
+                        if (unit.TorpedoesLeft >= 1 && new Point(x, y) != unit.Position && Terrain.Get(x, y) == TerrainType.Sea)
                         {
 
                             Unit target = GetUnitAt(new Point(x, y));
@@ -716,6 +832,147 @@ namespace NavalGame
             }
 
             return possibleTorpedoes;
+        }
+
+        public HashSet<Point> GetPossibleTorpedoLoads(Unit unit)
+        {
+            HashSet<Point> possibleLoads = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                    {
+                        if (new Point(x, y) != unit.Position)
+                        {
+                            Unit target = GetUnitAt(new Point(x, y));
+
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player == unit.Player && target.Type == UnitType.Port && target.Cargo >= 1)
+                            {
+                                possibleLoads.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleLoads;
+
+        }
+
+        public HashSet<Point> GetPossibleDepthCharges(Unit unit)
+        {
+            HashSet<Point> possibleCharges = new HashSet<Point>();
+
+            if (unit.DepthChargesLeft >= 1)
+            {
+                for (int x = 0; x < Terrain.Width; x++)
+                {
+                    for (int y = 0; y < Terrain.Height; y++)
+                    {
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                        {
+                            if (new Point(x, y) != unit.Position && MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 1.5)
+                            {
+                                possibleCharges.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleCharges;
+        }
+
+        public HashSet<Point> GetMoveRange(Unit unit)
+        {
+            HashSet<Point> range = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.MovesLeft)
+                    {
+                        range.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            return range;
+        }
+
+        public HashSet<Point> GetLightArtilleryRange(Unit unit)
+        {
+            HashSet<Point> range = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange)
+                    {
+                        range.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            return range;
+        }
+
+        public HashSet<Point> GetHeavyArtilleryRange(Unit unit)
+        {
+            HashSet<Point> range = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange)
+                    {
+                        range.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            return range;
+        }
+
+        public HashSet<Point> GetTorpedoRange(Unit unit)
+        {
+            HashSet<Point> range = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 2)
+                    {
+                        range.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            return range;
+        }
+
+        public HashSet<Point> GetDepthChargeRange(Unit unit)
+        {
+            HashSet<Point> range = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= 1.5)
+                    {
+                        range.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            return range;
         }
     }
 }

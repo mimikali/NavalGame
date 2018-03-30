@@ -18,14 +18,15 @@ namespace NavalGame
         public override void ResetProperties(bool initialSetup)
         {
             base.ResetProperties(initialSetup);
+            
             if (!initialSetup)
             {
+                _TurnsToLive--;
                 if (_TurnsToLive <= 0)
                 {
                     Game.RemoveUnit(this);
                 }
             }
-            _TurnsToLive--;
         }
     }
 }

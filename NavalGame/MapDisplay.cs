@@ -19,13 +19,6 @@ namespace NavalGame
         private Point? _ClickPoint;
         private SoundPlayer _SoundPlayer;
         private Order? _CurrentOrder;
-        private List<Point> _PossibleMoves;
-        private List<Point> _PossibleLightShots;
-        private List<Point> _PossibleHeavyShots;
-        private List<Point> _PossibleRepairs;
-        private List<Point> _PossibleBuilds;
-        private List<Point> _PossibleLoads;
-        private List<Point> _PossibleTorpedoes;
         private Unit _LastSelectedUnit;
         private Bitmap[] CachedTiles;
         private OrdersDisplay _OrdersDisplay;
@@ -52,6 +45,7 @@ namespace NavalGame
                         _Game.Changed -= GameChanged;
                         _Game.Sinking -= Sinking;
                         _Game.SubmarineDetected -= SubmarineDetected;
+                        _Game.PlayerChanged -= PlayerChanged;
                     }
                     _Game = value;
                     _MoveMode = MoveType.Drag;
@@ -61,6 +55,7 @@ namespace NavalGame
                     _Game.Changed += GameChanged;
                     _Game.Sinking += Sinking;
                     _Game.SubmarineDetected += SubmarineDetected;
+                    _Game.PlayerChanged += PlayerChanged;
                 }
             }
         }
@@ -74,7 +69,6 @@ namespace NavalGame
                     if (Game.SelectedUnit != null && Game.SelectedUnit.Type.Abilities.Contains(Order.Move))
                     {
                         CurrentOrder = Order.Move;
-                        _PossibleMoves.Clear();
                     }
                 }
             }
@@ -91,6 +85,12 @@ namespace NavalGame
         private void SubmarineDetected()
         {
             PlaySound("Data\\SonarPing.wav");
+        }
+
+        private void PlayerChanged()
+        {
+            CameraScale = 0;
+            CameraPosition = new Point(Game.Terrain.Width / 2, Game.Terrain.Height / 2);
         }
 
         public OrdersDisplay OrdersDisplay
@@ -173,13 +173,6 @@ namespace NavalGame
             CachedTiles = new Bitmap[16];
             CameraScale = 20;
             _CurrentOrder = null;
-            _PossibleMoves = new List<Point>();
-            _PossibleLightShots = new List<Point>();
-            _PossibleHeavyShots = new List<Point>();
-            _PossibleRepairs = new List<Point>();
-            _PossibleBuilds = new List<Point>();
-            _PossibleLoads = new List<Point>();
-            _PossibleTorpedoes = new List<Point>();
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -200,7 +193,7 @@ namespace NavalGame
             {
                 foreach (Unit unit in Game.Units)
                 {
-                    if (Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit))
+                    if (Game.IsUnitVisibleForPlayer(Game.CurrentPlayer, unit) || unit.Type.AlwaysVisible)
                     {
                         Point displayPos = MapToDisplay(unit.Position);
                         if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
@@ -254,6 +247,12 @@ namespace NavalGame
                                     Rectangle rectangle = new Rectangle(displayPos, new Size(CameraScale, CameraScale));
                                     rectangle.Inflate((int)Math.Round(CameraScale / 16f), (int)Math.Round(CameraScale / 16f));
                                     pe.Graphics.DrawImage(selected, rectangle);
+                                }
+                                if (unit.MovesLeft >= 1)
+                                {
+                                    Rectangle rectangle = new Rectangle(displayPos.X, displayPos.Y, CameraScale / 8, CameraScale / 8);
+                                    pe.Graphics.FillEllipse(Brushes.White, rectangle);
+                                    pe.Graphics.DrawEllipse(Pens.Black, rectangle);
                                 }
                             }
                         }
@@ -313,15 +312,13 @@ namespace NavalGame
                             if (hit == 0)
                             {
                                 PlaySound("Data\\LightArtilleryMiss.wav");
-                                _ToolTip.IsBalloon = true;
                                 _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
 
                             }
                             else
                             {
                                 PlaySound("Data\\LightArtilleryHit.wav");
-                                _ToolTip.IsBalloon = true;
-                                _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                                _ToolTip.Show("Hit, damage " + Math.Min(hit, 100).ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
                             selectionPossible = false;
                             CurrentOrder = null;
@@ -337,15 +334,13 @@ namespace NavalGame
                             if (hit == 0)
                             {
                                 PlaySound("Data\\HeavyArtilleryMiss.wav");
-                                _ToolTip.IsBalloon = true;
                                 _ToolTip.Show("Miss", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
 
                             }
                             else
                             {
                                 PlaySound("Data\\HeavyArtilleryHit.wav");
-                                _ToolTip.IsBalloon = true;
-                                _ToolTip.Show("Hit " + hit.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                                _ToolTip.Show("Hit, damage " + Math.Min(hit, 100).ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                             }
                             selectionPossible = false;
                             CurrentOrder = null;
@@ -382,6 +377,7 @@ namespace NavalGame
                         {
                             int load = Game.Load(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Loaded " + load.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                            PlaySound("Data\\Cargo.wav");
                         }
                         selectionPossible = false;
                         CurrentOrder = null;
@@ -394,6 +390,7 @@ namespace NavalGame
                         {
                             int unload = Game.Unload(mapClickPosition, Game.SelectedUnit);
                             _ToolTip.Show("Unloaded " + unload.ToString() + " war materials", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                            PlaySound("Data\\Cargo.wav");
                         }
                         selectionPossible = false;
                         CurrentOrder = null;
@@ -407,7 +404,7 @@ namespace NavalGame
                             int damage = Game.Torpedo(mapClickPosition, Game.SelectedUnit);
                             if (damage != 0)
                             {
-                                _ToolTip.Show("Hit " + damage.ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                                _ToolTip.Show("Hit, damage " + Math.Min(damage, 100).ToString() + "%", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                                 PlaySound("Data\\TorpedoLaunchHit.wav");
                             }
                             else
@@ -418,6 +415,38 @@ namespace NavalGame
                         }
                         selectionPossible = false;
                         CurrentOrder = null;
+                    }
+
+                    // Load Torpedoes
+                    else if (CurrentOrder == Order.LoadTorpedoes)
+                    {
+                        if (Game.GetPossibleTorpedoLoads(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            if (MessageBox.Show("Topping up on torpedoes costs 1 war material.", "Load Torpedoes", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.OK)
+                            {
+                                if (Game.LoadTorpedoes(mapClickPosition, Game.SelectedUnit) == 1)
+                                {
+                                    _ToolTip.Show("Torpedoes loaded.", this, e.Location, 2000);
+                                    PlaySound("Data\\Cargo.wav");
+                                }
+                                else _ToolTip.Show("Loading failed.", this, e.Location, 2000);
+                            }
+                        }
+                        selectionPossible = false;
+                        CurrentOrder = null;
+                    }
+
+                    // Depth Charge
+                    else if (CurrentOrder == Order.DepthCharge)
+                    {
+                        if (Game.GetPossibleDepthCharges(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            int hit = Game.DepthCharge(mapClickPosition, Game.SelectedUnit);
+
+                            if (hit > 0 ) _ToolTip.Show("Hit, damage " + Math.Min(hit, 100).ToString("0") + "%", this, e.Location, 2000);
+                            else _ToolTip.Show("Miss", this, e.Location, 2000);
+                            PlaySound("Data\\DepthChargeDrop.wav");
+                        }
                     }
                 }
 
@@ -521,7 +550,6 @@ namespace NavalGame
             //        {
             //            float baseFuelCost = PointDifference(unit.Position, mapPos);
             //            float fuelCost = (float)(baseFuelCost + (baseFuelCost * 0.5) * (unit.Speed - unit.MovesLeft));
-            //            _ToolTip.IsBalloon = true;
             //            _ToolTip.Show("Moving here costs " + Math.Round(fuelCost, 2).ToString() + " fuel.", this, 3000);
             //        }
             //        break;
@@ -553,13 +581,6 @@ namespace NavalGame
 
         private void DrawMap(Graphics graphics)
         {
-            _PossibleLightShots.Clear();
-            _PossibleMoves.Clear();
-            _PossibleHeavyShots.Clear();
-            _PossibleRepairs.Clear();
-            _PossibleBuilds.Clear();
-            _PossibleLoads.Clear();
-            _PossibleTorpedoes.Clear();
 
             HashSet<Point> range = new HashSet<Point>();
 
@@ -568,15 +589,13 @@ namespace NavalGame
                 switch (CurrentOrder)
                 {
                     case Order.Move:
-                        range = Game.GetPossibleMoves(Game.SelectedUnit);
+                        range = Game.GetMoveRange(Game.SelectedUnit);
                         break;
-
                     case Order.LightArtillery:
-                        range = Game.GetPossibleLightShots(Game.SelectedUnit);
+                        range = Game.GetLightArtilleryRange(Game.SelectedUnit);
                         break;
-
                     case Order.HeavyArtillery:
-                        range = Game.GetPossibleHeavyShots(Game.SelectedUnit);
+                        range = Game.GetHeavyArtilleryRange(Game.SelectedUnit);
                         break;
                     case Order.Repair:
                         range = Game.GetPossibleRepairs(Game.SelectedUnit);
@@ -591,7 +610,13 @@ namespace NavalGame
                         range = Game.GetPossibleUnloads(Game.SelectedUnit);
                         break;
                     case Order.Torpedo:
-                        range = Game.GetPossibleTorpedoes(Game.SelectedUnit);
+                        range = Game.GetTorpedoRange(Game.SelectedUnit);
+                        break;
+                    case Order.LoadTorpedoes:
+                        range = Game.GetPossibleTorpedoLoads(Game.SelectedUnit);
+                        break;
+                    case Order.DepthCharge:
+                        range = Game.GetDepthChargeRange(Game.SelectedUnit);
                         break;
                 }
             }

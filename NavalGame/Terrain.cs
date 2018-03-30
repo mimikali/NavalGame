@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace NavalGame
 {
@@ -33,6 +34,31 @@ namespace NavalGame
             _cells = new TerrainType[width * height];
             _width = width;
             _height = height;
+        }
+
+        public Terrain(Bitmap map)
+        {
+            _width = map.Width;
+            _height = map.Height;
+            _cells = new TerrainType[_width * _height];
+
+            for (int y = 0; y < map.Height; y++)
+            {
+                for (int x = 0; x < map.Width; x++)
+                {
+                    Color pixel = map.GetPixel(x, y);
+
+                    if (pixel == Color.FromArgb(0, 0, 255))
+                    {
+                        Set(x, y, TerrainType.Sea);
+                    }
+                    else
+                    {
+                        Set(x, y, TerrainType.Land);
+                    }
+
+                }
+            }
         }
 
         public TerrainType Get(int x, int y, TerrainType defaultTerrain = TerrainType.Sea)

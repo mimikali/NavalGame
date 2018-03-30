@@ -567,8 +567,10 @@ namespace NavalGame
                     ports.AddRange(new string[]
                     {
                         "Portsmouth",
+                        "Plymouth",
                         "Scapa Flow",
                         "Southampton",
+                        "Bristol",
                         "Kingston",
                         "Chatham",
                         "Devonport",
@@ -587,7 +589,7 @@ namespace NavalGame
                     {
                         "SS M. Guhn",
                         "SS M. Michael",
-                        "SS Mack Bruton Bryson",
+                        "SS Mack Bryson",
                         "SS Mahlon Pitney",
                         "SS Malcolm M.Steward",
                         "SS Manasseh Cutler",
@@ -618,7 +620,7 @@ namespace NavalGame
                     mediumCargoes.AddRange(new string[]
                     {
                         "SS Arthur Middleton",
-                        "SS Alexander H. Stephens",
+                        "SS Alex H. Stephens",
                         "SS Charles Carroll",
                         "SS Francis Scott Key",
                         "TS American Mariner",
@@ -880,17 +882,17 @@ namespace NavalGame
                         "SS Joel R. Poinsett",
                         "SS Joseph Smith",
                         "SS Joseph V. Conn",
-                        "SS Louis C. Tiffany",
+                        "SS Louis Tiffany",
                         "SS Juan de Fuca",
                         "SS John Cabot", 
                         "SS Joseph Henry",
                         "SS Laura Keene",
-                        "SS Joe C. S. Blackburn",
+                        "SS Joe Blackburn",
                         "SS John Carver",
                         "SS John Morgan",
                         "SS Josiah Snelling",
-                        "SS John Burke John",
-                        "SS Lewis L. Dyche",
+                        "SS John Burke",
+                        "SS Lewis Dyche",
                         "SS Leonidas Merritt",
                         "SS Jeremiah M. Dail",
                         "SS Lee S.Overman",
@@ -907,7 +909,7 @@ namespace NavalGame
                         "SS Star of Oregon",
                         "SS Thomas Paine",
                         "SS William Clark",
-                        "SS Zebulon B. Vancouver",
+                        "SS Zebulon B.",
                         "SS Thomas Jefferson",
                         "SS Stephen A.Douglas",
                         "SS Thomas MacDonough",
@@ -934,7 +936,7 @@ namespace NavalGame
                 #region Japan
                 case Faction.Japan:
 
-                    for (int i = 0; i < 300; i++)
+                    for (int i = 1; i < 300; i++)
                     {
                         submarines.Add("I" + i.ToString());
                     }

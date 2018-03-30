@@ -8,10 +8,15 @@ namespace NavalGame
 {
     public class Port : Unit
     {
-
         public Port(Player player, Point position) : base(UnitType.Port, player, position)
         {
-            Cargo = 15;
+            Cargo = 25;
+        }
+
+        public override void ResetProperties(bool initialSetup)
+        {
+            base.ResetProperties(initialSetup);
+            if (!initialSetup) Cargo++;
         }
     }
 }

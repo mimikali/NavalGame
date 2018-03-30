@@ -4,12 +4,27 @@
 - Make Order buttons checkboxes
 - Add leader head next to greetings
 - Remove flags from unit bitmaps
-- Set amount of torpedoes
-- Add depth charges
-- No torpedoing onshore targets!!!
-- Display gun and torpedo range, not possible targets.
+- Add coastal battery, coastal battery barge
+- Move ship icons down
 
+* Game needs its own turn system
+* Make factories always produce 2 cargo per turn
+* Slow down damaged ships
+* Somehow show that unit has no moves on map
+* Resources
+* Display turn number during game (avoid cheating)
+* Units moving behind other units???!
+* add next turn sound
+* Add depth charges
+* Display gun and torpedo range, not possible targets.
+* Make factories always visible (maybe ports too)
+* torpedoes are overpowered - torpedo boat can get close to any ship in one turn and sink it
+* Make MapDisplay view sunken
+* Repair icon is blurred
+* Make ShipInProgress icon an hourglass
+* Add torpedo sounds
 * Change build/cancel buttons to side-by-side
+* Clamp damage so that it is never shown above 100% in tooltip
 * Make textboxes read-only
 * Blur range lines
 * No building on terrain
@@ -17,13 +32,19 @@
 * Stretch health bar
 * Flag of country on ordersDisplay next to next turn button
 * Add more unit icons
-* Resources
-* Units moving behind other units???!
-* Repair icon is blurred
-* Make ShipInProgress icon an hourglass
-* Add torpedo sounds
 * Wreck is invincible (infinite armour)
 * Add ping sound when sub is detected
 * Disallow shooting from underwater!!!
 * Unit Names
 * Add diving sounds
+* No torpedoing onshore targets!!!
+* Set amount of torpedoes
+* shore battery or ports should be able to fire
+* generate cargo in main port
+* zoom out and center map on player change
+* Mapview does not update on selection change
+* display damage on unit counter
+* Find first player that is not neutral
+* Delete BuildsLeft for ports
+* display firepower/armour/range on units
+* Remove limit on port cargo generation

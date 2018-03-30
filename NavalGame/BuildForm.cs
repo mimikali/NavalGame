@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace NavalGame
 {
@@ -15,9 +16,11 @@ namespace NavalGame
         Game _Game;
         Point _BuildPosition;
         Unit _Builder;
+        SoundPlayer _SoundPlayer;
 
         public BuildForm(Game game, Unit builder, Point buildPosition)
         {
+            _SoundPlayer = new SoundPlayer();
             _Game = game;
             _Builder = builder;
             _BuildPosition = buildPosition;
@@ -48,8 +51,8 @@ namespace NavalGame
             newShip.TurnsUntilCompletion = ((UnitType)UnitList.SelectedItem).BuildTime;
             newShip.ShipType = (UnitType)UnitList.SelectedItem;
             _Game.AddUnit(newShip);
-            _Builder.BuildsLeft--;
             _Builder.Cargo -= newShip.ShipType.Cost;
+            PlaySound("Data\\Construction.wav");
             Close();
         }
 
@@ -88,6 +91,12 @@ namespace NavalGame
                 UnitView.Image = null;
                 UnitDescription.Text = "";
             }
+        }
+
+        public void PlaySound(string fileName)
+        {
+            _SoundPlayer.SoundLocation = fileName;
+            _SoundPlayer.Play();
         }
     }
 }

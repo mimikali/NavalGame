@@ -35,6 +35,14 @@ namespace NavalGame
             if (!initialSetup) TurnsUntilCompletion--;
         }
 
+        public override string Information
+        {
+            get
+            {
+                return TurnsUntilCompletion.ToString("0") + " turns left";
+            }
+        }
+
         public override void OnGameChanged()
         {
             base.OnGameChanged();

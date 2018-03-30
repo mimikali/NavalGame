@@ -58,6 +58,9 @@
             this.DiveBox = new System.Windows.Forms.GroupBox();
             this.DivePictureBox = new System.Windows.Forms.PictureBox();
             this.DiveButton = new System.Windows.Forms.Button();
+            this.LoadTorpedoesBox = new System.Windows.Forms.GroupBox();
+            this.LoadTorpedoesPictureBox = new System.Windows.Forms.PictureBox();
+            this.LoadTorpedoesButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
             this.UnitTextBox = new System.Windows.Forms.RichTextBox();
@@ -65,6 +68,9 @@
             this.InfoPanel = new System.Windows.Forms.Panel();
             this.FlagBox = new System.Windows.Forms.PictureBox();
             this.GreetingText = new System.Windows.Forms.Label();
+            this.DepthChargeBox = new System.Windows.Forms.GroupBox();
+            this.DepthChargePictureBox = new System.Windows.Forms.PictureBox();
+            this.DepthChargeButton = new System.Windows.Forms.Button();
             this.MoveBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).BeginInit();
             this.OrdersPanel.SuspendLayout();
@@ -84,10 +90,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.TorpedoPictureBox)).BeginInit();
             this.DiveBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DivePictureBox)).BeginInit();
+            this.LoadTorpedoesBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LoadTorpedoesPictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FlagBox)).BeginInit();
+            this.DepthChargeBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DepthChargePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // MoveBox
@@ -116,7 +126,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MoveButton.Location = new System.Drawing.Point(6, 19);
             this.MoveButton.Name = "MoveButton";
-            this.MoveButton.Size = new System.Drawing.Size(75, 23);
+            this.MoveButton.Size = new System.Drawing.Size(97, 23);
             this.MoveButton.TabIndex = 0;
             this.MoveButton.Text = "Move";
             this.MoveButton.UseVisualStyleBackColor = true;
@@ -126,7 +136,7 @@
             // 
             this.NextTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextTurnButton.Location = new System.Drawing.Point(131, 843);
+            this.NextTurnButton.Location = new System.Drawing.Point(131, 951);
             this.NextTurnButton.Name = "NextTurnButton";
             this.NextTurnButton.Size = new System.Drawing.Size(112, 53);
             this.NextTurnButton.TabIndex = 1;
@@ -138,7 +148,7 @@
             // 
             this.BeginTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.BeginTurnButton.Location = new System.Drawing.Point(131, 843);
+            this.BeginTurnButton.Location = new System.Drawing.Point(131, 951);
             this.BeginTurnButton.Name = "BeginTurnButton";
             this.BeginTurnButton.Size = new System.Drawing.Size(119, 53);
             this.BeginTurnButton.TabIndex = 2;
@@ -160,9 +170,11 @@
             this.OrdersPanel.Controls.Add(this.UnloadBox);
             this.OrdersPanel.Controls.Add(this.TorpedoBox);
             this.OrdersPanel.Controls.Add(this.DiveBox);
+            this.OrdersPanel.Controls.Add(this.LoadTorpedoesBox);
+            this.OrdersPanel.Controls.Add(this.DepthChargeBox);
             this.OrdersPanel.Location = new System.Drawing.Point(6, 283);
             this.OrdersPanel.Name = "OrdersPanel";
-            this.OrdersPanel.Size = new System.Drawing.Size(247, 545);
+            this.OrdersPanel.Size = new System.Drawing.Size(247, 653);
             this.OrdersPanel.TabIndex = 3;
             this.OrdersPanel.Visible = false;
             // 
@@ -192,7 +204,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.LightArtilleryButton.Location = new System.Drawing.Point(6, 19);
             this.LightArtilleryButton.Name = "LightArtilleryButton";
-            this.LightArtilleryButton.Size = new System.Drawing.Size(75, 23);
+            this.LightArtilleryButton.Size = new System.Drawing.Size(97, 23);
             this.LightArtilleryButton.TabIndex = 0;
             this.LightArtilleryButton.Text = "Light Guns";
             this.LightArtilleryButton.UseVisualStyleBackColor = true;
@@ -224,7 +236,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.HeavyArtilleryButton.Location = new System.Drawing.Point(6, 19);
             this.HeavyArtilleryButton.Name = "HeavyArtilleryButton";
-            this.HeavyArtilleryButton.Size = new System.Drawing.Size(75, 23);
+            this.HeavyArtilleryButton.Size = new System.Drawing.Size(97, 23);
             this.HeavyArtilleryButton.TabIndex = 0;
             this.HeavyArtilleryButton.Text = "Heavy Guns";
             this.HeavyArtilleryButton.UseVisualStyleBackColor = true;
@@ -256,7 +268,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.RepairButton.Location = new System.Drawing.Point(6, 19);
             this.RepairButton.Name = "RepairButton";
-            this.RepairButton.Size = new System.Drawing.Size(75, 23);
+            this.RepairButton.Size = new System.Drawing.Size(97, 23);
             this.RepairButton.TabIndex = 0;
             this.RepairButton.Text = "Repair";
             this.RepairButton.UseVisualStyleBackColor = true;
@@ -288,7 +300,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.BuildButton.Location = new System.Drawing.Point(6, 19);
             this.BuildButton.Name = "BuildButton";
-            this.BuildButton.Size = new System.Drawing.Size(75, 23);
+            this.BuildButton.Size = new System.Drawing.Size(97, 23);
             this.BuildButton.TabIndex = 0;
             this.BuildButton.Text = "Build";
             this.BuildButton.UseVisualStyleBackColor = true;
@@ -320,7 +332,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.LoadButton.Location = new System.Drawing.Point(6, 19);
             this.LoadButton.Name = "LoadButton";
-            this.LoadButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadButton.Size = new System.Drawing.Size(97, 23);
             this.LoadButton.TabIndex = 0;
             this.LoadButton.Text = "Load";
             this.LoadButton.UseVisualStyleBackColor = true;
@@ -352,7 +364,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.UnloadButton.Location = new System.Drawing.Point(6, 19);
             this.UnloadButton.Name = "UnloadButton";
-            this.UnloadButton.Size = new System.Drawing.Size(75, 23);
+            this.UnloadButton.Size = new System.Drawing.Size(97, 23);
             this.UnloadButton.TabIndex = 0;
             this.UnloadButton.Text = "Unload";
             this.UnloadButton.UseVisualStyleBackColor = true;
@@ -384,7 +396,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.TorpedoButton.Location = new System.Drawing.Point(6, 19);
             this.TorpedoButton.Name = "TorpedoButton";
-            this.TorpedoButton.Size = new System.Drawing.Size(75, 23);
+            this.TorpedoButton.Size = new System.Drawing.Size(97, 23);
             this.TorpedoButton.TabIndex = 0;
             this.TorpedoButton.Text = "Torpedo";
             this.TorpedoButton.UseVisualStyleBackColor = true;
@@ -416,11 +428,43 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.DiveButton.Location = new System.Drawing.Point(6, 19);
             this.DiveButton.Name = "DiveButton";
-            this.DiveButton.Size = new System.Drawing.Size(75, 23);
+            this.DiveButton.Size = new System.Drawing.Size(97, 23);
             this.DiveButton.TabIndex = 0;
             this.DiveButton.Text = "Dive";
             this.DiveButton.UseVisualStyleBackColor = true;
             this.DiveButton.Click += new System.EventHandler(this.DiveButtonClick);
+            // 
+            // LoadTorpedoesBox
+            // 
+            this.LoadTorpedoesBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadTorpedoesBox.Controls.Add(this.LoadTorpedoesPictureBox);
+            this.LoadTorpedoesBox.Controls.Add(this.LoadTorpedoesButton);
+            this.LoadTorpedoesBox.Location = new System.Drawing.Point(3, 534);
+            this.LoadTorpedoesBox.Name = "LoadTorpedoesBox";
+            this.LoadTorpedoesBox.Size = new System.Drawing.Size(241, 53);
+            this.LoadTorpedoesBox.TabIndex = 9;
+            this.LoadTorpedoesBox.TabStop = false;
+            // 
+            // LoadTorpedoesPictureBox
+            // 
+            this.LoadTorpedoesPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.LoadTorpedoesPictureBox.Name = "LoadTorpedoesPictureBox";
+            this.LoadTorpedoesPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.LoadTorpedoesPictureBox.TabIndex = 2;
+            this.LoadTorpedoesPictureBox.TabStop = false;
+            // 
+            // LoadTorpedoesButton
+            // 
+            this.LoadTorpedoesButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.LoadTorpedoesButton.Location = new System.Drawing.Point(6, 19);
+            this.LoadTorpedoesButton.Name = "LoadTorpedoesButton";
+            this.LoadTorpedoesButton.Size = new System.Drawing.Size(97, 23);
+            this.LoadTorpedoesButton.TabIndex = 0;
+            this.LoadTorpedoesButton.Text = "Load Torpedoes\r\n";
+            this.LoadTorpedoesButton.UseVisualStyleBackColor = true;
+            this.LoadTorpedoesButton.Click += new System.EventHandler(this.LoadTorpedoesButtonClick);
             // 
             // HealthBar
             // 
@@ -478,7 +522,7 @@
             // 
             this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FlagBox.Location = new System.Drawing.Point(6, 843);
+            this.FlagBox.Location = new System.Drawing.Point(6, 951);
             this.FlagBox.Name = "FlagBox";
             this.FlagBox.Size = new System.Drawing.Size(106, 53);
             this.FlagBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -495,6 +539,38 @@
             this.GreetingText.TabIndex = 8;
             this.GreetingText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // DepthChargeBox
+            // 
+            this.DepthChargeBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DepthChargeBox.Controls.Add(this.DepthChargePictureBox);
+            this.DepthChargeBox.Controls.Add(this.DepthChargeButton);
+            this.DepthChargeBox.Location = new System.Drawing.Point(3, 593);
+            this.DepthChargeBox.Name = "DepthChargeBox";
+            this.DepthChargeBox.Size = new System.Drawing.Size(241, 53);
+            this.DepthChargeBox.TabIndex = 10;
+            this.DepthChargeBox.TabStop = false;
+            // 
+            // DepthChargePictureBox
+            // 
+            this.DepthChargePictureBox.Location = new System.Drawing.Point(122, 14);
+            this.DepthChargePictureBox.Name = "DepthChargePictureBox";
+            this.DepthChargePictureBox.Size = new System.Drawing.Size(97, 33);
+            this.DepthChargePictureBox.TabIndex = 2;
+            this.DepthChargePictureBox.TabStop = false;
+            // 
+            // DepthChargeButton
+            // 
+            this.DepthChargeButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DepthChargeButton.Location = new System.Drawing.Point(6, 19);
+            this.DepthChargeButton.Name = "DepthChargeButton";
+            this.DepthChargeButton.Size = new System.Drawing.Size(97, 23);
+            this.DepthChargeButton.TabIndex = 0;
+            this.DepthChargeButton.Text = "Depth Charge";
+            this.DepthChargeButton.UseVisualStyleBackColor = true;
+            this.DepthChargeButton.Click += new System.EventHandler(this.DepthChargeButtonClick);
+            // 
             // OrdersDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -507,7 +583,7 @@
             this.Controls.Add(this.BeginTurnButton);
             this.Controls.Add(this.NextTurnButton);
             this.Name = "OrdersDisplay";
-            this.Size = new System.Drawing.Size(256, 899);
+            this.Size = new System.Drawing.Size(256, 1007);
             this.MoveBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).EndInit();
             this.OrdersPanel.ResumeLayout(false);
@@ -527,10 +603,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.TorpedoPictureBox)).EndInit();
             this.DiveBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DivePictureBox)).EndInit();
+            this.LoadTorpedoesBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.LoadTorpedoesPictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FlagBox)).EndInit();
+            this.DepthChargeBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DepthChargePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -574,5 +654,11 @@
         private System.Windows.Forms.GroupBox DiveBox;
         private System.Windows.Forms.PictureBox DivePictureBox;
         private System.Windows.Forms.Button DiveButton;
+        private System.Windows.Forms.GroupBox LoadTorpedoesBox;
+        private System.Windows.Forms.PictureBox LoadTorpedoesPictureBox;
+        private System.Windows.Forms.Button LoadTorpedoesButton;
+        private System.Windows.Forms.GroupBox DepthChargeBox;
+        private System.Windows.Forms.PictureBox DepthChargePictureBox;
+        private System.Windows.Forms.Button DepthChargeButton;
     }
 }
