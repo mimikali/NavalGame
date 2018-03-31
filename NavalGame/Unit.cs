@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -399,6 +400,52 @@ namespace NavalGame
             }
             if (IsDetected != isDetected && isDetected && IsSubmerged) Game.FireSubmarineDetectedEvent(); 
             IsDetected = isDetected;
+        }
+
+        public virtual void Save(XElement unitNode)
+        {
+            unitNode.SetAttributeValue("MovesLeft", MovesLeft);
+            unitNode.SetAttributeValue("LightShotsLeft", LightShotsLeft);
+            unitNode.SetAttributeValue("HeavyShotsLeft", HeavyShotsLeft);
+            unitNode.SetAttributeValue("TorpedoesLeft", TorpedoesLeft);
+            unitNode.SetAttributeValue("DivesLeft", DivesLeft);
+            unitNode.SetAttributeValue("LoadsLeft", LoadsLeft);
+            unitNode.SetAttributeValue("DepthChargesLeft", DepthChargesLeft);
+            unitNode.SetAttributeValue("InstallsLeft", InstallsLeft);
+            unitNode.SetAttributeValue("CapturesLeft", CapturesLeft);
+            unitNode.SetAttributeValue("RepairsLeft", RepairsLeft);
+
+            unitNode.SetAttributeValue("Name", Name);
+            unitNode.SetAttributeValue("Position", string.Format("{0}, {1}", Position.X, Position.Y));
+            unitNode.SetAttributeValue("Health", Health);
+            unitNode.SetAttributeValue("IsSubmerged", IsSubmerged);
+            unitNode.SetAttributeValue("IsDetected", IsDetected);
+            unitNode.SetAttributeValue("Cargo", Cargo);
+            unitNode.SetAttributeValue("Torpedoes", Torpedoes);
+            unitNode.SetAttributeValue("TurnsUntilCompletion", TurnsUntilCompletion);
+        }
+
+        public virtual void Load(XElement unitNode)
+        {
+            MovesLeft = XmlUtils.GetAttributeValue<float>(unitNode, "MovesLeft");
+            LightShotsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "LightShotsLeft");
+            HeavyShotsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "HeavyShotsLeft");
+            TorpedoesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "TorpedoesLeft");
+            DivesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "DivesLeft");
+            LoadsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "LoadsLeft");
+            DepthChargesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "DepthChargesLeft");
+            InstallsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "InstallsLeft");
+            CapturesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "CapturesLeft");
+            RepairsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "RepairsLeft");
+
+            Name = XmlUtils.GetAttributeValue<string>(unitNode, "Name");
+            Position = XmlUtils.GetAttributeValue<Point>(unitNode, "Position");
+            Health = XmlUtils.GetAttributeValue<float>(unitNode, "Health");
+            IsSubmerged = XmlUtils.GetAttributeValue<bool>(unitNode, "IsSubmerged");
+            IsDetected = XmlUtils.GetAttributeValue<bool>(unitNode, "IsDetected");
+            Cargo = XmlUtils.GetAttributeValue<int>(unitNode, "Cargo");
+            Torpedoes = XmlUtils.GetAttributeValue<int>(unitNode, "Torpedoes");
+            TurnsUntilCompletion = XmlUtils.GetAttributeValue<int>(unitNode, "TurnsUntilCompletion");
         }
     }
 }

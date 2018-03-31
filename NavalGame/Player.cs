@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -1288,6 +1289,41 @@ namespace NavalGame
                         { UnitType.MediumCargo, mediumCargoes },
                         { UnitType.TroopShip, troopShips }
                     };
+        }
+
+        public static XElement Save(Player player)
+        {
+            XElement playerNode = new XElement("Player");
+
+            playerNode.SetAttributeValue("Faction", player.Faction.ToString());
+
+            foreach (Unit unit in player.Units)
+            {
+                XElement unitNode = new XElement("Unit");
+                playerNode.Add(unitNode);
+                unitNode.SetAttributeValue("Type", unit.Type.Name);
+                unit.Save(unitNode);
+            }
+
+            return playerNode;
+        }
+
+        public static Player Load(Game game, XElement playerNode)
+        {
+            Faction faction = XmlUtils.GetAttributeValue<Faction>(playerNode, "Faction");
+
+            Player player = new Player(game, faction);
+
+            foreach(XElement unitNode in playerNode.Elements("Unit"))
+            {
+                string typeName = XmlUtils.GetAttributeValue<string>(unitNode, "Type");
+                UnitType type = UnitType.UnitTypes.First(t => t.Name == typeName);
+                Unit unit = type.CreateUnit(player, new Point(0, 0));
+                unit.Load(unitNode);
+                game.AddUnit(unit);
+            }
+
+            return player;
         }
     }
 }

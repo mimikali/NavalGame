@@ -520,7 +520,7 @@ namespace NavalGame
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\FactoryLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Factory.png"),
                 Speed = 0,
-                ViewDistance = 100,
+                ViewDistance = 9,
                 AlwaysVisible = true,
                 HeavyPower = 0,
                 HeavyRange = 0,

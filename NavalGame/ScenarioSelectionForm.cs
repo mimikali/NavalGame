@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -126,8 +127,26 @@ namespace NavalGame
             {
                 var scenario = (Scenario)ScenarioList.SelectedItem;
                 Hide();
-                new Form1(scenario.Map, this).ShowDialog();
+                new Form1(new Game(scenario.Map, scenario.Name), this).ShowDialog();
             }
+        }
+
+        private void LoadButtonClick(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            fileDialog.Filter = "Naval Game Files (*.nvg)|*.nvg";
+
+            fileDialog.FileOk += FileDialogFileOk;
+
+            fileDialog.ShowDialog();
+
+        }
+
+        private void FileDialogFileOk(object sender, CancelEventArgs e)
+        {
+            XElement element = XElement.Load(((FileDialog)sender).FileName);
+            new Form1(Game.Load(element), this).ShowDialog();
         }
     }
 }

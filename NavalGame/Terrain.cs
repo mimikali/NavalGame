@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -70,6 +71,38 @@ namespace NavalGame
         public void Set(int x, int y, TerrainType terrainType)
         {
             _cells[x + y * Width] = terrainType;
+        }
+
+        public static XElement Save(Terrain terrain)
+        {
+            XElement terrainNode = new XElement("Terrain");
+
+            terrainNode.SetAttributeValue("Width", terrain.Width);
+            terrainNode.SetAttributeValue("Height", terrain.Height);
+
+            terrainNode.Value = "";
+            foreach (TerrainType cell in terrain._cells)
+            {
+                if (cell == TerrainType.Land) terrainNode.Value += "1";
+                else terrainNode.Value += "0";
+            }
+
+            return terrainNode;
+        }
+
+        public static Terrain Load(XElement terrainNode)
+        {
+            int width = XmlUtils.GetAttributeValue<int>(terrainNode, "Width");
+            int height = XmlUtils.GetAttributeValue<int>(terrainNode, "Height");
+
+            Terrain terrain = new Terrain(width, height);
+
+            for(int i = 0; i < terrain._cells.Length; i++)
+            {
+                terrain._cells[i] = terrainNode.Value[i] == '1' ? TerrainType.Land : TerrainType.Sea;
+            }
+
+            return terrain;
         }
     }
 }

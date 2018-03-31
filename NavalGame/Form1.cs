@@ -15,11 +15,11 @@ namespace NavalGame
         Game Game;
         Form ScenarioSelectionForm;
 
-        public Form1(Bitmap map, ScenarioSelectionForm scenarioSelectionForm)
+        public Form1(Game game, ScenarioSelectionForm scenarioSelectionForm)
         {
             InitializeComponent();
             ScenarioSelectionForm = scenarioSelectionForm;
-            Game = new Game(map);
+            Game = game;
             Game.PlayerChanged += GamePlayerChanged;
             MapDisplay.Game = Game;
             MapDisplay.OrdersDisplay = OrdersDisplay;

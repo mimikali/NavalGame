@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -139,12 +141,16 @@ namespace NavalGame
                 FlagBox.Image = Game.GetFactionFlag(MapDisplay.Game.CurrentPlayer.Faction);
                 GreetingText.Text = Game.GetFactionGreetings(MapDisplay.Game.CurrentPlayer.Faction);
                 GreetingText.BackColor = Game.GetFactionColor(MapDisplay.Game.CurrentPlayer.Faction);
+                NextTurnButton.Show();
+                BeginTurnButton.Hide();
             }
             else
             {
                 FlagBox.Image = null;
                 GreetingText.Text = "Press the Begin Turn button.";
                 GreetingText.BackColor = SystemColors.Control;
+                NextTurnButton.Hide();
+                BeginTurnButton.Show();
             }
 
             var selectedUnit = MapDisplay.Game.SelectedUnit;
@@ -244,10 +250,15 @@ namespace NavalGame
 
         private void NextTurnButtonClick(object sender, EventArgs e)
         {
+            string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), MapDisplay.Game.ScenarioName + " " + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")) + ".nvg";
+
             MapDisplay.Game.CurrentPlayer = null;
             NextTurnButton.Hide();
             BeginTurnButton.Show();
             MapDisplay.PlaySound("Data\\Bell.wav");
+
+            XElement gameNode = Game.Save(MapDisplay.Game);
+            gameNode.Save(fileName);
         }
 
         private void BeginTurnButtonClick(object sender, EventArgs e)

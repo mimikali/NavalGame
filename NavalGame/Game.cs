@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -22,6 +23,7 @@ namespace NavalGame
         public Player _NextPlayer;
         public int TurnIndex;
         public Random Random = new Random();
+        public string ScenarioName;
 
         public Unit SelectedUnit
         {
@@ -92,11 +94,13 @@ namespace NavalGame
             }
         }
 
-        public Game(Bitmap map)
+        public Game(Bitmap map, string scenarioName)
         {
             _Units = new List<Unit>();
             _Players = new List<Player>();
             _Terrain = new Terrain(map);
+
+            ScenarioName = scenarioName;
 
             for (int y = 0; y < map.Height; y++)
             {
@@ -116,6 +120,30 @@ namespace NavalGame
                             AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.England), new Point(x, y)));
                         }
                     }
+                    else if (pixel == Color.FromArgb(0, 0, 0))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Neutral))
+                        {
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.Neutral));
+                            AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
+                        }
+                    }
+                    else if (pixel == Color.FromArgb(128, GetFactionColor(Faction.England)))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.England))
+                        {
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.England), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.USA));
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.England), new Point(x, y)));
+                        }
+                    }
                     else if (pixel == GetFactionColor(Faction.USA))
                     {
                         if (Players.Any(player => player.Faction == Faction.USA))
@@ -126,6 +154,18 @@ namespace NavalGame
                         {
                             _Players.Add(new Player(this, Faction.USA));
                             AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.USA), new Point(x, y)));
+                        }
+                    }
+                    else if (pixel == Color.FromArgb(128, GetFactionColor(Faction.USA)))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.USA))
+                        {
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.USA), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.USA));
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.USA), new Point(x, y)));
                         }
                     }
                     else if (pixel == GetFactionColor(Faction.Germany))
@@ -140,6 +180,18 @@ namespace NavalGame
                             AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Germany), new Point(x, y)));
                         }
                     }
+                    else if (pixel == Color.FromArgb(128, GetFactionColor(Faction.Germany)))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Germany))
+                        {
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Germany), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.USA));
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Germany), new Point(x, y)));
+                        }
+                    }
                     else if (pixel == GetFactionColor(Faction.Japan))
                     {
                         if (Players.Any(player => player.Faction == Faction.Japan))
@@ -152,7 +204,18 @@ namespace NavalGame
                             AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Japan), new Point(x, y)));
                         }
                     }
-
+                    else if (pixel == Color.FromArgb(128, GetFactionColor(Faction.Japan)))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Japan))
+                        {
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Japan), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.USA));
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Japan), new Point(x, y)));
+                        }
+                    }
                     else if (pixel == GetFactionColor(Faction.Neutral))
                     {
                         if (Players.Any(player => player.Faction == Faction.Neutral))
@@ -169,6 +232,15 @@ namespace NavalGame
             }
 
             _NextPlayer = Players[0];
+        }
+
+        public Game(Terrain terrain, string scenarioName)
+        {
+            _Terrain = terrain;
+            _Players = new List<Player>();
+            _Units = new List<Unit>();
+
+            ScenarioName = scenarioName;
         }
 
         public static Terrain GenerateTerrain(int width, int height, int seed)
@@ -1028,6 +1100,50 @@ namespace NavalGame
             }
 
             return range;
+        }
+
+        public static XElement Save(Game game)
+        {
+            XElement gameNode = new XElement("Game");
+            XElement terrainNode = Terrain.Save(game.Terrain);
+            gameNode.Add(terrainNode);
+
+            XElement playersNode = new XElement("Players");
+            gameNode.Add(playersNode);
+            foreach(Player player in game.Players)
+            {
+                playersNode.Add(Player.Save(player));
+            }
+
+            if (game.CurrentPlayer != null) gameNode.SetAttributeValue("CurrentPlayer", game.Players.IndexOf(game.CurrentPlayer));
+            else gameNode.SetAttributeValue("CurrentPlayer", -1);
+
+            gameNode.SetAttributeValue("NextPlayer", game.Players.IndexOf(game._NextPlayer));
+
+            gameNode.SetAttributeValue("ScenarioName", game.ScenarioName);
+        
+            return gameNode;
+        }
+
+        public static Game Load(XElement gameNode)
+        {
+            XElement terrainNode = gameNode.Element("Terrain");
+            Terrain terrain = Terrain.Load(terrainNode);
+
+            Game game = new Game(terrain, XmlUtils.GetAttributeValue<string>(gameNode, "ScenarioName"));
+
+            XElement playersNode = gameNode.Element("Players");
+            foreach (XElement playerNode in playersNode.Elements())
+            {
+                game._Players.Add(Player.Load(game, playerNode));
+            }
+
+            if (XmlUtils.GetAttributeValue<int>(gameNode, "CurrentPlayer") == -1) game.CurrentPlayer = null;
+            else game.CurrentPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "CurrentPlayer")];
+
+            game._NextPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "NextPlayer")];
+
+            return game;
         }
     }
 }
