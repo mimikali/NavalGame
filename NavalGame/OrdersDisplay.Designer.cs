@@ -61,6 +61,12 @@
             this.LoadTorpedoesBox = new System.Windows.Forms.GroupBox();
             this.LoadTorpedoesPictureBox = new System.Windows.Forms.PictureBox();
             this.LoadTorpedoesButton = new System.Windows.Forms.Button();
+            this.DepthChargeBox = new System.Windows.Forms.GroupBox();
+            this.DepthChargePictureBox = new System.Windows.Forms.PictureBox();
+            this.DepthChargeButton = new System.Windows.Forms.Button();
+            this.InstallBatteryBox = new System.Windows.Forms.GroupBox();
+            this.InstallBatteryPictureBox = new System.Windows.Forms.PictureBox();
+            this.InstallBatteryButton = new System.Windows.Forms.Button();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.UnitPanel = new System.Windows.Forms.Panel();
             this.UnitTextBox = new System.Windows.Forms.RichTextBox();
@@ -68,9 +74,9 @@
             this.InfoPanel = new System.Windows.Forms.Panel();
             this.FlagBox = new System.Windows.Forms.PictureBox();
             this.GreetingText = new System.Windows.Forms.Label();
-            this.DepthChargeBox = new System.Windows.Forms.GroupBox();
-            this.DepthChargePictureBox = new System.Windows.Forms.PictureBox();
-            this.DepthChargeButton = new System.Windows.Forms.Button();
+            this.CaptureBox = new System.Windows.Forms.GroupBox();
+            this.CapturePictureBox = new System.Windows.Forms.PictureBox();
+            this.CaptureButton = new System.Windows.Forms.Button();
             this.MoveBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).BeginInit();
             this.OrdersPanel.SuspendLayout();
@@ -92,12 +98,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.DivePictureBox)).BeginInit();
             this.LoadTorpedoesBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadTorpedoesPictureBox)).BeginInit();
+            this.DepthChargeBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DepthChargePictureBox)).BeginInit();
+            this.InstallBatteryBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InstallBatteryPictureBox)).BeginInit();
             this.UnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).BeginInit();
             this.InfoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FlagBox)).BeginInit();
-            this.DepthChargeBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DepthChargePictureBox)).BeginInit();
+            this.CaptureBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CapturePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // MoveBox
@@ -136,7 +146,7 @@
             // 
             this.NextTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextTurnButton.Location = new System.Drawing.Point(131, 951);
+            this.NextTurnButton.Location = new System.Drawing.Point(131, 1060);
             this.NextTurnButton.Name = "NextTurnButton";
             this.NextTurnButton.Size = new System.Drawing.Size(112, 53);
             this.NextTurnButton.TabIndex = 1;
@@ -148,7 +158,7 @@
             // 
             this.BeginTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.BeginTurnButton.Location = new System.Drawing.Point(131, 951);
+            this.BeginTurnButton.Location = new System.Drawing.Point(131, 1060);
             this.BeginTurnButton.Name = "BeginTurnButton";
             this.BeginTurnButton.Size = new System.Drawing.Size(119, 53);
             this.BeginTurnButton.TabIndex = 2;
@@ -172,9 +182,11 @@
             this.OrdersPanel.Controls.Add(this.DiveBox);
             this.OrdersPanel.Controls.Add(this.LoadTorpedoesBox);
             this.OrdersPanel.Controls.Add(this.DepthChargeBox);
+            this.OrdersPanel.Controls.Add(this.InstallBatteryBox);
+            this.OrdersPanel.Controls.Add(this.CaptureBox);
             this.OrdersPanel.Location = new System.Drawing.Point(6, 283);
             this.OrdersPanel.Name = "OrdersPanel";
-            this.OrdersPanel.Size = new System.Drawing.Size(247, 653);
+            this.OrdersPanel.Size = new System.Drawing.Size(247, 771);
             this.OrdersPanel.TabIndex = 3;
             this.OrdersPanel.Visible = false;
             // 
@@ -466,6 +478,70 @@
             this.LoadTorpedoesButton.UseVisualStyleBackColor = true;
             this.LoadTorpedoesButton.Click += new System.EventHandler(this.LoadTorpedoesButtonClick);
             // 
+            // DepthChargeBox
+            // 
+            this.DepthChargeBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DepthChargeBox.Controls.Add(this.DepthChargePictureBox);
+            this.DepthChargeBox.Controls.Add(this.DepthChargeButton);
+            this.DepthChargeBox.Location = new System.Drawing.Point(3, 593);
+            this.DepthChargeBox.Name = "DepthChargeBox";
+            this.DepthChargeBox.Size = new System.Drawing.Size(241, 53);
+            this.DepthChargeBox.TabIndex = 10;
+            this.DepthChargeBox.TabStop = false;
+            // 
+            // DepthChargePictureBox
+            // 
+            this.DepthChargePictureBox.Location = new System.Drawing.Point(122, 14);
+            this.DepthChargePictureBox.Name = "DepthChargePictureBox";
+            this.DepthChargePictureBox.Size = new System.Drawing.Size(97, 33);
+            this.DepthChargePictureBox.TabIndex = 2;
+            this.DepthChargePictureBox.TabStop = false;
+            // 
+            // DepthChargeButton
+            // 
+            this.DepthChargeButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DepthChargeButton.Location = new System.Drawing.Point(6, 19);
+            this.DepthChargeButton.Name = "DepthChargeButton";
+            this.DepthChargeButton.Size = new System.Drawing.Size(97, 23);
+            this.DepthChargeButton.TabIndex = 0;
+            this.DepthChargeButton.Text = "Depth Charge";
+            this.DepthChargeButton.UseVisualStyleBackColor = true;
+            this.DepthChargeButton.Click += new System.EventHandler(this.DepthChargeButtonClick);
+            // 
+            // InstallBatteryBox
+            // 
+            this.InstallBatteryBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.InstallBatteryBox.Controls.Add(this.InstallBatteryPictureBox);
+            this.InstallBatteryBox.Controls.Add(this.InstallBatteryButton);
+            this.InstallBatteryBox.Location = new System.Drawing.Point(3, 652);
+            this.InstallBatteryBox.Name = "InstallBatteryBox";
+            this.InstallBatteryBox.Size = new System.Drawing.Size(241, 53);
+            this.InstallBatteryBox.TabIndex = 11;
+            this.InstallBatteryBox.TabStop = false;
+            // 
+            // InstallBatteryPictureBox
+            // 
+            this.InstallBatteryPictureBox.Location = new System.Drawing.Point(122, 14);
+            this.InstallBatteryPictureBox.Name = "InstallBatteryPictureBox";
+            this.InstallBatteryPictureBox.Size = new System.Drawing.Size(97, 33);
+            this.InstallBatteryPictureBox.TabIndex = 2;
+            this.InstallBatteryPictureBox.TabStop = false;
+            // 
+            // InstallBatteryButton
+            // 
+            this.InstallBatteryButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.InstallBatteryButton.Location = new System.Drawing.Point(6, 19);
+            this.InstallBatteryButton.Name = "InstallBatteryButton";
+            this.InstallBatteryButton.Size = new System.Drawing.Size(97, 23);
+            this.InstallBatteryButton.TabIndex = 0;
+            this.InstallBatteryButton.Text = "Install Battery";
+            this.InstallBatteryButton.UseVisualStyleBackColor = true;
+            this.InstallBatteryButton.Click += new System.EventHandler(this.InstallBatteryButtonClick);
+            // 
             // HealthBar
             // 
             this.HealthBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -522,7 +598,7 @@
             // 
             this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FlagBox.Location = new System.Drawing.Point(6, 951);
+            this.FlagBox.Location = new System.Drawing.Point(6, 1060);
             this.FlagBox.Name = "FlagBox";
             this.FlagBox.Size = new System.Drawing.Size(106, 53);
             this.FlagBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -539,37 +615,37 @@
             this.GreetingText.TabIndex = 8;
             this.GreetingText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // DepthChargeBox
+            // CaptureBox
             // 
-            this.DepthChargeBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.CaptureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DepthChargeBox.Controls.Add(this.DepthChargePictureBox);
-            this.DepthChargeBox.Controls.Add(this.DepthChargeButton);
-            this.DepthChargeBox.Location = new System.Drawing.Point(3, 593);
-            this.DepthChargeBox.Name = "DepthChargeBox";
-            this.DepthChargeBox.Size = new System.Drawing.Size(241, 53);
-            this.DepthChargeBox.TabIndex = 10;
-            this.DepthChargeBox.TabStop = false;
+            this.CaptureBox.Controls.Add(this.CapturePictureBox);
+            this.CaptureBox.Controls.Add(this.CaptureButton);
+            this.CaptureBox.Location = new System.Drawing.Point(3, 711);
+            this.CaptureBox.Name = "CaptureBox";
+            this.CaptureBox.Size = new System.Drawing.Size(241, 53);
+            this.CaptureBox.TabIndex = 12;
+            this.CaptureBox.TabStop = false;
             // 
-            // DepthChargePictureBox
+            // CapturePictureBox
             // 
-            this.DepthChargePictureBox.Location = new System.Drawing.Point(122, 14);
-            this.DepthChargePictureBox.Name = "DepthChargePictureBox";
-            this.DepthChargePictureBox.Size = new System.Drawing.Size(97, 33);
-            this.DepthChargePictureBox.TabIndex = 2;
-            this.DepthChargePictureBox.TabStop = false;
+            this.CapturePictureBox.Location = new System.Drawing.Point(122, 14);
+            this.CapturePictureBox.Name = "CapturePictureBox";
+            this.CapturePictureBox.Size = new System.Drawing.Size(97, 33);
+            this.CapturePictureBox.TabIndex = 2;
+            this.CapturePictureBox.TabStop = false;
             // 
-            // DepthChargeButton
+            // CaptureButton
             // 
-            this.DepthChargeButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.CaptureButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.DepthChargeButton.Location = new System.Drawing.Point(6, 19);
-            this.DepthChargeButton.Name = "DepthChargeButton";
-            this.DepthChargeButton.Size = new System.Drawing.Size(97, 23);
-            this.DepthChargeButton.TabIndex = 0;
-            this.DepthChargeButton.Text = "Depth Charge";
-            this.DepthChargeButton.UseVisualStyleBackColor = true;
-            this.DepthChargeButton.Click += new System.EventHandler(this.DepthChargeButtonClick);
+            this.CaptureButton.Location = new System.Drawing.Point(6, 19);
+            this.CaptureButton.Name = "CaptureButton";
+            this.CaptureButton.Size = new System.Drawing.Size(97, 23);
+            this.CaptureButton.TabIndex = 0;
+            this.CaptureButton.Text = "Capture";
+            this.CaptureButton.UseVisualStyleBackColor = true;
+            this.CaptureButton.Click += new System.EventHandler(this.CaptureButtonClick);
             // 
             // OrdersDisplay
             // 
@@ -583,7 +659,7 @@
             this.Controls.Add(this.BeginTurnButton);
             this.Controls.Add(this.NextTurnButton);
             this.Name = "OrdersDisplay";
-            this.Size = new System.Drawing.Size(256, 1007);
+            this.Size = new System.Drawing.Size(256, 1116);
             this.MoveBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MovePictureBox)).EndInit();
             this.OrdersPanel.ResumeLayout(false);
@@ -605,12 +681,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.DivePictureBox)).EndInit();
             this.LoadTorpedoesBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LoadTorpedoesPictureBox)).EndInit();
+            this.DepthChargeBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DepthChargePictureBox)).EndInit();
+            this.InstallBatteryBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.InstallBatteryPictureBox)).EndInit();
             this.UnitPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.UnitPictureBox)).EndInit();
             this.InfoPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FlagBox)).EndInit();
-            this.DepthChargeBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DepthChargePictureBox)).EndInit();
+            this.CaptureBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.CapturePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -660,5 +740,11 @@
         private System.Windows.Forms.GroupBox DepthChargeBox;
         private System.Windows.Forms.PictureBox DepthChargePictureBox;
         private System.Windows.Forms.Button DepthChargeButton;
+        private System.Windows.Forms.GroupBox InstallBatteryBox;
+        private System.Windows.Forms.PictureBox InstallBatteryPictureBox;
+        private System.Windows.Forms.Button InstallBatteryButton;
+        private System.Windows.Forms.GroupBox CaptureBox;
+        private System.Windows.Forms.PictureBox CapturePictureBox;
+        private System.Windows.Forms.Button CaptureButton;
     }
 }

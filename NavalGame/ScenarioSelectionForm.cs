@@ -43,6 +43,62 @@ namespace NavalGame
                     Map = Bitmaps.Get("Data\\TheChannel.png")
                 });
 
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Four Corners",
+                    Description = "THE FOUR CORNERS.",
+                    Map = Bitmaps.Get("Data\\TheFourCorners.png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Archipelago",
+                    Description = "THE ARCHIPELAGO.",
+                    Map = Bitmaps.Get("Data\\TheArchipelago.png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "Wake Island",
+                    Description = "WAKE ISLAND.",
+                    Map = Bitmaps.Get("Data\\WakeIsland.png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Islands",
+                    Description = "THE ISLANDS.",
+                    Map = Bitmaps.Get("Data\\TheIslands.png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Siege of Malta",
+                    Description = "THE SIEGE OF MALTA.",
+                    Map = Bitmaps.Get("Data\\Malta.png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Islands (3)",
+                    Description = "THE ISLANDS 3.",
+                    Map = Bitmaps.Get("Data\\TheIslands(3).png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Four Corners (4)",
+                    Description = "The Four Corners (4)",
+                    Map = Bitmaps.Get("Data\\TheFourCorners(4).png")
+                });
+
             ScenarioList.SelectedIndex = 0;
         }
 

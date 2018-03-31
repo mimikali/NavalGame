@@ -3,10 +3,9 @@
 - Add likely outcome tooltip 1/2
 - Make Order buttons checkboxes
 - Add leader head next to greetings
-- Remove flags from unit bitmaps
-- Add coastal battery, coastal battery barge
-- Move ship icons down
 
+* Move ship icons down
+* Add coastal battery, coastal battery barge
 * Game needs its own turn system
 * Make factories always produce 2 cargo per turn
 * Slow down damaged ships

@@ -259,47 +259,17 @@ namespace NavalGame
             }
 
             // Calculate the chances of a hit
-            List<int> chances = new List<int>();
-            for (int i = 0; i < MapDisplay.PointDifference(shooter.Position, target); i++)
+            float probability = MapDisplay.PointDifference(targetUnit.Position, shooter.Position) <= 3 ? 0.5f : 0.3f;
+            if (Random.NextDouble() < probability)
             {
-                chances.Add(0);
+                // Calculate damage
+                float damage = 0.65f * shooter.Type.LightPower / targetUnit.Type.Armour;
+                damage *= (float)(1 + 0.2f * (Random.NextDouble() * 2 - 1));
+                if (Random.NextDouble() < 0.07f) damage *= 1.5f;
+                targetUnit.Health -= damage;
+                return (int)(damage * 100);
             }
 
-            for (int i = 0; i < targetUnit.Type.Speed; i++)
-            {
-                chances.Add(0);
-            }
-
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(2);
-
-            // Choose if the shot missed, hit, or critically hit
-            int result = chances[Random.Next(0, chances.Count)];
-
-            // Calculate damage
-            float basedamage = shooter.Type.LightPower / targetUnit.Type.Armour;
-            float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
-
-            // Take action according to the shot
-            switch (result)
-            {
-                case 0:
-                    return 0;
-                case 1:
-                    targetUnit.Health -= basedamage + randomVariation;
-                    return (int)((basedamage + randomVariation) * 100);
-                case 2:
-                    targetUnit.Health -= 2 * basedamage + randomVariation;
-                    return (int)((2 * basedamage + randomVariation) * 100);
-            }
             return 0;
         }
 
@@ -318,51 +288,18 @@ namespace NavalGame
             }
 
             // Calculate the chances of a hit
-            List<int> chances = new List<int>();
-            for (int i = 0; i < MapDisplay.PointDifference(shooter.Position, target); i++)
+            float probability = MapDisplay.PointDifference(targetUnit.Position, shooter.Position) <= 3 ? 0.5f : 0.3f;
+            if (Random.NextDouble() < probability)
             {
-                chances.Add(0);
+                // Calculate damage
+                float damage = 0.65f * shooter.Type.HeavyPower / targetUnit.Type.Armour;
+                damage *= (float)(1 + 0.2f * (Random.NextDouble() * 2 - 1));
+                if (Random.NextDouble() < 0.07f) damage *= 1.5f;
+                targetUnit.Health -= damage;
+                return (int)(damage * 100);
             }
 
-            for (int i = 0; i < targetUnit.Type.Speed; i++)
-            {
-                chances.Add(0);
-            }
-
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(1);
-            chances.Add(2);
-
-            // Choose if the shot missed, hit, or critically hit
-            int result = chances[Random.Next(0, chances.Count)];
-
-            // Calculate damage
-            float basedamage = shooter.Type.HeavyPower / targetUnit.Type.Armour;
-            float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
-
-            // Take action according to the shot
-            switch (result)
-            {
-                case 0:
-                    return 0;
-                case 1:
-                    targetUnit.Health -= basedamage + randomVariation;
-                    return (int)((basedamage + randomVariation) * 100);
-                case 2:
-                    targetUnit.Health -= 2 * basedamage + randomVariation;
-                    return (int)((2 * basedamage + randomVariation) * 100);
-            }
             return 0;
-
         }
 
         public int Repair(Point target, Unit repairer)
@@ -512,14 +449,15 @@ namespace NavalGame
         public int DepthCharge(Point target, Unit charger)
         {
             Unit targetUnit = GetUnitAt(target);
+            charger.DepthChargesLeft--;
 
+            if (charger == null) return 0;
             if (targetUnit == null) return 0;
             if (!targetUnit.IsSubmerged) return 0;
             if (targetUnit == charger) return 0;
             if (targetUnit.Player == charger.Player) return 0;
             if (charger.DepthChargesLeft < 1) return 0;
 
-            charger.DepthChargesLeft--;
             float r = (float)Random.NextDouble();
             if (r < 0.1f)
             {
@@ -542,6 +480,74 @@ namespace NavalGame
             {
                 return 0;
             }
+        }
+
+        public int InstallBattery(Point target, Unit installer)
+        {
+            if (installer == null) return 0;
+            if (Terrain.Get(target.X, target.Y, TerrainType.Sea) == TerrainType.Sea) return 0;
+            if (MapDisplay.PointDifference(target, installer.Position) >= 1.5) return 0;
+            if (installer.IsSubmerged) return 0;
+            if (installer.InstallsLeft < 1) return 0;
+
+            installer.InstallsLeft--;
+            RemoveUnit(installer);
+
+            Unit newUnit = new BatteryInProgress(installer.Player, target);
+            AddUnit(newUnit);
+            return 1;
+        }
+
+        public int Capture(Point target, Unit captor)
+        {
+            Unit targetUnit = GetUnitAt(target);
+
+            if (targetUnit == null) return 0;
+            if (targetUnit.IsSubmerged) return 0;
+            if (!IsUnitVisibleForPlayer(captor.Player, targetUnit)) return 0;
+            if (captor == null) return 0;
+            if (Terrain.Get(target.X, target.Y, TerrainType.Sea) == TerrainType.Sea) return 0;
+            if (MapDisplay.PointDifference(target, captor.Position) >= 1.5) return 0;
+            if (captor.IsSubmerged) return 0;
+            if (captor.CapturesLeft < 1) return 0;
+
+            captor.CapturesLeft--;
+
+            float chance = 0;
+
+            if (targetUnit.Player.Faction == Faction.Neutral)
+            {
+                if (targetUnit.Type == UnitType.Factory)
+                {
+                    chance = 0.6f;
+                }
+                else
+                {
+                    chance = 0.3f;
+                }
+            }
+            else
+            {
+                if (targetUnit.Type == UnitType.Factory)
+                {
+                    chance = 0.4f;
+                }
+                else
+                {
+                    chance = 0.2f;
+                }
+            }
+
+            if (Random.NextDouble() > chance)
+            {
+                captor.Health -= 0.1f;
+                return 0;
+            }
+
+            targetUnit.Player = captor.Player;
+            targetUnit.Name = captor.Player.GetUnitName(targetUnit);
+            RemoveUnit(captor);
+            return 1;
         }
 
         public static Bitmap GetFactionFlag(Faction faction)
@@ -654,11 +660,11 @@ namespace NavalGame
                 {
                     for (int y = 0; y < Terrain.Height; y++)
                     {
-                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange && Terrain.Get(x, y) == TerrainType.Sea)
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.LightRange)
                         {
                             Unit target = GetUnitAt(new Point(x, y));
 
-                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player)
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player && target.Type.Armour != float.PositiveInfinity)
                             {
                                 if (unit.LightShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
                             }
@@ -680,11 +686,11 @@ namespace NavalGame
                 {
                     for (int y = 0; y < Terrain.Height; y++)
                     {
-                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange && Terrain.Get(x, y) == TerrainType.Sea)
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) <= unit.Type.HeavyRange)
                         {
                             Unit target = GetUnitAt(new Point(x, y));
 
-                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player)
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player != unit.Player && target.Type.Armour != float.PositiveInfinity)
                             {
                                 if (unit.HeavyShotsLeft >= 1 && new Point(x, y) != unit.Position) possibleShots.Add(new Point(x, y));
                             }
@@ -873,7 +879,7 @@ namespace NavalGame
                     {
                         if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
                         {
-                            if (new Point(x, y) != unit.Position && MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 1.5)
+                            if (new Point(x, y) != unit.Position && Terrain.Get(x, y) == TerrainType.Sea)
                             {
                                 possibleCharges.Add(new Point(x, y));
                             }
@@ -883,6 +889,55 @@ namespace NavalGame
             }
 
             return possibleCharges;
+        }
+
+        public HashSet<Point> GetPossibleBatteryInstallations(Unit unit)
+        {
+            HashSet<Point> possibleBatteries = new HashSet<Point>();
+
+            if (unit.InstallsLeft >= 1)
+            {
+                for (int x = 0; x < Terrain.Width; x++)
+                {
+                    for (int y = 0; y < Terrain.Height; y++)
+                    {
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                        {
+                            if (new Point(x, y) != unit.Position && Terrain.Get(x, y) == TerrainType.Land)
+                            {
+                                possibleBatteries.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleBatteries;
+        }
+
+        public HashSet<Point> GetPossibleCaptures(Unit unit)
+        {
+            HashSet<Point> possibleCaptures = new HashSet<Point>();
+
+            if (unit.CapturesLeft >= 1)
+            {
+                for (int x = 0; x < Terrain.Width; x++)
+                {
+                    for (int y = 0; y < Terrain.Height; y++)
+                    {
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                        {
+                            if (new Point(x, y) != unit.Position && Terrain.Get(x, y) == TerrainType.Land)
+                            {
+                                possibleCaptures.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            return possibleCaptures;
         }
 
         public HashSet<Point> GetMoveRange(Unit unit)

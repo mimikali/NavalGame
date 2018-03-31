@@ -26,6 +26,8 @@ namespace NavalGame
         private int _LoadsLeft;
         private int _TorpedoesLeft;
         private int _DivesLeft;
+        private int _InstallsLeft;
+        private int _CapturesLeft;
 
         protected Unit(UnitType type, Player player, Point position)
         {
@@ -300,6 +302,32 @@ namespace NavalGame
             }
         }
 
+        public int InstallsLeft
+        {
+            get
+            {
+                return _InstallsLeft;
+            }
+
+            set
+            {
+                _InstallsLeft = value;
+            }
+        }
+
+        public int CapturesLeft
+        {
+            get
+            {
+                return _CapturesLeft;
+            }
+
+            set
+            {
+                _CapturesLeft = value;
+            }
+        }
+
         public bool Move(Point destination)
         {
             var distance = MapDisplay.PointDifference(_Position, destination);
@@ -341,6 +369,7 @@ namespace NavalGame
             TorpedoesLeft = 1;
             DivesLeft = 1;
             DepthChargesLeft = 1;
+            CapturesLeft = 1;
 
             if (IsSubmerged && new Random(GetHashCode()).NextDouble() <= 0.7)
             {

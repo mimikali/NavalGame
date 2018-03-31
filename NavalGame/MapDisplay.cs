@@ -448,6 +448,30 @@ namespace NavalGame
                             PlaySound("Data\\DepthChargeDrop.wav");
                         }
                     }
+
+                    // Install Battery
+                    else if (CurrentOrder == Order.InstallBattery)
+                    {
+                        if (Game.GetPossibleBatteryInstallations(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            int installation = Game.InstallBattery(mapClickPosition, Game.SelectedUnit);
+
+                            if (installation != 0) _ToolTip.Show("Succesfully installed battery.", this, e.Location, 2000);
+                            else _ToolTip.Show("Failed to install battery.", this, e.Location, 2000);
+                        }
+                    }
+
+                    // Capture
+                    else if (CurrentOrder == Order.Capture)
+                    {
+                        if (Game.GetPossibleCaptures(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            int capture = Game.Capture(mapClickPosition, Game.SelectedUnit);
+
+                            if (capture != 0) _ToolTip.Show("Successfully captured the target.", this, e.Location, 2000);
+                            else _ToolTip.Show("Failed to capture the target.", this, e.Location, 2000);
+                        }
+                    }
                 }
 
                 // Selection
@@ -617,6 +641,12 @@ namespace NavalGame
                         break;
                     case Order.DepthCharge:
                         range = Game.GetDepthChargeRange(Game.SelectedUnit);
+                        break;
+                    case Order.InstallBattery:
+                        range = Game.GetPossibleBatteryInstallations(Game.SelectedUnit);
+                        break;
+                    case Order.Capture:
+                        range = Game.GetPossibleCaptures(Game.SelectedUnit);
                         break;
                 }
             }

@@ -15,7 +15,8 @@ namespace NavalGame
         public override void ResetProperties(bool initialSetup)
         {
             base.ResetProperties(initialSetup);
-            if (!initialSetup) Cargo += 2;
+            if (!initialSetup && Player.Faction == Faction.Neutral) Cargo += 2;
+            else if (!initialSetup) Cargo += 3;
         }
     }
 }

@@ -204,6 +204,10 @@ namespace NavalGame
             {
                 names = _UnitNames[((ShipInProgress)unit).ShipType];
             }
+            else if (unit.Type == UnitType.BatteryInProgress)
+            {
+                names = _UnitNames[UnitType.CoastalBattery];
+            }
             else
             {
                 names = _UnitNames[unit.Type];
@@ -234,11 +238,44 @@ namespace NavalGame
             List<string> factories = new List<string>();
             List<string> lightCargoes = new List<string>();
             List<string> mediumCargoes = new List<string>();
+            List<string> batteryBarges = new List<string>();
+            List<string> coastalBatteries = new List<string>();
+            List<string> frigates = new List<string>();
+            List<string> pocketBattleships = new List<string>();
+            List<string> troopShips = new List<string>();
 
             switch (_Faction)
             {
                 #region Germany
                 case Faction.Germany:
+
+                    troopShips.AddRange(new string[]
+                    {
+                        "MV Goya",
+                        "SS Cap Arcona",
+                        "MV Wilhelm Gustloff"
+                    });
+
+                    for (int i = 1; i < 100; i++)
+                    {
+                        batteryBarges.Add("Battery Barge" + i.ToString());
+                    }
+
+                    coastalBatteries.AddRange(new string[]
+                    {
+                        "Hornbäck Battery",
+                        "Skagen Battery",
+                        "Bornholm-Süd Battery",
+                        "Bornholm-Nord Battery",
+                        "Heligoland Battery",
+                        "Borkum Battery",
+                        "Kolberg Battery",
+                        "Memel Battery",
+                        "Pillau Battery",
+                        "Egersund Battery",
+                        "Ostende Battery",
+                        "Le Havre Battery",
+                    });
 
                     for (int i = 1; i < 5000; i++)
                     {
@@ -249,18 +286,23 @@ namespace NavalGame
                     {
                         "Bismarck",
                         "Tirpitz",
-                        "Scharnhorst",
-                        "Gneisenau",
                         "Hannover",
+                        "Pommem",
                         "Schleswig Holstein",
                         "Schlesien"
                     });
 
-                    battlecruisers.AddRange(new string[]
+                    pocketBattleships.AddRange(new string[]
                     {
                         "Deutschland",
                         "Admiral Scheer",
                         "Admiral Graf Spee"
+                    });
+
+                    battlecruisers.AddRange(new string[]
+                    {
+                        "Scharnhorst",
+                        "Gneisenau",
                     });
 
                     heavyCruisers.AddRange(new string[]
@@ -331,8 +373,9 @@ namespace NavalGame
 
                     ports.AddRange(new string[]
                     {
-                        "Kiel",
                         "Heligoland",
+                        "Brest",
+                        "Kiel",
                         "Danzig",
                         "Hela",
                         "Brevik",
@@ -383,6 +426,34 @@ namespace NavalGame
 
                 #region England
                 case Faction.England:
+
+                    troopShips.AddRange(new string[]
+                    {
+                        "Henry Baldwin",
+                        "Howard Victory",
+                        "Henry Bergh",
+                        "Howell Lykes",
+                        "Henry Dearborn",
+                        "Hugh L. Scott"
+                    });
+
+                    for (int i = 1; i < 100; i++)
+                    {
+                        batteryBarges.Add("Battery Barge " + i.ToString());
+                    }
+
+                    coastalBatteries.AddRange(new string[]
+                    {
+                        "Wanstone Battery",
+                        "Hurst Castle Battery",
+                        "Fan Bay Battery",
+                        "Foreland Battery",
+                        "Upton Fort Battery",
+                        "Blyth Battery",
+                        "Ness Battery",
+                        "Tyne Turrets Battery",
+                        "Palmerston Battery"
+                    });
 
                     submarines.AddRange(new string[]
                     {
@@ -539,6 +610,24 @@ namespace NavalGame
                         "HMS Brazen"
                     });
 
+                    frigates.AddRange(new string[]
+                    {
+                        "HMS Tweed",
+                        "HMS Ribble",
+                        "HMS River",
+                        "HMS Nith",
+                        "HMS Ness",
+                        "HMS Trent",
+                        "HMS Itchen",
+                        "HMS Exe",
+                        "HMS Waveney",
+                        "HMS Annan",
+                        "HMS Awe",
+                        "HMS Lossie",
+                        "HMS Braid",
+                    });
+
+
                     for (int i = 1; i <= 150; i++)
                     {
                         torpedoBoats.Add("MTB" + i.ToString());
@@ -659,6 +748,39 @@ namespace NavalGame
 
                 #region USA
                 case Faction.USA:
+
+                    troopShips.AddRange(new string[]
+                    {
+                        "USS General Hase",
+                        "USS General Morton",
+                        "USS General Hersey",
+                        "USS General McRae",
+                        "USS General Patrick",
+                        "USS General Langfitt",
+                        "USS General Omar",
+                        "USS General Blatchford",
+                        "USS General LeRoy",
+                        "USS General Brewster",
+                        "USS General Aultman",
+                        "USS General Ballou",
+                        "USS General Haan",
+                        "USS General Stuart"
+                    });
+
+                    for (int i = 1; i < 100; i++)
+                    {
+                        batteryBarges.Add("Battery Barge" + i.ToString());
+                    }
+
+                    coastalBatteries.AddRange(new string[]
+                    {
+                        "Portland Battery",
+                        "Charleston Battery",
+                        "Galveston Battery",
+                        "Pensacola Battery",
+                        "Seward Battery",
+                        "Cap Cod Battery",
+                    });
 
                     submarines.AddRange(new string[]
                     {
@@ -936,6 +1058,31 @@ namespace NavalGame
                 #region Japan
                 case Faction.Japan:
 
+                    troopShips.AddRange(new string[]
+                    {
+                        "Shinshu Maru",
+                        "Mayasan Maru",
+                        "Tamatsu Maru",
+                        "Kibitsu Maru",
+                        "Nigitsu Maru",
+                        "Takatsu Maru"
+                    });
+
+                    for (int i = 1; i < 100; i++)
+                    {
+                        batteryBarges.Add("Battery Barge" + i.ToString());
+                    }
+
+                    coastalBatteries.AddRange(new string[]
+                    {
+                        "Fort Siloso Battery",
+                        "Tokyo Bay Battery",
+                        "Tosa Battery",
+                        "Mandai Battery",
+                        "Takihome Battery",
+                        "Manila Battery",
+                    });
+
                     for (int i = 1; i < 300; i++)
                     {
                         submarines.Add("I" + i.ToString());
@@ -1098,12 +1245,17 @@ namespace NavalGame
 
                 #region Default
                 default:
+                    troopShips.Add("Troop Ship");
+                    batteryBarges.Add("Battery Barge");
+                    coastalBatteries.Add("Coastal Battery");
                     submarines.Add("Submarine");
                     battleships.Add("Battleship");
+                    pocketBattleships.Add("Pocket Battleship");
                     battlecruisers.Add("Battlecruiser");
                     heavyCruisers.Add("Heavy Cruiser");
                     lightCruisers.Add("Light Cruiser");
                     destroyers.Add("Destroyer");
+                    frigates.Add("Frigate");
                     torpedoBoats.Add("Topredo Boat");
                     minesweepers.Add("Minesweeper");
                     wrecks.Add("Wreck");
@@ -1117,12 +1269,16 @@ namespace NavalGame
 
             _UnitNames = new Dictionary<UnitType, List<string>>()
                     {
+                        { UnitType.BatteryBarge, batteryBarges },
+                        { UnitType.CoastalBattery, coastalBatteries },
                         { UnitType.Submarine, submarines },
                         { UnitType.Battleship, battleships },
+                        { UnitType.PocketBattleship, pocketBattleships },
                         { UnitType.Battlecruiser, battlecruisers },
                         { UnitType.HeavyCruiser, heavyCruisers },
                         { UnitType.LightCruiser, lightCruisers },
                         { UnitType.Destroyer, destroyers },
+                        { UnitType.Frigate, frigates },
                         { UnitType.TorpedoBoat, torpedoBoats },
                         { UnitType.Minesweeper, minesweepers },
                         { UnitType.Wreck, wrecks },
@@ -1130,6 +1286,7 @@ namespace NavalGame
                         { UnitType.Factory, factories },
                         { UnitType.LightCargo, lightCargoes },
                         { UnitType.MediumCargo, mediumCargoes },
+                        { UnitType.TroopShip, troopShips }
                     };
         }
     }

@@ -31,7 +31,7 @@ namespace NavalGame
 
             foreach (var unitType in UnitType.UnitTypes)
             {
-                if (unitType.BuildTime > 0)
+                if (unitType.BuildTime > 0 && unitType.Factions.Contains(builder.Player.Faction))
                 {
                     UnitList.Items.Add(unitType);
                 }

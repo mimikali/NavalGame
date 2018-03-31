@@ -39,6 +39,8 @@ namespace NavalGame
             LoadTorpedoesPictureBox.Image = Bitmaps.Get("Data\\LoadTorpedoes.png");
             DepthChargePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             DepthChargePictureBox.Image = Bitmaps.Get("Data\\DepthCharge.png");
+            InstallBatteryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            InstallBatteryPictureBox.Image = Bitmaps.Get("Data\\InstallBattery.png");
         }
 
         MapDisplay _MapDisplay;
@@ -69,6 +71,8 @@ namespace NavalGame
             DivePictureBox.BorderStyle = BorderStyle.None;
             LoadTorpedoesPictureBox.BorderStyle = BorderStyle.None;
             DepthChargePictureBox.BorderStyle = BorderStyle.None;
+            InstallBatteryPictureBox.BorderStyle = BorderStyle.None;
+            CapturePictureBox.BorderStyle = BorderStyle.None;
 
             if (MapDisplay.Game.SelectedUnit != null) DivePictureBox.Image = MapDisplay.Game.SelectedUnit.IsSubmerged ? Bitmaps.Get("Data\\Surface.png") : Bitmaps.Get("Data\\Dive.png");
 
@@ -119,6 +123,14 @@ namespace NavalGame
 
                 case Order.DepthCharge:
                     DepthChargePictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.InstallBattery:
+                    InstallBatteryPictureBox.BorderStyle = BorderStyle.Fixed3D;
+                    break;
+
+                case Order.Capture:
+                    CapturePictureBox.BorderStyle = BorderStyle.Fixed3D;
                     break;
             }
 
@@ -178,6 +190,8 @@ namespace NavalGame
                 else DiveBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.LoadTorpedoes)) LoadTorpedoesBox.Show(); else LoadTorpedoesBox.Hide();
                 if (selectedUnit.Type.Abilities.Contains(Order.DepthCharge)) DepthChargeBox.Show(); else DepthChargeBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.InstallBattery)) InstallBatteryBox.Show(); else InstallBatteryBox.Hide();
+                if (selectedUnit.Type.Abilities.Contains(Order.Capture)) CaptureBox.Show(); else CaptureBox.Hide();
 
                 MoveBox.Enabled = selectedUnit.MovesLeft >= 1;
                 LightArtilleryBox.Enabled = selectedUnit.LightShotsLeft >= 1 && !selectedUnit.IsSubmerged;
@@ -190,6 +204,8 @@ namespace NavalGame
                 DiveBox.Enabled = selectedUnit.DivesLeft >= 1;
                 LoadTorpedoesBox.Enabled = selectedUnit.Torpedoes < 4;
                 DepthChargeBox.Enabled = selectedUnit.DepthChargesLeft >= 1;
+                InstallBatteryBox.Enabled = selectedUnit.InstallsLeft >= 1;
+                CaptureBox.Enabled = selectedUnit.CapturesLeft >= 1;
 
                 if (MapDisplay.CurrentOrder == Order.Move && selectedUnit.MovesLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.LightArtillery && selectedUnit.LightShotsLeft < 1) MapDisplay.CurrentOrder = null;
@@ -200,6 +216,8 @@ namespace NavalGame
                 if (MapDisplay.CurrentOrder == Order.Torpedo && selectedUnit.TorpedoesLeft < 1) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.LoadTorpedoes && selectedUnit.Torpedoes == selectedUnit.Type.MaxTorpedoes) MapDisplay.CurrentOrder = null;
                 if (MapDisplay.CurrentOrder == Order.DepthCharge && selectedUnit.DepthChargesLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.InstallBattery && selectedUnit.InstallsLeft < 1) MapDisplay.CurrentOrder = null;
+                if (MapDisplay.CurrentOrder == Order.Capture && selectedUnit.CapturesLeft < 1) MapDisplay.CurrentOrder = null;
 
                 HealthBar.Value = (int)(selectedUnit.Health * 100);
             }
@@ -305,6 +323,16 @@ namespace NavalGame
         private void DepthChargeButtonClick(object sender, EventArgs e)
         {
             MapDisplay.CurrentOrder = Order.DepthCharge;
+        }
+
+        private void InstallBatteryButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.InstallBattery;
+        }
+
+        private void CaptureButtonClick(object sender, EventArgs e)
+        {
+            MapDisplay.CurrentOrder = Order.Capture;
         }
     }
 }

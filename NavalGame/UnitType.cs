@@ -28,6 +28,7 @@ namespace NavalGame
         public float RepairPower;
         public int BuildTime;
         public int Cost;
+        public List<Faction> Factions;
         public Func<Player, Point, Unit> CreateUnit;
 
         public static UnitType Battleship;
@@ -60,10 +61,44 @@ namespace NavalGame
 
         public static UnitType TorpedoBoat;
 
+        public static UnitType BatteryBarge;
+
+        public static UnitType BatteryInProgress;
+
+        public static UnitType CoastalBattery;
+
+        public static UnitType Frigate;
+
+        public static UnitType TroopShip;
+
+        public static UnitType PocketBattleship;
+
+        public static UnitType SuperBattleship;
+
         public static List<UnitType> UnitTypes;
 
         public static void InitializeUnitTypes()
         {
+            SuperBattleship = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
+                Name = "Battleship",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\BattleshipLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\Battleship.png"),
+                Speed = 4,
+                ViewDistance = 9,
+                HeavyPower = 18,
+                HeavyRange = 9,
+                LightPower = 4,
+                LightRange = 7,
+                TorpedoHitProbability = 0.4f,
+                Armour = 34,
+                BuildTime = 12,
+                Cost = 44,
+                Factions = new List<Faction> { Faction.Japan, Faction.USA },
+                CreateUnit = (player, position) => new Battleship(player, position)
+            };
+
             Battleship = new UnitType
             {
                 Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
@@ -72,17 +107,35 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Battleship.png"),
                 Speed = 4,
                 ViewDistance = 9,
-                SonarRange = 0,
-                HeavyPower = 7,
+                HeavyPower = 15,
                 HeavyRange = 9,
-                LightPower = 2,
-                LightRange = 6,
+                LightPower = 4,
+                LightRange = 7,
+                TorpedoHitProbability = 0.4f,
+                Armour = 30,
+                BuildTime = 10,
+                Cost = 36,
+                Factions = new List<Faction> { Faction.Germany, Faction.England, Faction.Japan, Faction.USA },
+                CreateUnit = (player, position) => new Battleship(player, position)
+            };
+
+            PocketBattleship = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
+                Name = "Pocket Battleship",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\PocketBattleshipLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\PocketBattleship.png"),
+                Speed = 4,
+                ViewDistance = 9,
+                HeavyPower = 13,
+                HeavyRange = 9,
+                LightPower = 4,
+                LightRange = 7,
                 TorpedoHitProbability = 0.4f,
                 Armour = 18,
-                Capacity = 0,
-                RepairPower = 0,
-                BuildTime = 10,
-                Cost = 30,
+                BuildTime = 8,
+                Cost = 24,
+                Factions = new List<Faction> { Faction.Germany },
                 CreateUnit = (player, position) => new Battleship(player, position)
             };
 
@@ -94,17 +147,15 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Battlecruiser.png"),
                 Speed = 5,
                 ViewDistance = 9,
-                SonarRange = 0,
-                HeavyPower = 6,
+                HeavyPower = 15,
                 HeavyRange = 9,
-                LightPower = 2,
-                LightRange = 6,
+                LightPower = 4,
+                LightRange = 7,
                 TorpedoHitProbability = 0.4f,
-                Armour = 12,
-                Capacity = 0,
-                RepairPower = 0,
+                Armour = 24,
                 BuildTime = 9,
-                Cost = 25,
+                Cost = 30,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Battlecruiser(player, position)
             };
 
@@ -115,42 +166,43 @@ namespace NavalGame
                 Name = "Heavy Cruiser",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\HeavyCruiserLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\HeavyCruiser.png"),
-                Speed = 4,
+                Speed = 5,
                 ViewDistance = 9,
-                SonarRange = 0,
-                HeavyPower = 5,
-                HeavyRange = 9,
-                LightPower = 3,
+                HeavyPower = 7,
+                HeavyRange = 8,
+                LightPower = 2,
                 LightRange = 6,
                 TorpedoHitProbability = 0.4f,
                 Armour = 12,
                 Capacity = 0,
                 RepairPower = 0,
                 BuildTime = 7,
-                Cost = 18,
+                Cost = 14,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new HeavyCruiser(player, position)
             };
 
             LightCruiser = new UnitType
             {
-                Abilities = new List<Order> { Order.Move, Order.LightArtillery },
+                Abilities = new List<Order> { Order.Move, Order.LightArtillery, Order.Torpedo, Order.LoadTorpedoes },
                 Name = "Light Cruiser",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\LightCruiserLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\LightCruiser.png"),
                 Speed = 5,
                 ViewDistance = 9,
-                SonarRange = 0,
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 4,
                 LightRange = 7,
                 TorpedoPower = 9,
+                MaxTorpedoes = 3,
                 TorpedoHitProbability = 0.2f,
-                Armour = 9,
+                Armour = 8,
                 Capacity = 0,
                 RepairPower = 0,
                 BuildTime = 5,
-                Cost = 13,
+                Cost = 10,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new LightCruiser(player, position)
             };
 
@@ -166,7 +218,7 @@ namespace NavalGame
                 HeavyPower = 0,
                 HeavyRange = 0,
                 LightPower = 2,
-                LightRange = 5,
+                LightRange = 6,
                 TorpedoPower = 9,
                 TorpedoHitProbability = 0.2f,
                 MaxTorpedoes = 4,
@@ -175,7 +227,31 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 3,
                 Cost = 7,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Destroyer(player, position)
+            };
+
+            Frigate = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.LightArtillery, Order.DepthCharge },
+                Name = "Frigate",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\FrigateLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\Frigate.png"),
+                Speed = 5,
+                ViewDistance = 9,
+                SonarRange = 2,
+                HeavyPower = 0,
+                HeavyRange = 0,
+                LightPower = 1,
+                LightRange = 5,
+                TorpedoHitProbability = 0.2f,
+                Armour = 3,
+                Capacity = 0,
+                RepairPower = 0,
+                BuildTime = 3,
+                Cost = 5,
+                Factions = new List<Faction> { Faction.England },
+                CreateUnit = (player, position) => new Frigate(player, position)
             };
 
             TorpedoBoat = new UnitType
@@ -191,14 +267,13 @@ namespace NavalGame
                 HeavyRange = 0,
                 LightPower = 0,
                 LightRange = 0,
-                TorpedoPower = 6,
+                TorpedoPower = 7,
                 MaxTorpedoes = 2,
                 TorpedoHitProbability = 0.2f,
                 Armour = 0.1f,
-                Capacity = 0,
-                RepairPower = 0,
                 BuildTime = 2,
                 Cost = 4,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new TorpedoBoat(player, position)
             };
 
@@ -210,9 +285,6 @@ namespace NavalGame
                 Bitmap = Bitmaps.Get("Data\\Ships\\Minesweeper.png"),
                 Speed = 4,
                 ViewDistance = 8,
-                SonarRange = 0,
-                HeavyPower = 0,
-                HeavyRange = 0,
                 LightPower = 1,
                 LightRange = 4,
                 TorpedoHitProbability = 0.2f,
@@ -221,7 +293,24 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 2,
                 Cost = 5,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Minesweeper(player, position)
+            };
+
+            TroopShip = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.Capture },
+                Name = "Troop Ship",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\TroopShipLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\TroopShip.png"),
+                Speed = 3,
+                ViewDistance = 8,
+                TorpedoHitProbability = 0.4f,
+                Armour = 2,
+                Cost = 10,
+                BuildTime = 8,
+                Factions = new List<Faction> { Faction.England, Faction.USA, Faction.Germany, Faction.Japan, Faction.Neutral },
+                CreateUnit = (player, position) => new TroopShip(player, position)
             };
 
             LightCargo = new UnitType
@@ -243,6 +332,7 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 2,
                 Cost = 5,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new LightCargo(player, position)
             };
 
@@ -265,6 +355,7 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 3,
                 Cost = 7,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new MediumCargo(player, position)
             };
 
@@ -290,7 +381,52 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 2,
                 Cost = 6,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Submarine(player, position)
+            };
+
+            CoastalBattery = new UnitType
+            {
+                Abilities = new List<Order> { Order.HeavyArtillery },
+                Name = "Coastal Battery",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\CoastalBatteryLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\CoastalBattery.png"),
+                ViewDistance = 9,
+                HeavyPower = 6,
+                HeavyRange = 9,
+                TorpedoHitProbability = 0f,
+                Armour = 24,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
+                CreateUnit = (player, position) => new CoastalBattery(player, position)
+            };
+
+            BatteryInProgress = new UnitType
+            {
+                Abilities = new List<Order> { },
+                Name = "Battery Under Construction",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\BatteryInProgressLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\BatteryInProgress.png"),
+                ViewDistance = 1,
+                TorpedoHitProbability = 0f,
+                Armour = 5,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
+                CreateUnit = (player, position) => new BatteryInProgress(player, position)
+            };
+
+            BatteryBarge = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.InstallBattery },
+                Name = "Battery Installation Barge",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\BatteryBargeLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\BatteryBarge.png"),
+                Speed = 3,
+                ViewDistance = 8,
+                TorpedoHitProbability = 0.4f,
+                Armour = 2,
+                BuildTime = 4,
+                Cost = 12,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
+                CreateUnit = (player, position) => new BatteryBarge(player, position)
             };
 
             //AircraftCarrier = new UnitType
@@ -311,6 +447,7 @@ namespace NavalGame
             //    RepairPower = 0,
             //    BuildTime = 12,
             //    Cost = 35,
+            //    Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
             //    CreateUnit = (player, position) => new AircraftCarrier(player, position)
             //};
 
@@ -332,6 +469,7 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 0,
                 Cost = 0,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Wreck(player, position)
             };
 
@@ -353,28 +491,25 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 0,
                 Cost = 0,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new ShipInProgress(player, position)
             };
 
             Port = new UnitType
             {
-                Abilities = new List<Order> { Order.Build, Order.Repair, Order.HeavyArtillery },
+                Abilities = new List<Order> { Order.Build, Order.Repair },
                 Name = "Port",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\PortLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Port.png"),
                 Speed = 0,
                 ViewDistance = 10,
                 AlwaysVisible = true,
-                HeavyPower = 7,
-                HeavyRange = 9,
-                LightPower = 0,
-                LightRange = 0,
-                TorpedoPower = 0,
                 Armour = float.PositiveInfinity,
                 Capacity = 80,
                 RepairPower = 2.5f,
                 BuildTime = 0,
                 Cost = 0,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Port(player, position)
             };
 
@@ -397,12 +532,13 @@ namespace NavalGame
                 RepairPower = 0,
                 BuildTime = 0,
                 Cost = 0,
+                Factions = new List<Faction> { Faction.England, Faction.Germany, Faction.Japan, Faction.USA, Faction.Neutral },
                 CreateUnit = (player, position) => new Factory(player, position)
             };
 
             UnitTypes = new List<UnitType>
             {
-                LightCargo, MediumCargo, TorpedoBoat, Destroyer, LightCruiser, HeavyCruiser, Battlecruiser, Battleship, Minesweeper, Submarine, Wreck, ShipInProgress, Port, Factory
+                LightCargo, MediumCargo, TorpedoBoat, Frigate, Destroyer, LightCruiser, HeavyCruiser, Battlecruiser, PocketBattleship, Battleship, Minesweeper, Submarine, TroopShip, BatteryBarge, BatteryInProgress, Wreck, ShipInProgress, CoastalBattery, Port, Factory
             };
         }
     }
