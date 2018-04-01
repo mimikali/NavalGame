@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -54,6 +55,21 @@ namespace NavalGame
                 newUnit.Name = Name;
                 Game.AddUnit(newUnit);
             }
+        }
+
+        public override void Save(XElement unitNode)
+        {
+            base.Save(unitNode);
+
+            unitNode.SetAttributeValue("ShipType", _ShipType.Name);
+        }
+
+        public override void Load(XElement unitNode)
+        {
+            base.Load(unitNode);
+
+            string typeName = XmlUtils.GetAttributeValue<string>(unitNode, "ShipType");
+            _ShipType = UnitType.UnitTypes.First(t => t.Name == typeName);
         }
     }
 }

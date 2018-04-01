@@ -46,6 +46,7 @@ namespace NavalGame
                 if (OxygenLeft <= 0)
                 {
                     IsSubmerged = false;
+                    DivesLeft = 0;
                 }
             }
             if (!IsSubmerged)

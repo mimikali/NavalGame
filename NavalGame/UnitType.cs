@@ -82,7 +82,7 @@ namespace NavalGame
             SuperBattleship = new UnitType
             {
                 Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
-                Name = "Battleship",
+                Name = "Super Battleship",
                 LargeBitmap = Bitmaps.Get("Data\\Ships\\BattleshipLarge.png"),
                 Bitmap = Bitmaps.Get("Data\\Ships\\Battleship.png"),
                 Speed = 4,
@@ -119,26 +119,6 @@ namespace NavalGame
                 CreateUnit = (player, position) => new Battleship(player, position)
             };
 
-            PocketBattleship = new UnitType
-            {
-                Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
-                Name = "Pocket Battleship",
-                LargeBitmap = Bitmaps.Get("Data\\Ships\\PocketBattleshipLarge.png"),
-                Bitmap = Bitmaps.Get("Data\\Ships\\PocketBattleship.png"),
-                Speed = 4,
-                ViewDistance = 9,
-                HeavyPower = 13,
-                HeavyRange = 9,
-                LightPower = 4,
-                LightRange = 7,
-                TorpedoHitProbability = 0.4f,
-                Armour = 18,
-                BuildTime = 8,
-                Cost = 24,
-                Factions = new List<Faction> { Faction.Germany },
-                CreateUnit = (player, position) => new Battleship(player, position)
-            };
-
             Battlecruiser = new UnitType
             {
                 Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
@@ -159,6 +139,25 @@ namespace NavalGame
                 CreateUnit = (player, position) => new Battlecruiser(player, position)
             };
 
+            PocketBattleship = new UnitType
+            {
+                Abilities = new List<Order> { Order.Move, Order.HeavyArtillery, Order.LightArtillery },
+                Name = "Pocket Battleship",
+                LargeBitmap = Bitmaps.Get("Data\\Ships\\PocketBattleshipLarge.png"),
+                Bitmap = Bitmaps.Get("Data\\Ships\\PocketBattleship.png"),
+                Speed = 4,
+                ViewDistance = 9,
+                HeavyPower = 13,
+                HeavyRange = 9,
+                LightPower = 4,
+                LightRange = 7,
+                TorpedoHitProbability = 0.4f,
+                Armour = 18,
+                BuildTime = 8,
+                Cost = 24,
+                Factions = new List<Faction> { Faction.Germany },
+                CreateUnit = (player, position) => new Battleship(player, position)
+            };
 
             HeavyCruiser = new UnitType
             {
