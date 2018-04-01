@@ -140,7 +140,7 @@ namespace NavalGame
                         }
                         else
                         {
-                            _Players.Add(new Player(this, Faction.USA));
+                            _Players.Add(new Player(this, Faction.England));
                             AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.England), new Point(x, y)));
                         }
                     }
@@ -188,7 +188,7 @@ namespace NavalGame
                         }
                         else
                         {
-                            _Players.Add(new Player(this, Faction.USA));
+                            _Players.Add(new Player(this, Faction.Germany));
                             AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Germany), new Point(x, y)));
                         }
                     }
@@ -331,7 +331,7 @@ namespace NavalGame
             }
 
             // Calculate the chances of a hit
-            float probability = MapDisplay.PointDifference(targetUnit.Position, shooter.Position) <= 3 ? 0.5f : 0.3f;
+            float probability = MapDisplay.PointDifference(targetUnit.Position, shooter.Position) <= 3 ? 0.7f : 0.5f;
             if (Random.NextDouble() < probability)
             {
                 // Calculate damage
@@ -360,7 +360,7 @@ namespace NavalGame
             }
 
             // Calculate the chances of a hit
-            float probability = MapDisplay.PointDifference(targetUnit.Position, shooter.Position) <= 3 ? 0.5f : 0.3f;
+            float probability = MapDisplay.PointDifference(targetUnit.Position, shooter.Position) <= 5 ? 0.7f : 0.5f;
             if (Random.NextDouble() < probability)
             {
                 // Calculate damage
