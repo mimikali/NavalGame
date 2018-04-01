@@ -212,7 +212,7 @@ namespace NavalGame
                         }
                         else
                         {
-                            _Players.Add(new Player(this, Faction.USA));
+                            _Players.Add(new Player(this, Faction.Japan));
                             AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Japan), new Point(x, y)));
                         }
                     }
@@ -378,9 +378,10 @@ namespace NavalGame
         {
             Unit unit = GetUnitAt(target);
 
-            if (unit != null)
+            if (unit != null && repairer.Cargo >= 1)
             {
                 repairer.RepairsLeft -= 1;
+                repairer.Cargo -= 1;
                 unit.Health += repairer.Type.RepairPower / unit.Type.Armour;
                 unit.HeavyShotsLeft = 0;
                 unit.LightShotsLeft = 0;
@@ -520,6 +521,8 @@ namespace NavalGame
 
         public int DepthCharge(Point target, Unit charger)
         {
+            if (charger.DepthChargesLeft < 1) return 0;
+
             Unit targetUnit = GetUnitAt(target);
             charger.DepthChargesLeft--;
 
@@ -528,7 +531,6 @@ namespace NavalGame
             if (!targetUnit.IsSubmerged) return 0;
             if (targetUnit == charger) return 0;
             if (targetUnit.Player == charger.Player) return 0;
-            if (charger.DepthChargesLeft < 1) return 0;
 
             float r = (float)Random.NextDouble();
             if (r < 0.1f)
@@ -536,13 +538,13 @@ namespace NavalGame
                 targetUnit.Health = 0;
                 return 100;
             }
-            else if (r < 0.3f)
+            else if (r < 0.2f)
             {
                 float r2 = (float)(Random.NextDouble() * 0.1f - 0.05f);
                 targetUnit.Health -= (float)(0.6 + r2);
                 return (int)(60 + r2 * 100);
             }
-            else if (r < 0.6f)
+            else if (r < 0.4f)
             {
                 float r2 = (float)(Random.NextDouble() * 0.1 - 0.05);
                 targetUnit.Health -= (float)(0.3 + r2);

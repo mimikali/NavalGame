@@ -63,6 +63,22 @@ namespace NavalGame
             ScenarioList.Items.Add(
                 new Scenario
                 {
+                    Name = "The Archipelago (3)",
+                    Description = "THE ARCHIPELAGO.",
+                    Map = Bitmaps.Get("Data\\TheArchipelago(3).png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Archipelago (4)",
+                    Description = "THE ARCHIPELAGO.",
+                    Map = Bitmaps.Get("Data\\TheArchipelago(4).png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
                     Name = "Wake Island",
                     Description = "WAKE ISLAND.",
                     Map = Bitmaps.Get("Data\\WakeIsland.png")
@@ -98,6 +114,14 @@ namespace NavalGame
                     Name = "The Four Corners (4)",
                     Description = "The Four Corners (4)",
                     Map = Bitmaps.Get("Data\\TheFourCorners(4).png")
+                });
+
+            ScenarioList.Items.Add(
+                new Scenario
+                {
+                    Name = "The Fjord",
+                    Description = "The Fjord",
+                    Map = Bitmaps.Get("Data\\TheFjords.png")
                 });
 
             ScenarioList.SelectedIndex = 0;

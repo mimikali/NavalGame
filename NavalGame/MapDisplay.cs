@@ -443,9 +443,17 @@ namespace NavalGame
                         {
                             int hit = Game.DepthCharge(mapClickPosition, Game.SelectedUnit);
 
-                            if (hit > 0 ) _ToolTip.Show("Hit, damage " + Math.Min(hit, 100).ToString("0") + "%", this, e.Location, 2000);
-                            else _ToolTip.Show("Miss", this, e.Location, 2000);
-                            PlaySound("Data\\DepthChargeDrop.wav");
+                            if (hit > 0)
+                            {
+                                _ToolTip.Show("Hit, damage " + Math.Min(hit, 100).ToString("0") + "%", this, e.Location, 2000);
+                                PlaySound("Data\\DepthChargeHit.wav");
+                            }
+
+                            else
+                            {
+                                _ToolTip.Show("Miss", this, e.Location, 2000);
+                                PlaySound("Data\\DepthChargeMiss.wav");
+                            }
                         }
                     }
 

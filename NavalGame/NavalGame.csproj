@@ -54,12 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AircraftCarrier.cs" />
-    <Compile Include="BatteryBarge.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="BatteryInProgress.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="BatteryBarge.cs" />
+    <Compile Include="BatteryInProgress.cs" />
     <Compile Include="Battlecruiser.cs" />
     <Compile Include="Battleship.cs" />
     <Compile Include="BuildForm.cs">
@@ -68,9 +64,7 @@
     <Compile Include="BuildForm.Designer.cs">
       <DependentUpon>BuildForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Coastal Battery.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="Coastal Battery.cs" />
     <Compile Include="Destroyer.cs" />
     <Compile Include="Faction.cs" />
     <Compile Include="Factory.cs" />
@@ -428,10 +422,19 @@
     <Content Include="Data\TestScenario.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\TheArchipelago%283%29.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\TheArchipelago%284%29.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\TheArchipelago.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\TheChannel.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\TheFjords.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\TheFourCorners%284%29.png">

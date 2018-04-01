@@ -3,7 +3,12 @@
 - Add likely outcome tooltip 1/2
 - Make Order buttons checkboxes
 - Add leader head next to greetings
+- Strzelanie do baterii
 
+* Zamienic miejscami pancernik kieszkonowy i liniowy krazownik
+* Bateria nadbrzezna za droga
+* Duzy cargo za wolny, byc moze drozszy ale szybszy
+* Naprawa kosztowac musi
 * Move ship icons down
 * Add coastal battery, coastal battery barge
 * Game needs its own turn system

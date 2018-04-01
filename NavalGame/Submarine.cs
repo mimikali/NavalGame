@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -40,10 +41,27 @@ namespace NavalGame
         {
             base.ResetProperties(initialSetup);
             if (IsSubmerged)
+            {
                 OxygenLeft--;
-            else
-                OxygenLeft = 15;
-            if (OxygenLeft <= 0) IsSubmerged = false;
+                if (OxygenLeft <= 0)
+                {
+                    IsSubmerged = false;
+                }
+            }
+            if (!IsSubmerged)
+                OxygenLeft = 8;
+        }
+
+        public override void Save(XElement unitNode)
+        {
+            base.Save(unitNode);
+            unitNode.SetAttributeValue("OxygenLeft", OxygenLeft);
+        }
+
+        public override void Load(XElement unitNode)
+        {
+            base.Load(unitNode);
+            OxygenLeft = XmlUtils.GetAttributeValue<int>(unitNode, "OxygenLeft");
         }
     }
 }

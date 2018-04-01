@@ -357,6 +357,8 @@ namespace NavalGame
                 IsSubmerged = !IsSubmerged;
                 DivesLeft--;
             }
+
+            if (IsSubmerged) MovesLeft = Math.Min(MovesLeft, Type.SubmergedSpeed);
         }
 
         public virtual void ResetProperties(bool initialSetup)
@@ -394,7 +396,7 @@ namespace NavalGame
             {
                 isDetected = true;
             }
-            else if (!IsDetected && new Random(Game.TurnIndex * GetHashCode()).NextDouble() < 0.3)
+            else if (!IsDetected && new Random(Game.TurnIndex * GetHashCode()).NextDouble() < 0.5)
             {
                 isDetected = Game.Units.Any(u => MapDisplay.PointDifference(u.Position, Position) <= u.Type.SonarRange && u.Player.Faction != Player.Faction);
             }

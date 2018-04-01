@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace NavalGame
 {
@@ -27,6 +28,19 @@ namespace NavalGame
                     Game.RemoveUnit(this);
                 }
             }
+        }
+
+
+        public override void Save(XElement unitNode)
+        {
+            base.Save(unitNode);
+            unitNode.SetAttributeValue("TurnsToLive", _TurnsToLive);
+        }
+
+        public override void Load(XElement unitNode)
+        {
+            base.Load(unitNode);
+            _TurnsToLive = XmlUtils.GetAttributeValue<int>(unitNode, "TurnsToLive");
         }
     }
 }

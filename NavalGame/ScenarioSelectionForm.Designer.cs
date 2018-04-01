@@ -49,7 +49,7 @@
             this.ScenarioList.ItemHeight = 19;
             this.ScenarioList.Location = new System.Drawing.Point(622, 352);
             this.ScenarioList.Name = "ScenarioList";
-            this.ScenarioList.Size = new System.Drawing.Size(161, 146);
+            this.ScenarioList.Size = new System.Drawing.Size(183, 146);
             this.ScenarioList.TabIndex = 0;
             this.ScenarioList.SelectedIndexChanged += new System.EventHandler(this.ScenarioListSelectedIndexChanged);
             // 
@@ -58,10 +58,10 @@
             this.ScenarioDescriptionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ScenarioDescriptionBox.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ScenarioDescriptionBox.Location = new System.Drawing.Point(789, 352);
+            this.ScenarioDescriptionBox.Location = new System.Drawing.Point(811, 352);
             this.ScenarioDescriptionBox.Name = "ScenarioDescriptionBox";
             this.ScenarioDescriptionBox.ReadOnly = true;
-            this.ScenarioDescriptionBox.Size = new System.Drawing.Size(167, 146);
+            this.ScenarioDescriptionBox.Size = new System.Drawing.Size(145, 146);
             this.ScenarioDescriptionBox.TabIndex = 1;
             this.ScenarioDescriptionBox.Text = "";
             // 
