@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using System.IO;
 
 namespace NavalGame
 {
@@ -22,107 +23,39 @@ namespace NavalGame
             {
                 return Name;
             }
+
+            public static XElement Save(Scenario scenario)
+            {
+                XElement scenarioNode = new XElement("Scenario");
+
+                scenarioNode.SetAttributeValue("Name", scenario.Name);
+                scenarioNode.SetAttributeValue("Description", scenario.Description);
+                scenarioNode.SetAttributeValue("Bitmap", "blob");
+
+                return scenarioNode;
+            }
+
+            public static Scenario Load(XElement scenarioNode)
+            {
+                Scenario scenario = new Scenario();
+
+                scenario.Name = XmlUtils.GetAttributeValue<string>(scenarioNode, "Name");
+                scenario.Description = scenarioNode.Value;
+                scenario.Map = Bitmaps.Get(XmlUtils.GetAttributeValue<string>(scenarioNode, "Bitmap"));
+
+                return scenario;
+            }
         }
 
         public ScenarioSelectionForm()
         {
             InitializeComponent();
 
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "Test Scenario",
-                    Description = "This is the description of this test scenario.",
-                    Map = Bitmaps.Get("Data\\TestScenario.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Channel",
-                    Description = "THE CHANNEL.",
-                    Map = Bitmaps.Get("Data\\TheChannel.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Four Corners",
-                    Description = "THE FOUR CORNERS.",
-                    Map = Bitmaps.Get("Data\\TheFourCorners.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Archipelago",
-                    Description = "THE ARCHIPELAGO.",
-                    Map = Bitmaps.Get("Data\\TheArchipelago.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Archipelago (3)",
-                    Description = "THE ARCHIPELAGO.",
-                    Map = Bitmaps.Get("Data\\TheArchipelago(3).png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Archipelago (4)",
-                    Description = "THE ARCHIPELAGO.",
-                    Map = Bitmaps.Get("Data\\TheArchipelago(4).png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "Wake Island",
-                    Description = "WAKE ISLAND.",
-                    Map = Bitmaps.Get("Data\\WakeIsland.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Islands",
-                    Description = "THE ISLANDS.",
-                    Map = Bitmaps.Get("Data\\TheIslands.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Siege of Malta",
-                    Description = "THE SIEGE OF MALTA.",
-                    Map = Bitmaps.Get("Data\\Malta.png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Islands (3)",
-                    Description = "THE ISLANDS 3.",
-                    Map = Bitmaps.Get("Data\\TheIslands(3).png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Four Corners (4)",
-                    Description = "The Four Corners (4)",
-                    Map = Bitmaps.Get("Data\\TheFourCorners(4).png")
-                });
-
-            ScenarioList.Items.Add(
-                new Scenario
-                {
-                    Name = "The Fjord",
-                    Description = "The Fjord",
-                    Map = Bitmaps.Get("Data\\TheFjords.png")
-                });
+            foreach (var fileName in Directory.GetFiles("Data\\Scenarios", "*.scenario"))
+            {
+                XElement element = XElement.Load(fileName);
+                ScenarioList.Items.Add(Scenario.Load(element));
+            }
 
             ScenarioList.SelectedIndex = 0;
         }
@@ -171,6 +104,25 @@ namespace NavalGame
         {
             XElement element = XElement.Load(((FileDialog)sender).FileName);
             new Form1(Game.Load(element), this).ShowDialog();
+        }
+
+        public static string GetScenarioNameFromFileName(string fileName)
+        {
+            string name = "";
+            bool hasExt = true;
+
+            name = Path.GetFileName(fileName);
+
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (name[i] == '.' && hasExt == true)
+                {
+                    name = name.Remove(i);
+                    hasExt = false;
+                }
+            }
+
+            return name;
         }
     }
 }

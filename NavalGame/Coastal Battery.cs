@@ -11,5 +11,12 @@ namespace NavalGame
         public CoastalBattery(Player player, Point position) : base(UnitType.CoastalBattery, player, position)
         {
         }
+
+        public override void ResetProperties(bool initialSetup)
+        {
+            base.ResetProperties(initialSetup);
+
+            Health += 0.02f;
+        }
     }
 }

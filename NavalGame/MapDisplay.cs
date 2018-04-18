@@ -64,7 +64,7 @@ namespace NavalGame
         {
             if (Game.SelectedUnit != null && Game.SelectedUnit != _LastSelectedUnit)
             {
-                if (Game.SelectedUnit.Player == Game.CurrentPlayer)
+                if (Game.SelectedUnit.Player == Game.CurrentPlayer && CurrentOrder != Order.Move)
                 {
                     if (Game.SelectedUnit != null && Game.SelectedUnit.Type.Abilities.Contains(Order.Move))
                     {
@@ -73,6 +73,13 @@ namespace NavalGame
                 }
             }
             _LastSelectedUnit = Game.SelectedUnit;
+
+            if (CurrentOrder == Order.SearchMines)
+            {
+                _ToolTip.Show(Game.SearchMines(Game.SelectedUnit).ToString() + " mine(s) found.", this, MapToDisplay(Game.SelectedUnit.Position), 2000);
+                CurrentOrder = null;
+            }
+
             Invalidate();
             OrdersDisplay.GameChanged();
         }
@@ -158,6 +165,7 @@ namespace NavalGame
             {
                 _CurrentOrder = value;
                 Invalidate();
+                if (Game != null) Game.FireChangedEvent();
             }
         }
 
@@ -187,6 +195,50 @@ namespace NavalGame
             var selected = Bitmaps.Get("Data\\Selected.png");
 
             DrawMap(pe.Graphics);
+
+            // Draw Mines
+
+            foreach (Mine mine in Game.Mines)
+            {
+                Point displayPos = MapToDisplay(mine.Position);
+
+                if (mine.IsVisible || Game.CurrentPlayer != null && Game.CurrentPlayer.Faction == mine.Faction)
+                {
+                    if (displayPos.X > -CameraScale || displayPos.Y > -CameraScale)
+                    {
+                        if (displayPos.X < Width + CameraScale || displayPos.Y < Height + CameraScale)
+                        {
+                            Rectangle counterRect = new Rectangle(displayPos, new Size(CameraScale, CameraScale));
+                            counterRect.Inflate(0 - counterRect.Width / 5, 0 - counterRect.Height / 5);
+
+                            switch (mine.Faction)
+                            {
+                                case Faction.USA:
+                                    pe.Graphics.DrawImage(USACounter, counterRect);
+                                    break;
+
+                                case Faction.Germany:
+                                    pe.Graphics.DrawImage(germanyCounter, counterRect);
+                                    break;
+
+                                case Faction.Japan:
+                                    pe.Graphics.DrawImage(japanCounter, counterRect);
+                                    break;
+
+                                case Faction.England:
+                                    pe.Graphics.DrawImage(englandCounter, counterRect);
+                                    break;
+
+                                case Faction.Neutral:
+                                    pe.Graphics.DrawImage(neutralCounter, counterRect);
+                                    break;
+                            }
+
+                            pe.Graphics.DrawImage(Bitmaps.Get("Data\\Mine.png"), counterRect);
+                        }
+                    }
+                }
+            }
 
             // Draw Units
             if (Game.CurrentPlayer != null)
@@ -285,7 +337,7 @@ namespace NavalGame
         protected override void OnMouseUp(MouseEventArgs e)
         {
             if (_ClickPoint == null) return;
-            if (PointDifference((Point)_ClickPoint, e.Location) < 2)
+            if (PointDifference((Point)_ClickPoint, e.Location) < 4)
             {
                 // Click
                 bool selectionPossible = true;
@@ -297,8 +349,16 @@ namespace NavalGame
                     {
                         if (Game.GetPossibleMoves(Game.SelectedUnit).Contains(mapClickPosition))
                         {
-                            if (Game.SelectedUnit.Move(mapClickPosition))
+                            int result = Game.SelectedUnit.Move(mapClickPosition);
+
+                            if (result >= 0)
+                            {
                                 PlaySound("Data\\Sailing.wav");
+                            }
+                            if (result > 0)
+                            {
+                                PlaySound("Data\\TorpedoHit.wav");
+                            }
                             selectionPossible = false;
                         }
                     }
@@ -480,6 +540,53 @@ namespace NavalGame
                             else _ToolTip.Show("Failed to capture the target.", this, e.Location, 2000);
                         }
                     }
+
+                    // Mine
+                    else if (CurrentOrder == Order.Mine)
+                    {
+                        if (Game.GetPossibleMines(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            int mine = Game.Mine(mapClickPosition, Game.SelectedUnit);
+
+                            if (mine != 0) _ToolTip.Show("Successfully layed minefield.", this, e.Location, 2000);
+                            else _ToolTip.Show("Failed to lay minefield.", this, e.Location, 2000);
+                        }
+                    }
+
+                    // Load Mines
+                    else if (CurrentOrder == Order.LoadMines)
+                    {
+                        if (Game.GetPossibleMineLoads(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            if (MessageBox.Show("Topping up on mines costs 2 war materials.", "Load Mines", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.OK)
+                            {
+                                if (Game.LoadMines(mapClickPosition, Game.SelectedUnit) == 1)
+                                {
+                                    _ToolTip.Show("Mines loaded.", this, e.Location, 2000);
+                                    PlaySound("Data\\Cargo.wav");
+                                }
+                                else _ToolTip.Show("Loading failed.", this, e.Location, 2000);
+                            }
+                        }
+                        selectionPossible = false;
+                        CurrentOrder = null;
+                    }
+
+                    // Sweep
+                    else if (CurrentOrder == Order.Sweep)
+                    {
+                        if (Game.GetPossibleSweeps(Game.SelectedUnit).Contains(mapClickPosition))
+                        {
+                            if (Game.Sweep(mapClickPosition, Game.SelectedUnit) == 1)
+                            {
+                                _ToolTip.Show("Minefield removed.", this, e.Location, 2000);
+                            }
+                            else
+                            {
+                                _ToolTip.Show("Failed to sweep.", this, e.Location, 2000);
+                            }
+                        }
+                    }
                 }
 
                 // Selection
@@ -655,6 +762,15 @@ namespace NavalGame
                         break;
                     case Order.Capture:
                         range = Game.GetPossibleCaptures(Game.SelectedUnit);
+                        break;
+                    case Order.Mine:
+                        range = Game.GetPossibleMines(Game.SelectedUnit);
+                        break;
+                    case Order.LoadMines:
+                        range = Game.GetPossibleMineLoads(Game.SelectedUnit);
+                        break;
+                    case Order.Sweep:
+                        range = Game.GetPossibleSweeps(Game.SelectedUnit);
                         break;
                 }
             }

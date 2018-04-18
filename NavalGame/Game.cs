@@ -12,6 +12,7 @@ namespace NavalGame
     public class Game
     {
         private List<Unit> _Units;
+        private List<Mine> _Mines;
         private Terrain _Terrain;
         private Unit _SelectedUnit;
         private List<Player> _Players = new List<Player>();
@@ -54,6 +55,14 @@ namespace NavalGame
             }
         }
 
+        public IList<Mine> Mines
+        {
+            get
+            {
+                return _Mines.AsReadOnly();
+            }
+        }
+
         public Terrain Terrain
         {
             get
@@ -81,7 +90,7 @@ namespace NavalGame
                         unit.ResetProperties(false);
                     }
                 }
-                if (Changed != null) Changed();
+                Changed?.Invoke();
                 FirePlayerChangedEvent();
             }
         }
@@ -99,6 +108,7 @@ namespace NavalGame
             _Units = new List<Unit>();
             _Players = new List<Player>();
             _Terrain = new Terrain(map);
+            _Mines = new List<NavalGame.Mine>();
 
             ScenarioName = scenarioName;
 
@@ -130,6 +140,18 @@ namespace NavalGame
                         {
                             _Players.Add(new Player(this, Faction.Neutral));
                             AddUnit(new Port(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
+                        }
+                    }
+                    else if (pixel == Color.FromArgb(255, 255, 255))
+                    {
+                        if (Players.Any(player => player.Faction == Faction.Neutral))
+                        {
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
+                        }
+                        else
+                        {
+                            _Players.Add(new Player(this, Faction.Neutral));
+                            AddUnit(new CoastalBattery(Players.ToList().Find(player => player.Faction == Faction.Neutral), new Point(x, y)));
                         }
                     }
                     else if (pixel == Color.FromArgb(128, GetFactionColor(Faction.England)))
@@ -231,7 +253,7 @@ namespace NavalGame
                 }
             }
 
-            _NextPlayer = Players[0];
+            if (Players.Count > 0) _NextPlayer = Players[0];
         }
 
         public Game(Terrain terrain, string scenarioName)
@@ -239,6 +261,7 @@ namespace NavalGame
             _Terrain = terrain;
             _Players = new List<Player>();
             _Units = new List<Unit>();
+            _Mines = new List<Mine>();
 
             ScenarioName = scenarioName;
         }
@@ -298,22 +321,22 @@ namespace NavalGame
                 unit.OnGameChanged();
             }
 
-            if (Changed != null) Changed();
+            Changed?.Invoke();
         }
 
         public void FireSinkingEvent()
         {
-            if (Sinking != null) Sinking();
+            Sinking?.Invoke();
         }
 
         public void FireSubmarineDetectedEvent()
         {
-            if (SubmarineDetected != null) SubmarineDetected();
+            SubmarineDetected?.Invoke();
         }
 
         public void FirePlayerChangedEvent()
         {
-            if (PlayerChanged != null) PlayerChanged();
+            PlayerChanged?.Invoke();
         }
 
         public int LightArtillery(Point target, Unit shooter)
@@ -586,6 +609,7 @@ namespace NavalGame
             if (captor.CapturesLeft < 1) return 0;
 
             captor.CapturesLeft--;
+            captor.Health -= 0.1f;
 
             float chance = 0;
 
@@ -597,14 +621,14 @@ namespace NavalGame
                 }
                 else
                 {
-                    chance = 0.3f;
+                    chance = 0.4f;
                 }
             }
             else
             {
                 if (targetUnit.Type == UnitType.Factory)
                 {
-                    chance = 0.4f;
+                    chance = 0.3f;
                 }
                 else
                 {
@@ -614,14 +638,127 @@ namespace NavalGame
 
             if (Random.NextDouble() > chance)
             {
-                captor.Health -= 0.1f;
                 return 0;
             }
 
+            targetUnit.Cargo = 0;
             targetUnit.Player = captor.Player;
             targetUnit.Name = captor.Player.GetUnitName(targetUnit);
-            RemoveUnit(captor);
             return 1;
+        }
+
+        public int Mine(Point target, Unit miner)
+        {
+            if (miner == null) return 0;
+            if (Terrain.Get(target.X, target.Y, TerrainType.Land) == TerrainType.Land) return 0;
+            if (_Units.Any(unit => unit.Position == target)) return 0;
+            if (miner.MinesLeft < 1) return 0;
+            if (MapDisplay.PointDifference(miner.Position, target) > 1.5f) return 0;
+
+            _Mines.Add(new Mine(miner.Player.Faction, target, this));
+            miner.MovesLeft = 0;
+            miner.MinesLeft--;
+            miner.Mines--;
+            miner.RepairsLeft = 0;
+            miner.TorpedoesLeft = 0;
+            miner.LoadsLeft = 0;
+            miner.LightShotsLeft = 0;
+            miner.InstallsLeft = 0;
+            miner.HeavyShotsLeft = 0;
+            miner.DepthChargesLeft = 0;
+            miner.DivesLeft = 0;
+            miner.CapturesLeft = 0;
+            return 1;
+        }
+
+        public int LoadMines(Point target, Unit loader)
+        {
+            Unit targetUnit = GetUnitAt(target);
+
+            if (targetUnit == null) return 0;
+            if (targetUnit == loader) return 0;
+            if (targetUnit.Player != loader.Player) return 0;
+            if (targetUnit.Type != UnitType.Port) return 0;
+            if (targetUnit.Cargo < 2) return 0;
+            if (!IsUnitVisibleForPlayer(loader.Player, targetUnit)) return 0;
+            if (targetUnit.IsSubmerged) return 0;
+
+            targetUnit.Cargo -= 2;
+            loader.Mines = loader.Type.MaxMines;
+            return 1;
+        }
+
+        public int SearchMines(Unit searcher)
+        {
+            if (searcher == null) return 0;
+            if (searcher.MineSearchesLeft < 1) return 0;
+
+            searcher.MineSearchesLeft--;
+            searcher.MovesLeft = 0;
+            searcher.RepairsLeft = 0;
+            searcher.TorpedoesLeft = 0;
+            searcher.LoadsLeft = 0;
+            searcher.LightShotsLeft = 0;
+            searcher.InstallsLeft = 0;
+            searcher.HeavyShotsLeft = 0;
+            searcher.DepthChargesLeft = 0;
+            searcher.DivesLeft = 0;
+            searcher.CapturesLeft = 0;
+
+            int minesFound = 0;
+
+            for (int x = searcher.Position.X - 1; x <= searcher.Position.X + 1; x++)
+            {
+                for (int y = searcher.Position.Y - 1; y <= searcher.Position.Y + 1; y++)
+                {
+                    Mine mine = GetMineAt(new Point(x, y));
+
+                    if (mine != null)
+                    {
+                        mine.IsVisible = true;
+                        minesFound++;
+                    }
+                }
+            }
+
+            return minesFound;
+        }
+
+        public int Sweep(Point target, Unit sweeper)
+        {
+            if (sweeper == null) return 0;
+            if (sweeper.SweepsLeft < 1) return 0;
+            if (MapDisplay.PointDifference(target, sweeper.Position) > 1.5f) return 0;
+
+            sweeper.SweepsLeft--;
+            sweeper.MovesLeft = 0;
+            sweeper.RepairsLeft = 0;
+            sweeper.TorpedoesLeft = 0;
+            sweeper.LoadsLeft = 0;
+            sweeper.LightShotsLeft = 0;
+            sweeper.InstallsLeft = 0;
+            sweeper.HeavyShotsLeft = 0;
+            sweeper.DepthChargesLeft = 0;
+            sweeper.DivesLeft = 0;
+            sweeper.CapturesLeft = 0;
+
+            if (GetMineAt(target) == null) return 0;
+            _Mines.Remove(GetMineAt(target));
+
+            return 1;
+        }
+
+        public int EnterMinefield(Unit trespasser)
+        {
+            if (Random.NextDouble() < trespasser.Type.TorpedoHitProbability)
+            {
+                float basedamage = 10 / trespasser.Type.Armour;
+                float randomVariation = (float)((Random.NextDouble() * 2 - 1) * (basedamage / 3));
+
+                trespasser.Health -= basedamage + randomVariation;
+                return (int)((basedamage + randomVariation) * 100);
+            }
+            else return 0;
         }
 
         public static Bitmap GetFactionFlag(Faction faction)
@@ -648,9 +785,9 @@ namespace NavalGame
             switch(faction)
             {
                 case Faction.England:
-                    return "Good evening, Your Majesty. The Royal Navy awaits to do its duty!";
+                    return "Greetings, Your Majesty. The Royal Navy awaits to do its duty!";
                 case Faction.Germany:
-                    return "Greetings, Mein Fuhrer! The Kriegsmarine ships are waiting!";
+                    return "Guten Morgen, Mein Fuhrer. The Kriegsmarine is waiting!";
                 case Faction.Japan:
                     return "Issue your orders, Honourable Emperor. The samurai are prepared to die. Banzai!";
                 case Faction.USA:
@@ -693,6 +830,18 @@ namespace NavalGame
                 if (unit.Position == position)
                 {
                     return unit;
+                }
+            }
+            return null;
+        }
+
+        public Mine GetMineAt(Point position)
+        {
+            foreach (Mine mine in Mines)
+            {
+                if (mine.Position == position)
+                {
+                    return mine;
                 }
             }
             return null;
@@ -1010,8 +1159,76 @@ namespace NavalGame
                 }
             }
 
-
             return possibleCaptures;
+        }
+
+        public HashSet<Point> GetPossibleMines(Unit unit)
+        {
+            HashSet<Point> possibleMines = new HashSet<Point>();
+
+            if (unit.MinesLeft >= 1)
+            {
+                for (int x = 0; x < Terrain.Width; x++)
+                {
+                    for (int y = 0; y < Terrain.Height; y++)
+                    {
+                        if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                        {
+                            if (new Point(x, y) != unit.Position && Terrain.Get(x, y) != TerrainType.Land)
+                            {
+                                possibleMines.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleMines;
+        }
+
+        public HashSet<Point> GetPossibleMineLoads(Unit unit)
+        {
+            HashSet<Point> possibleLoads = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                    {
+                        if (new Point(x, y) != unit.Position)
+                        {
+                            Unit target = GetUnitAt(new Point(x, y));
+
+                            if (target != null && IsUnitVisibleForPlayer(unit.Player, target) && !target.IsSubmerged && target.Player == unit.Player && target.Type == UnitType.Port && target.Cargo >= 2)
+                            {
+                                possibleLoads.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return possibleLoads;
+
+        }
+
+        public HashSet<Point> GetPossibleSweeps(Unit unit)
+        {
+            HashSet<Point> possibleSweeps = new HashSet<Point>();
+
+            for (int x = 0; x < Terrain.Width; x++)
+            {
+                for (int y = 0; y < Terrain.Height; y++)
+                {
+                    if (MapDisplay.PointDifference(unit.Position, new Point(x, y)) < 2)
+                    {
+                        possibleSweeps.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            return possibleSweeps;
         }
 
         public HashSet<Point> GetMoveRange(Unit unit)
@@ -1117,6 +1334,15 @@ namespace NavalGame
                 playersNode.Add(Player.Save(player));
             }
 
+            XElement minesNode = new XElement("Mines");
+            gameNode.Add(minesNode);
+            foreach (Mine mine in game.Mines)
+            {
+                minesNode.Add(NavalGame.Mine.Save(mine));
+            }
+
+
+
             if (game.CurrentPlayer != null) gameNode.SetAttributeValue("CurrentPlayer", game.Players.IndexOf(game.CurrentPlayer));
             else gameNode.SetAttributeValue("CurrentPlayer", -1);
 
@@ -1140,12 +1366,45 @@ namespace NavalGame
                 game._Players.Add(Player.Load(game, playerNode));
             }
 
+            XElement minesNode = gameNode.Element("Mines");
+            foreach (XElement mineNode in minesNode.Elements())
+            {
+                game._Mines.Add(NavalGame.Mine.Load(mineNode, game));
+            }
+
             if (XmlUtils.GetAttributeValue<int>(gameNode, "CurrentPlayer") == -1) game.CurrentPlayer = null;
             else game.CurrentPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "CurrentPlayer")];
 
             game._NextPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "NextPlayer")];
 
             return game;
+        }
+
+        public List<Player> FindLosers()
+        {
+            List<Player> losers = new List<Player>();
+
+            for (int i = 0; i < Players.Count; i++)
+            {
+                if (Players[i].Units.Count == 0 && Players[i].Faction != Faction.Neutral)
+                {
+                    losers.Add(Players[i]);
+                }
+            }
+
+            for (int i = 0; i < losers.Count; i++)
+            {
+                _Players.Remove(losers[i]);
+
+                Player nextPlayer = Players[(Players.IndexOf(CurrentPlayer) + 1) % Players.Count];
+                if (nextPlayer == Players[0] && nextPlayer != _NextPlayer)
+                {
+                    TurnIndex++;
+                }
+                _NextPlayer = nextPlayer;
+            }
+
+            return losers;
         }
     }
 }

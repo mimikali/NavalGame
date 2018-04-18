@@ -1,14 +1,20 @@
+- Pinch zoom on touch screen crashes
+- Increase torpedo boat armor
+- Enemy factories cannot be loaded from
+- Drag threshold too small
 - Land buildings full size counter
 - Rename Form1 to GameForm
 - Add likely outcome tooltip 1/2
 - Make Order buttons checkboxes
 - Add leader head next to greetings
-- Strzelanie do baterii
 
+* Name generation infinite loop
+* Strzelanie do baterii
 * Zamienic miejscami pancernik kieszkonowy i liniowy krazownik
 * Bateria nadbrzezna za droga
 * Duzy cargo za wolny, byc moze drozszy ale szybszy
 * Naprawa kosztowac musi
+* Dodac superpancernik
 * Move ship icons down
 * Add coastal battery, coastal battery barge
 * Game needs its own turn system

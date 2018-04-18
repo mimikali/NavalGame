@@ -214,19 +214,20 @@ namespace NavalGame
                 names = _UnitNames[unit.Type];
             }
 
-            foreach (string name in names)
+            for (int i = 0; i < 1000; ++i)
             {
-                if (Game.Units.ToList().Find(testUnit => testUnit.Name == name) == null)
-                {
+                string name = names[_Random.Next(names.Count)];
+                if (!Game.Units.Any(u => u.Name == name))
                     return name;
-                }
             }
-            return names[_Random.Next(0, names.Count)];
+
+            return names[_Random.Next(names.Count)];
         }
 
         public void InitializeUnitnames()
         {
             List<string> submarines = new List<string>();
+            List<string> superBattleships = new List<string>();
             List<string> battleships = new List<string>();
             List<string> battlecruisers = new List<string>();
             List<string> heavyCruisers = new List<string>();
@@ -244,6 +245,7 @@ namespace NavalGame
             List<string> frigates = new List<string>();
             List<string> pocketBattleships = new List<string>();
             List<string> troopShips = new List<string>();
+            List<string> uBoats = new List<string>();
 
             switch (_Faction)
             {
@@ -257,10 +259,7 @@ namespace NavalGame
                         "MV Wilhelm Gustloff"
                     });
 
-                    for (int i = 1; i < 100; i++)
-                    {
-                        batteryBarges.Add("Battery Barge" + i.ToString());
-                    }
+                    batteryBarges.Add("Battery Barge");
 
                     coastalBatteries.AddRange(new string[]
                     {
@@ -278,9 +277,9 @@ namespace NavalGame
                         "Le Havre Battery",
                     });
 
-                    for (int i = 1; i < 5000; i++)
+                    for (int i = 1; i < 1000; i++)
                     {
-                        submarines.Add("U" + i.ToString());
+                        uBoats.Add("U-" + i.ToString());
                     }
 
                     battleships.AddRange(new string[]
@@ -342,7 +341,7 @@ namespace NavalGame
                     });
                     for (int i = 23; i <= 45; i++)
                     {
-                        destroyers.Add("Z" + i.ToString());
+                        destroyers.Add("Z-" + i.ToString());
                     }
 
                     torpedoBoats.AddRange(new string[]
@@ -362,12 +361,12 @@ namespace NavalGame
                     });
                     for (int i = 1; i <= 36; i++)
                     {
-                        torpedoBoats.Add("T" + i.ToString());
+                        torpedoBoats.Add("T-" + i.ToString());
                     }
 
                     for (int i = 1; i <= 214; i++)
                     {
-                        minesweepers.Add("M" + i.ToString());
+                        minesweepers.Add("M-" + i.ToString());
                     }
 
                     wrecks.Add("Wreck");
@@ -438,10 +437,7 @@ namespace NavalGame
                         "Hugh L. Scott"
                     });
 
-                    for (int i = 1; i < 100; i++)
-                    {
-                        batteryBarges.Add("Battery Barge " + i.ToString());
-                    }
+                    batteryBarges.Add("Battery Barge");
 
                     coastalBatteries.AddRange(new string[]
                     {
@@ -629,7 +625,7 @@ namespace NavalGame
                     });
 
 
-                    for (int i = 1; i <= 150; i++)
+                    for (int i = 1; i <= 100; i++)
                     {
                         torpedoBoats.Add("MTB" + i.ToString());
                     }
@@ -768,10 +764,7 @@ namespace NavalGame
                         "USS General Stuart"
                     });
 
-                    for (int i = 1; i < 100; i++)
-                    {
-                        batteryBarges.Add("Battery Barge" + i.ToString());
-                    }
+                    batteryBarges.Add("Battery Barge");
 
                     coastalBatteries.AddRange(new string[]
                     {
@@ -807,15 +800,19 @@ namespace NavalGame
                         "USS Guinea"
                     });
 
-                    battleships.AddRange(new string[]
-                    {
-                        "USS Iowa",
-                        "USS Texas",
+                    superBattleships.AddRange(new string[]
+                        {
                         "USS Illinois",
                         "USS Kentucky",
                         "USS Wisconsin",
+                        "USS Iowa",
                         "USS Missouri",
-                        "USS New Jersey",
+                        "USS New Jersey"
+                        });
+
+                    battleships.AddRange(new string[]
+                    {
+                        "USS Texas",
                         "USS Nevada",
                         "USS Arkansas",
                         "USS Pennsylvania",
@@ -948,7 +945,7 @@ namespace NavalGame
 
                     for (int i = 1; i <= 20; i++)
                     {
-                        torpedoBoats.Add("PT" + i.ToString());
+                        torpedoBoats.Add("PT-" + i.ToString());
                     }
 
                     minesweepers.AddRange(new string[]
@@ -1069,10 +1066,7 @@ namespace NavalGame
                         "Takatsu Maru"
                     });
 
-                    for (int i = 1; i < 100; i++)
-                    {
-                        batteryBarges.Add("Battery Barge" + i.ToString());
-                    }
+                    batteryBarges.Add("Battery Barge");
 
                     coastalBatteries.AddRange(new string[]
                     {
@@ -1086,14 +1080,19 @@ namespace NavalGame
 
                     for (int i = 1; i < 300; i++)
                     {
-                        submarines.Add("I" + i.ToString());
+                        submarines.Add("I-" + i.ToString());
                     }
+
+                    superBattleships.AddRange(new string[]
+                        {
+                        "Yamato",
+                        "Musashi"
+                        });
 
                     battleships.AddRange(new string[]
                     {
-                        "Yamato",
-                        "Musashi",
                         "Fuso",
+                        "Hyugo",
                         "Ise",
                         "Yamashiro",
                         "Nagato",
@@ -1250,6 +1249,7 @@ namespace NavalGame
                     batteryBarges.Add("Battery Barge");
                     coastalBatteries.Add("Coastal Battery");
                     submarines.Add("Submarine");
+                    uBoats.Add("U-Boat");
                     battleships.Add("Battleship");
                     pocketBattleships.Add("Pocket Battleship");
                     battlecruisers.Add("Battlecruiser");
@@ -1273,6 +1273,7 @@ namespace NavalGame
                         { UnitType.BatteryBarge, batteryBarges },
                         { UnitType.CoastalBattery, coastalBatteries },
                         { UnitType.Submarine, submarines },
+                        { UnitType.SuperBattleship, superBattleships },
                         { UnitType.Battleship, battleships },
                         { UnitType.PocketBattleship, pocketBattleships },
                         { UnitType.Battlecruiser, battlecruisers },
@@ -1287,7 +1288,8 @@ namespace NavalGame
                         { UnitType.Factory, factories },
                         { UnitType.LightCargo, lightCargoes },
                         { UnitType.MediumCargo, mediumCargoes },
-                        { UnitType.TroopShip, troopShips }
+                        { UnitType.TroopShip, troopShips },
+                        { UnitType.UBoat, uBoats}
                     };
         }
 

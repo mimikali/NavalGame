@@ -77,11 +77,6 @@ namespace NavalGame
             }
         }
 
-        protected override void OnMouseWheel(MouseEventArgs e)
-        {
-            CameraScale = (int)Math.Round(Math.Pow(1.2, e.Delta / 120) * CameraScale);
-        }
-
         private void DrawMap2(Graphics graphics)
         {
             if (Terrain == null)
@@ -104,7 +99,7 @@ namespace NavalGame
                 _RangesLayerId = _TileRenderer.AddLayer(TileRenderer.LayerLayout.Corners, Bitmaps.Get("Data\\Ranges.png"), null);
             }
 
-            CameraScale = Height / Terrain.Height;
+            CameraScale = Width / Terrain.Width;
             CameraPosition = new Point(Terrain.Width / 2, Terrain.Height / 2);
 
             _TileRenderer.TileSize = CameraScale;

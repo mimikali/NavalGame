@@ -24,11 +24,15 @@ namespace NavalGame
         private int _TurnsUntilCompletion;
         private int _Cargo;
         private int _Torpedoes;
+        private int _Mines;
         private int _LoadsLeft;
         private int _TorpedoesLeft;
         private int _DivesLeft;
         private int _InstallsLeft;
         private int _CapturesLeft;
+        private int _MinesLeft;
+        private int _SweepsLeft;
+        private int _MineSearchesLeft;
 
         protected Unit(UnitType type, Player player, Point position)
         {
@@ -37,6 +41,7 @@ namespace NavalGame
             _Position = position;
             _IsDetected = true;
             _Torpedoes = Type.MaxTorpedoes;
+            _Mines = Type.MaxMines;
             Name = player.GetUnitName(this);
             ResetProperties(true);
         }
@@ -329,7 +334,59 @@ namespace NavalGame
             }
         }
 
-        public bool Move(Point destination)
+        public int MinesLeft
+        {
+            get
+            {
+                return _MinesLeft;
+            }
+
+            set
+            {
+                _MinesLeft = value;
+            }
+        }
+
+        public int Mines
+        {
+            get
+            {
+                return _Mines;
+            }
+
+            set
+            {
+                _Mines = value;
+            }
+        }
+
+        public int SweepsLeft
+        {
+            get
+            {
+                return _SweepsLeft;
+            }
+
+            set
+            {
+                _SweepsLeft = value;
+            }
+        }
+
+        public int MineSearchesLeft
+        {
+            get
+            {
+                return _MineSearchesLeft;
+            }
+
+            set
+            {
+                _MineSearchesLeft = value;
+            }
+        }
+
+        public int Move(Point destination)
         {
             var distance = MapDisplay.PointDifference(_Position, destination);
             if (distance <= MovesLeft)
@@ -339,7 +396,13 @@ namespace NavalGame
                 {
                     MovesLeft -= distance;
                     _Position = destination;
-                    return true;
+
+                    if (Game.GetMineAt(destination) != null)
+                    {
+                        return Game.EnterMinefield(this);
+                    }
+
+                    return 0;
                 }
                 else
                 {
@@ -347,7 +410,7 @@ namespace NavalGame
                     unit.IsDetected = true;
                 }
             }
-            return false;
+            return -1;
         }
 
         public void DiveOrSurface()
@@ -373,6 +436,9 @@ namespace NavalGame
             DivesLeft = 1;
             DepthChargesLeft = 1;
             CapturesLeft = 1;
+            MinesLeft = 1;
+            SweepsLeft = 1;
+            MineSearchesLeft = 1;
 
             if (IsSubmerged && new Random(GetHashCode()).NextDouble() <= 0.7)
             {
@@ -416,6 +482,9 @@ namespace NavalGame
             unitNode.SetAttributeValue("InstallsLeft", InstallsLeft);
             unitNode.SetAttributeValue("CapturesLeft", CapturesLeft);
             unitNode.SetAttributeValue("RepairsLeft", RepairsLeft);
+            unitNode.SetAttributeValue("MinesLeft", MinesLeft);
+            unitNode.SetAttributeValue("SweepsLeft", MinesLeft);
+            unitNode.SetAttributeValue("MineSearchesLeft", MinesLeft);
 
             unitNode.SetAttributeValue("Name", Name);
             unitNode.SetAttributeValue("Position", string.Format("{0}, {1}", Position.X, Position.Y));
@@ -424,6 +493,7 @@ namespace NavalGame
             unitNode.SetAttributeValue("IsDetected", IsDetected);
             unitNode.SetAttributeValue("Cargo", Cargo);
             unitNode.SetAttributeValue("Torpedoes", Torpedoes);
+            unitNode.SetAttributeValue("Mines", Mines);
             unitNode.SetAttributeValue("TurnsUntilCompletion", TurnsUntilCompletion);
         }
 
@@ -439,6 +509,9 @@ namespace NavalGame
             InstallsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "InstallsLeft");
             CapturesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "CapturesLeft");
             RepairsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "RepairsLeft");
+            MinesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "MinesLeft");
+            SweepsLeft = XmlUtils.GetAttributeValue<int>(unitNode, "SweepsLeft");
+            MineSearchesLeft = XmlUtils.GetAttributeValue<int>(unitNode, "MineSearchesLeft");
 
             Name = XmlUtils.GetAttributeValue<string>(unitNode, "Name");
             Position = XmlUtils.GetAttributeValue<Point>(unitNode, "Position");
@@ -447,6 +520,7 @@ namespace NavalGame
             IsDetected = XmlUtils.GetAttributeValue<bool>(unitNode, "IsDetected");
             Cargo = XmlUtils.GetAttributeValue<int>(unitNode, "Cargo");
             Torpedoes = XmlUtils.GetAttributeValue<int>(unitNode, "Torpedoes");
+            Mines = XmlUtils.GetAttributeValue<int>(unitNode, "Mines");
             TurnsUntilCompletion = XmlUtils.GetAttributeValue<int>(unitNode, "TurnsUntilCompletion");
         }
     }
