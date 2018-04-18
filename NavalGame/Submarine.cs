@@ -24,6 +24,11 @@ namespace NavalGame
             }
         }
 
+        protected Submarine(UnitType unitType, Player player, Point position) : base(unitType, player, position)
+        {
+
+        }
+
         public Submarine(Player player, Point position) : base(UnitType.Submarine, player, position)
         {
 

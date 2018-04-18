@@ -265,8 +265,7 @@ namespace NavalGame
                     {
                         "Hornbäck Battery",
                         "Skagen Battery",
-                        "Bornholm-Süd Battery",
-                        "Bornholm-Nord Battery",
+                        "Bornholm Battery",
                         "Heligoland Battery",
                         "Borkum Battery",
                         "Kolberg Battery",
@@ -287,7 +286,7 @@ namespace NavalGame
                         "Bismarck",
                         "Tirpitz",
                         "Hannover",
-                        "Pommem",
+                        "Pommern",
                         "Schleswig Holstein",
                         "Schlesien"
                     });

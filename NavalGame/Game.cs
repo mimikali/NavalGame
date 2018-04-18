@@ -1341,15 +1341,11 @@ namespace NavalGame
                 minesNode.Add(NavalGame.Mine.Save(mine));
             }
 
-
-
-            if (game.CurrentPlayer != null) gameNode.SetAttributeValue("CurrentPlayer", game.Players.IndexOf(game.CurrentPlayer));
-            else gameNode.SetAttributeValue("CurrentPlayer", -1);
-
+            gameNode.SetAttributeValue("CurrentPlayer", game.CurrentPlayer != null ? game.Players.IndexOf(game.CurrentPlayer) : -1);
             gameNode.SetAttributeValue("NextPlayer", game.Players.IndexOf(game._NextPlayer));
-
             gameNode.SetAttributeValue("ScenarioName", game.ScenarioName);
-        
+            gameNode.SetAttributeValue("TurnIndex", game.TurnIndex);
+
             return gameNode;
         }
 
@@ -1376,6 +1372,8 @@ namespace NavalGame
             else game.CurrentPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "CurrentPlayer")];
 
             game._NextPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "NextPlayer")];
+
+            game.TurnIndex = XmlUtils.GetAttributeValue<int>(gameNode, "TurnIndex");
 
             return game;
         }

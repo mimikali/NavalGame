@@ -122,7 +122,7 @@ namespace NavalGame
 
             set
             {
-                int newScale = Math.Max(Math.Min(value, 180), 10);
+                int newScale = Math.Max(Math.Min(value, 150), 15);
 
                 if (newScale != _CameraPosition.X)
                 {
@@ -337,7 +337,7 @@ namespace NavalGame
         protected override void OnMouseUp(MouseEventArgs e)
         {
             if (_ClickPoint == null) return;
-            if (PointDifference((Point)_ClickPoint, e.Location) < 4)
+            if (PointDifference((Point)_ClickPoint, e.Location) < 8)
             {
                 // Click
                 bool selectionPossible = true;
@@ -715,7 +715,7 @@ namespace NavalGame
 
         protected override void OnMouseWheel(MouseEventArgs e)
         {
-            CameraScale = (int)Math.Round(Math.Pow(1.2, e.Delta / 120) * CameraScale);
+            CameraScale = (int)Math.Round(Math.Pow(1.3, e.Delta / 120) * CameraScale);
         }
 
         private void DrawMap(Graphics graphics)

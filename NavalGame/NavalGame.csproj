@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PocketBattleship.cs" />
+    <Compile Include="SuperBattleship.cs" />
     <Compile Include="Mine.cs" />
     <Compile Include="AircraftCarrier.cs" />
     <Compile Include="BatteryBarge.cs" />
