@@ -13,12 +13,10 @@ namespace NavalGame
     public partial class Form1 : Form
     {
         Game Game;
-        Form ScenarioSelectionForm;
 
-        public Form1(Game game, ScenarioSelectionForm scenarioSelectionForm)
+        public Form1(Game game)
         {
             InitializeComponent();
-            ScenarioSelectionForm = scenarioSelectionForm;
             Game = game;
             Game.PlayerChanged += GamePlayerChanged;
             MapDisplay.Game = Game;
@@ -31,11 +29,6 @@ namespace NavalGame
         private void GamePlayerChanged()
         {
             Text = "Naval Game - Turn " + (Game.TurnIndex + 1);
-        }
-
-        private void Form1Closed(object sender, FormClosedEventArgs e)
-        {
-            ScenarioSelectionForm.Show();
         }
 
         private void FormSizeChanged(object sender, EventArgs e)

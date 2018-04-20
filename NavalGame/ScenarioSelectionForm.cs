@@ -83,8 +83,7 @@ namespace NavalGame
             if (ScenarioList.SelectedItem != null)
             {
                 var scenario = (Scenario)ScenarioList.SelectedItem;
-                Hide();
-                new Form1(new Game(scenario.Map, scenario.Name), this).ShowDialog();
+                new Form1(new Game(scenario.Map, scenario.Name)).ShowDialog(this);
             }
         }
 
@@ -103,26 +102,7 @@ namespace NavalGame
         private void FileDialogFileOk(object sender, CancelEventArgs e)
         {
             XElement element = XElement.Load(((FileDialog)sender).FileName);
-            new Form1(Game.Load(element), this).ShowDialog();
-        }
-
-        public static string GetScenarioNameFromFileName(string fileName)
-        {
-            string name = "";
-            bool hasExt = true;
-
-            name = Path.GetFileName(fileName);
-
-            for (int i = 0; i < name.Length; i++)
-            {
-                if (name[i] == '.' && hasExt == true)
-                {
-                    name = name.Remove(i);
-                    hasExt = false;
-                }
-            }
-
-            return name;
+            new Form1(Game.Load(element)).ShowDialog(this);
         }
     }
 }
