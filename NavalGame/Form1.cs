@@ -19,16 +19,16 @@ namespace NavalGame
             InitializeComponent();
             Game = game;
             Game.PlayerChanged += GamePlayerChanged;
-            MapDisplay.Game = Game;
             MapDisplay.OrdersDisplay = OrdersDisplay;
             OrdersDisplay.MapDisplay = MapDisplay;
+            MapDisplay.Game = Game;
             WindowState = FormWindowState.Maximized;
             GamePlayerChanged();
         }
 
         private void GamePlayerChanged()
         {
-            Text = "Naval Game - Turn " + (Game.TurnIndex + 1);
+            Text = "Naval Game - Turn " + Game.TurnIndex;
         }
 
         private void FormSizeChanged(object sender, EventArgs e)

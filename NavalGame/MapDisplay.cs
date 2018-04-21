@@ -56,6 +56,7 @@ namespace NavalGame
                     _Game.Sinking += Sinking;
                     _Game.SubmarineDetected += SubmarineDetected;
                     _Game.PlayerChanged += PlayerChanged;
+                    GameChanged();
                 }
             }
         }

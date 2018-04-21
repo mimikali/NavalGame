@@ -72,6 +72,18 @@ namespace NavalGame
 
         public void GameChanged()
         {
+            if (MapDisplay.Game.CurrentPlayer == null)
+            {
+                BeginTurnButton.Show();
+                NextTurnButton.Hide();
+                BeginTurnButton.Text = "Begin " + MapDisplay.Game.NextPlayer.Faction.ToString() + "'s turn";
+            }
+            else
+            {
+                BeginTurnButton.Hide();
+                NextTurnButton.Show();
+            }
+
             MovePictureBox.BorderStyle = BorderStyle.None;
             BuildPictureBox.BorderStyle = BorderStyle.None;
             LoadPictureBox.BorderStyle = BorderStyle.None;
@@ -296,13 +308,9 @@ namespace NavalGame
             string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), MapDisplay.Game.ScenarioName + " " + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")) + ".nvg";
 
             MapDisplay.Game.CurrentPlayer = null;
-            NextTurnButton.Hide();
-            BeginTurnButton.Show();
             MapDisplay.PlaySound("Data\\Bell.wav");
 
-            List<Player> losers = MapDisplay.Game.FindLosers();
-
-            foreach (Player loser in losers)
+            foreach (Player loser in MapDisplay.Game.FindLosers())
             {
                 switch (loser.Faction)
                 {
@@ -327,9 +335,7 @@ namespace NavalGame
 
         private void BeginTurnButtonClick(object sender, EventArgs e)
         {
-            MapDisplay.Game.NextPlayer();
-            BeginTurnButton.Hide();
-            NextTurnButton.Show();
+            MapDisplay.Game.NextPlayerTurn();
 
             if (MapDisplay.Game.Players.Count(player => player.Faction != Faction.Neutral) == 1)
             {

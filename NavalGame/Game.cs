@@ -21,8 +21,8 @@ namespace NavalGame
         public event Action Sinking;
         public event Action SubmarineDetected;
         public event Action PlayerChanged;
-        public Player _NextPlayer;
-        public int TurnIndex;
+        private Player _NextPlayer;
+        private int _TurnIndex;
         public Random Random = new Random();
         public string ScenarioName;
 
@@ -95,11 +95,21 @@ namespace NavalGame
             }
         }
 
+        public Player NextPlayer => _NextPlayer;
+
         public IList<Player> Players
         {
             get
             {
                 return _Players.AsReadOnly();
+            }
+        }
+
+        public int TurnIndex
+        {
+            get
+            {
+                return _TurnIndex;
             }
         }
 
@@ -253,10 +263,10 @@ namespace NavalGame
                 }
             }
 
-            if (Players.Count > 0) _NextPlayer = Players[0];
+            _NextPlayer = GetNextPlayer(null);
         }
 
-        public Game(Terrain terrain, string scenarioName)
+        private Game(Terrain terrain, string scenarioName)
         {
             _Terrain = terrain;
             _Players = new List<Player>();
@@ -300,18 +310,27 @@ namespace NavalGame
             FireChangedEvent();
         }
 
-        public void NextPlayer()
+        public void NextPlayerTurn()
         {
+            if (_NextPlayer == GetNextPlayer(null))
+            {
+                _TurnIndex++;
+            }
+
             CurrentPlayer = _NextPlayer;
-            _NextPlayer = Players[(Players.IndexOf(CurrentPlayer) + 1) % Players.Count];
-            if (_NextPlayer == Players[0])
+            _NextPlayer = GetNextPlayer(CurrentPlayer);
+        }
+
+        private Player GetNextPlayer(Player player)
+        {
+            Player nextPlayer = player != null ? Players[(Players.IndexOf(player) + 1) % Players.Count] : Players[0];
+
+            if (nextPlayer.Faction == Faction.Neutral)
             {
-                TurnIndex++;
+                nextPlayer = Players[(Players.IndexOf(nextPlayer) + 1) % Players.Count];
             }
-            if (CurrentPlayer.Faction == Faction.Neutral)
-            {
-                NextPlayer();
-            }
+
+            return nextPlayer;
         }
 
         public void FireChangedEvent()
@@ -1373,7 +1392,7 @@ namespace NavalGame
 
             game._NextPlayer = game.Players[XmlUtils.GetAttributeValue<int>(gameNode, "NextPlayer")];
 
-            game.TurnIndex = XmlUtils.GetAttributeValue<int>(gameNode, "TurnIndex");
+            game._TurnIndex = XmlUtils.GetAttributeValue<int>(gameNode, "TurnIndex");
 
             return game;
         }
@@ -1397,7 +1416,7 @@ namespace NavalGame
                 Player nextPlayer = Players[(Players.IndexOf(CurrentPlayer) + 1) % Players.Count];
                 if (nextPlayer == Players[0] && nextPlayer != _NextPlayer)
                 {
-                    TurnIndex++;
+                    _TurnIndex++;
                 }
                 _NextPlayer = nextPlayer;
             }
