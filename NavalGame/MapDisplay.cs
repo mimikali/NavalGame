@@ -384,6 +384,10 @@ namespace NavalGame
                             selectionPossible = false;
                             CurrentOrder = null;
                         }
+                        else
+                        {
+                            _ToolTip.Show("No target visible", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
+                        }
                     }
 
                     // Heavy Artillery
@@ -405,6 +409,10 @@ namespace NavalGame
                             }
                             selectionPossible = false;
                             CurrentOrder = null;
+                        }
+                        else
+                        {
+                            _ToolTip.Show("No target visible", this, MapToDisplay(new PointF(mapClickPosition.X + 0.5f, mapClickPosition.Y + 0.5f)), 2000);
                         }
                     }
 
@@ -672,36 +680,6 @@ namespace NavalGame
                 _DragFrom = new Point(e.Location.X, e.Location.Y);
             }
             #endregion
-        }
-
-        protected override void OnMouseHover(EventArgs e)
-        {
-            base.OnMouseHover(e);
-            //if (Game.SelectedUnit == null) return;
-            //Unit unit = Game.SelectedUnit;
-            //Point mapPos = Point.Truncate(DisplayToMap(Cursor.Position));
-            //switch (CurrentOrder)
-            //{
-            //    case null:
-            //        return;
-
-            //    case Order.Move:
-            //        if (_PossibleMoves.Contains(mapPos))
-            //        {
-            //            float baseFuelCost = PointDifference(unit.Position, mapPos);
-            //            float fuelCost = (float)(baseFuelCost + (baseFuelCost * 0.5) * (unit.Speed - unit.MovesLeft));
-            //            _ToolTip.Show("Moving here costs " + Math.Round(fuelCost, 2).ToString() + " fuel.", this, 3000);
-            //        }
-            //        break;
-
-            //    case Order.LightArtillery:
-            //        if (_PossibleLightShots.Contains(mapPos))
-            //        {
-
-            //        }
-            //        break;
-            //}
-            //DisplayToMap(Cursor.Position);
         }
 
         protected override Cursor DefaultCursor

@@ -196,7 +196,7 @@ namespace NavalGame
                 HeavyRange = 7,
                 LightPower = 1,
                 LightRange = 5,
-                TorpedoHitProbability = 0.2f,
+                TorpedoHitProbability = 0.4f,
                 Armour = 8,
                 Capacity = 0,
                 RepairPower = 0,

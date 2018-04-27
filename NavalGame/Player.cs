@@ -185,7 +185,7 @@ namespace NavalGame
                         bool a = false;
                         for (int i = 0; i < Units.Count; i++)
                         {
-                            if (MapDisplay.PointDifference(new Point(x, y), Units[i].Position) < Units[i].Type.ViewDistance)
+                            if (MapDisplay.PointDifference(new Point(x, y), Units[i].Position) <= Units[i].Type.ViewDistance)
                             {
                                 a = true;
                                 break;

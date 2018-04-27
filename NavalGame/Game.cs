@@ -412,7 +412,6 @@ namespace NavalGame
                 targetUnit.Health -= damage;
                 return (int)(damage * 100);
             }
-
             return 0;
         }
 
